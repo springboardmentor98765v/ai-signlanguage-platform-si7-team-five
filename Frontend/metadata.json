@@ -1,0 +1,6 @@
+{
+  "name": "Sign Language Learning & Assessment Platform",
+  "description": "An interactive, AI-powered educational platform featuring sign language lessons, real-time practice assessment via webcam, progress tracking, and performance reporting.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
