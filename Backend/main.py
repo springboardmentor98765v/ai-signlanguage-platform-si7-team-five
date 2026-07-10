@@ -1,7 +1,14 @@
 from fastapi import FastAPI
-from routers import user_router, auth_router, post_router,health_router
+from routers.health import health_router,user_router, course_router
+
+
 app = FastAPI()
-app.include_router(health_router.router)
+
+app.include_router(health_router)
+app.include_router(user_router, prefix = "/auth", tags=["Authenticate"])
+
+app.include_router(course_router,prefix="/courses",tags=["Courses"])
+
 @app.get("/")
 def root():
     return {"message": "Backend skeleton running"}
