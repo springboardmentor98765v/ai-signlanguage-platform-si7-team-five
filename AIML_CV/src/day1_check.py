@@ -8,10 +8,10 @@ from mediapipe import Image
 import urllib.request
 import os
 
-os.makedirs("../models", exist_ok=True)
-os.makedirs("../data/samples", exist_ok=True)
+os.makedirs("models", exist_ok=True)
+os.makedirs("data/samples", exist_ok=True)
 
-model_path = "../models/hand_landmarker.task"
+model_path = "models/hand_landmarker.task"
 if not os.path.exists(model_path):
     print("Downloading model...")
     urllib.request.urlretrieve(
@@ -28,7 +28,7 @@ options = vision.HandLandmarkerOptions(
 )
 detector = vision.HandLandmarker.create_from_options(options)
 
-test_img_path = "../data/samples/test_hand.jpg"
+test_img_path = "data/samples/test_hand.jpg"
 if not os.path.exists(test_img_path):
     urllib.request.urlretrieve(
         "https://storage.googleapis.com/mediapipe-tasks/hand_landmarker/woman_hands.jpg",

@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# AI/CV - model files and sample data (re-downloadable)
+AIML_CV/models/
+AIML_CV/data/
+AIML_CV/notebooks/.ipynb_checkpoints/
+__pycache__/
+*.pyc
