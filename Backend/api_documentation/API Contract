@@ -1,0 +1,151 @@
+
+
+---
+
+## 🔑 Authentication APIs
+
+### **POST /auth/register**
+- **Purpose:** Register a new user  
+- **Request:**
+```json
+{
+  "username": "john_doe",
+  "email": "john@example.com",
+  "password": "securePassword123",
+  "role": "student"
+}
+```
+- **Response (success):**
+```json
+{
+  "message": "User registered successfully",
+  "user_id": "u12345"
+}
+```
+
+---
+
+### **POST /auth/login**
+- **Purpose:** Authenticate user and issue JWT  
+- **Request:**
+```json
+{
+  "email": "john@example.com",
+  "password": "securePassword123"
+}
+```
+- **Response (success):**
+```json
+{
+  "access_token": "jwt_token_here",
+  "token_type": "bearer",
+  "expires_in": 3600
+}
+```
+
+---
+
+### **GET /auth/me**
+- **Purpose:** Fetch current user profile  
+- **Headers:** `Authorization: Bearer <jwt_token>`  
+- **Response:**
+```json
+{
+  "user_id": "u12345",
+  "username": "john_doe",
+  "email": "john@example.com",
+  "role": "student"
+}
+```
+
+---
+
+## 📚 Course APIs
+
+### **POST /courses**
+- **Purpose:** Create a new course (instructor/admin only)  
+- **Headers:** `Authorization: Bearer <jwt_token>`  
+- **Request:**
+```json
+{
+  "title": "Intro to Sign Language",
+  "description": "Beginner course covering basics",
+  "level": "beginner"
+}
+```
+- **Response:**
+```json
+{
+  "course_id": "c101",
+  "message": "Course created successfully"
+}
+```
+
+---
+
+### **GET /courses**
+- **Purpose:** Retrieve all courses  
+- **Response:**
+```json
+[
+  {
+    "course_id": "c101",
+    "title": "Intro to Sign Language",
+    "level": "beginner"
+  },
+  {
+    "course_id": "c102",
+    "title": "Advanced Sign Language",
+    "level": "advanced"
+  }
+]
+```
+
+---
+
+### **GET /courses/{course_id}**
+- **Purpose:** Retrieve course details by ID  
+- **Response:**
+```json
+{
+  "course_id": "c101",
+  "title": "Intro to Sign Language",
+  "description": "Beginner course covering basics",
+  "level": "beginner",
+  "lessons": [
+    {"lesson_id": "l1", "title": "Alphabet"},
+    {"lesson_id": "l2", "title": "Basic Greetings"}
+  ]
+}
+```
+
+---
+
+### **PUT /courses/{course_id}**
+- **Purpose:** Update course details (instructor/admin only)  
+- **Headers:** `Authorization: Bearer <jwt_token>`  
+- **Request:**
+```json
+{
+  "title": "Intro to Sign Language - Updated",
+  "description": "Updated description",
+  "level": "intermediate"
+}
+```
+- **Response:**
+```json
+{
+  "message": "Course updated successfully"
+}
+```
+
+---
+
+### **DELETE /courses/{course_id}**
+- **Purpose:** Delete a course (admin only)  
+- **Headers:** `Authorization: Bearer <jwt_token>`  
+- **Response:**
+```json
+{
+  "message": "Course deleted successfully"
+}

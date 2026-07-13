@@ -1,11 +1,31 @@
-from fastapi import FastAPI
-from routers.health import health_router,user_router, course_router
-
+from fastapi import FastAPI, Request
+from routers.health import health_router
+from routers.users import r as user_router
+from routers.course import r as course_router
+from services.rate_limit import rate_limiter
+from db import engine, Base
+import models.users  # noqa: F401
+import models.course  # noqa: F401
 
 app = FastAPI()
 
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    rate_limiter(request)
+    return await call_next(request)
+
+
+@app.on_event("startup")
+def create_tables():
+    Base.metadata.create_all(bind=engine)
+
+
 app.include_router(health_router)
-app.include_router(user_router, prefix = "/auth", tags=["Authenticate"])
+app.include_router(user_router, prefix="/auth", tags=["Authenticate"])
+app.include_router(course_router, prefix="/courses", tags=["Courses"])
 
-app.include_router(course_router,prefix="/courses",tags=["Courses"])
 
+@app.get("/")
+def root():
+    return {"message": "Backend skeleton running"}
