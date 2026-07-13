@@ -2,10 +2,10 @@ import bcrypt
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi import HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+token_scheme = HTTPBearer(auto_error=False)
 
 
 def hash_password(password: str) -> str:
@@ -30,8 +30,11 @@ def decode_token(token: str) -> dict | None:
         return None
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
-    payload = decode_token(token)
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(token_scheme)) -> dict:
+    if credentials is None or credentials.scheme.lower() != "bearer":
+        raise HTTPException(status_code=401, detail="Invalid or missing authorization token")
+
+    payload = decode_token(credentials.credentials)
     if payload is None:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     return payload

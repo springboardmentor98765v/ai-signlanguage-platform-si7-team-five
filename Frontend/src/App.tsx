@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { JSX } from 'react';
 import { User, UserRole, Lesson, LessonStep } from './types';
 import { mockUser, mockLessons } from './mockData';
 import LoginView from './components/LoginView';
@@ -10,23 +11,26 @@ import PracticeView from './components/PracticeView';
 import ReportsView from './components/ReportsView';
 import ProfileView from './components/ProfileView';
 
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || "http://localhost:8000";
+
 export default function App() {
   // Authentication states
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
+  const [currentUser, setCurrentUser] = React.useState<User | null>(null);
+  const [authScreen, setAuthScreen] = React.useState<'login' | 'register'>('login');
 
   // Core application database states (for dynamic UI persistence)
-  const [lessons, setLessons] = useState<Lesson[]>(mockLessons);
+  const [lessons, setLessons] = React.useState<Lesson[]>([]);
+  const [token, setToken] = React.useState<string | null>(null);
 
   // Active navigation tab
-  const [activeTab, setActiveTab] = useState<string>('Dashboard');
+  const [activeTab, setActiveTab] = React.useState<string>('Dashboard');
 
   // Inter-tab parameter transfer (e.g. continuing a lesson or practicing a specific step)
-  const [selectedLessonFromNav, setSelectedLessonFromNav] = useState<Lesson | null>(null);
-  const [selectedPracticeStep, setSelectedPracticeStep] = useState<{ step: LessonStep; lessonName: string } | null>(null);
+  const [selectedLessonFromNav, setSelectedLessonFromNav] = React.useState<Lesson | null>(null);
+  const [selectedPracticeStep, setSelectedPracticeStep] = React.useState<{ step: LessonStep; lessonName: string } | null>(null);
 
   // Read session from localStorage if available (simulates persistent login)
-  useEffect(() => {
+  React.useEffect(() => {
     const cachedUser = localStorage.getItem('asl_user_session');
     if (cachedUser) {
       try {
@@ -100,6 +104,17 @@ export default function App() {
     } else {
       setActiveTab(tab);
     }
+  };
+
+  // Load courses on component mount
+  React.useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    const res = await fetch(`${API_BASE_URL}/courses`);
+    const data = await res.json();
+    setLessons(data);
   };
 
   // Render authentications if offline
@@ -177,3 +192,4 @@ export default function App() {
     </Layout>
   );
 }
+

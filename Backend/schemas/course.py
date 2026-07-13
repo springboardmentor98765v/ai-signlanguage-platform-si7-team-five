@@ -4,7 +4,7 @@ from pydantic import BaseModel, ConfigDict
 class CourseBase(BaseModel):
     title: str
     description: str
-    instructor_id: int
+    instructor_id: str
 
 
 class CourseCreate(CourseBase):
@@ -12,8 +12,8 @@ class CourseCreate(CourseBase):
 
 
 class CourseUpdate(BaseModel):
-    title: str | None = None
-    description: str | None = None
+    title: str  
+    description: str 
 
 
 class CourseOut(CourseBase):

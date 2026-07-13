@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from routers.health import health_router
 from routers.users import r as user_router
 from routers.course import r as course_router
@@ -9,6 +10,14 @@ import models.course  # noqa: F401
 
 app = FastAPI()
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.middleware("http")
 async def rate_limit_middleware(request: Request, call_next):

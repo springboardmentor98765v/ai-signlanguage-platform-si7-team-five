@@ -4,10 +4,13 @@ from schemas.user import UserCreate, UserLogin
 from services.auth import hash_password, verify_password, create_access_token
 from models.users import User
 from db import get_db
-
+from services.auth import get_current_user
+from typing import Dict
 r = APIRouter()
 
-
+@r.get("/me")
+def get_me(user: Dict = Depends(get_current_user)):
+    return user
 @r.post("/register")
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
     existing = (

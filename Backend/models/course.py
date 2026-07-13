@@ -7,5 +7,5 @@ class Course(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
+    letter= Column(Text, nullable=False)
     instructor_id = Column(Integer, nullable=False)
