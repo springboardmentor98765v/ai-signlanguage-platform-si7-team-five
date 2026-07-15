@@ -11,10 +11,10 @@ import {
   ShieldCheck, 
   Zap, 
   Bell, 
-  HelpCircle,
   GraduationCap,
   Users,
-  Accessibility
+  Accessibility,
+  ShieldAlert
 } from 'lucide-react';
 import { User as UserType } from '../types';
 
@@ -42,13 +42,36 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
     }
   };
 
-  const navItems = [
+  // Role-based nav items
+  const getLearnerNav = () => [
     { name: 'Dashboard', icon: LayoutDashboard },
     { name: 'Lessons', icon: BookOpen },
     { name: 'Practice', icon: Camera },
     { name: 'Reports', icon: Award },
     { name: 'Profile', icon: User },
   ];
+
+  const getInstructorNav = () => [
+    { name: 'Dashboard', icon: LayoutDashboard },
+    { name: 'Lessons', icon: BookOpen },
+    { name: 'Reports', icon: Award },
+    { name: 'Profile', icon: User },
+  ];
+
+  const getTrainerNav = () => [
+    { name: 'Dashboard', icon: LayoutDashboard },
+    { name: 'Lessons', icon: BookOpen },
+    { name: 'Practice', icon: Camera },
+    { name: 'Reports', icon: Award },
+    { name: 'Profile', icon: User },
+    { name: 'Admin', icon: ShieldAlert },
+  ];
+
+  const navItems = user.role === 'Instructor'
+    ? getInstructorNav()
+    : user.role === 'Accessibility Trainer'
+      ? getTrainerNav()
+      : getLearnerNav();
 
   const handleNavClick = (tabName: string) => {
     onTabChange(tabName);
@@ -58,7 +81,11 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
   const getPageTitle = () => {
     switch (activeTab) {
       case 'Dashboard':
-        return 'Learner Dashboard';
+        return user.role === 'Instructor' ? 'Instructor Dashboard' : 'Learner Dashboard';
+      case 'Instructor':
+        return 'Instructor Dashboard';
+      case 'Admin':
+        return 'Admin Dashboard';
       case 'Lessons':
         return 'ASL Syllabus';
       case 'Practice':
@@ -72,6 +99,66 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
     }
   };
 
+  const SidebarContent = () => (
+    <>
+      <div className="space-y-6 pt-6 flex-1 flex flex-col">
+        {/* Logo / Brand */}
+        <div className="px-6 flex items-center space-x-2 text-emerald-600">
+          <ShieldCheck className="h-8 w-8 text-emerald-600" />
+          <span className="font-sans font-bold text-lg tracking-tight text-gray-900">SignAI Learn</span>
+        </div>
+
+        {/* Navigation Links */}
+        <nav id="desktop_navigation" className="px-4 space-y-1 flex-1">
+          {navItems.map((item) => {
+            const IconComponent = item.icon;
+            const isActive = activeTab === item.name;
+            return (
+              <button
+                key={item.name}
+                id={`nav_desktop_${item.name.toLowerCase()}`}
+                onClick={() => handleNavClick(item.name)}
+                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
+                  isActive
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <IconComponent className={`h-5 w-5 ${isActive ? 'text-emerald-600' : 'text-gray-400'}`} />
+                <span>{item.name}</span>
+              </button>
+            );
+          })}
+        </nav>
+      </div>
+
+      {/* Sidebar Footer */}
+      <div id="desktop_sidebar_footer" className="p-4 border-t border-gray-100 space-y-4 bg-white">
+        <div className="flex items-center space-x-3 p-2 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="h-10 w-10 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm uppercase shrink-0">
+            {user.name.substring(0, 2)}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-bold text-gray-900 truncate">{user.name}</p>
+            <div className="flex items-center space-x-1 mt-0.5">
+              <span className="text-emerald-700">{getRoleIcon(user.role)}</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider truncate">{user.role}</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          id="logout_desktop_btn"
+          onClick={onLogout}
+          className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-red-50 hover:text-red-600 transition"
+        >
+          <LogOut className="h-4.5 w-4.5" />
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div id="layout_root" className="min-h-screen bg-gray-50 flex">
       
@@ -82,61 +169,7 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
         id="desktop_sidebar" 
         className="hidden md:flex flex-col w-64 bg-white border-r border-gray-100 flex-shrink-0 justify-between h-screen sticky top-0"
       >
-        <div className="space-y-6 pt-6 flex-1 flex flex-col">
-          {/* Logo / Brand */}
-          <div className="px-6 flex items-center space-x-2 text-emerald-600">
-            <ShieldCheck className="h-8 w-8 text-emerald-600" />
-            <span className="font-sans font-bold text-lg tracking-tight text-gray-900">SignAI Learn</span>
-          </div>
-
-          {/* Navigation Links */}
-          <nav id="desktop_navigation" className="px-4 space-y-1 flex-1">
-            {navItems.map((item) => {
-              const IconComponent = item.icon;
-              const isActive = activeTab === item.name;
-              return (
-                <button
-                  key={item.name}
-                  id={`nav_desktop_${item.name.toLowerCase()}`}
-                  onClick={() => handleNavClick(item.name)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-semibold transition ${
-                    isActive
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                  }`}
-                >
-                  <IconComponent className={`h-5 w-5 ${isActive ? 'text-emerald-600' : 'text-gray-400'}`} />
-                  <span>{item.name}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Sidebar Footer: Profile Summary & Logout */}
-        <div id="desktop_sidebar_footer" className="p-4 border-t border-gray-100 space-y-4 bg-white">
-          <div className="flex items-center space-x-3 p-2 bg-gray-50 rounded-xl border border-gray-100">
-            <div className="h-10 w-10 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm uppercase shrink-0">
-              {user.name.substring(0, 2)}
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-gray-900 truncate">{user.name}</p>
-              <div className="flex items-center space-x-1 mt-0.5">
-                <span className="text-emerald-700">{getRoleIcon(user.role)}</span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider truncate">{user.role}</span>
-              </div>
-            </div>
-          </div>
-
-          <button
-            id="logout_desktop_btn"
-            onClick={onLogout}
-            className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold text-gray-500 hover:bg-red-50 hover:text-red-600 transition"
-          >
-            <LogOut className="h-4.5 w-4.5" />
-            <span>Sign Out</span>
-          </button>
-        </div>
+        <SidebarContent />
       </aside>
 
       {/* ========================================== */}
