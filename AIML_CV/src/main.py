@@ -1,30 +1,67 @@
 import io
-import numpy as np
+import urllib.request
+from pathlib import Path
+
+import cv2
 import joblib
+import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
+from mediapipe import Image, ImageFormat
 from mediapipe.tasks import python as mp_tasks
 from mediapipe.tasks.python import vision
-from mediapipe import Image, ImageFormat
-import cv2
 
 app = FastAPI(title="Sign Language AI Prediction Service")
 
-MODEL_PATH = "models/hand_landmarker.task"
-CLASSIFIER_PATH = "models/knn_classifier.joblib"
+BASE_DIR = Path(__file__).resolve().parent
+MODELS_DIR = BASE_DIR / "models"
+MODEL_PATH = MODELS_DIR / "hand_landmarker.task"
+CLASSIFIER_PATH = MODELS_DIR / "knn_classifier.joblib"
+HAND_LANDMARKER_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
 
 WRIST = 0
 FINGERTIPS = [4, 8, 12, 16, 20]
 MIDDLE_MCP = 9
 
-base_options = mp_tasks.BaseOptions(model_asset_path=MODEL_PATH)
-options = vision.HandLandmarkerOptions(
-    base_options=base_options,
-    num_hands=1,
-    min_hand_detection_confidence=0.5
-)
-detector = vision.HandLandmarker.create_from_options(options)
-classifier = joblib.load(CLASSIFIER_PATH)
+
+def ensure_model_assets() -> None:
+    MODELS_DIR.mkdir(exist_ok=True)
+    if not MODEL_PATH.exists():
+        print(f"Downloading hand landmarker model to {MODEL_PATH}...")
+        urllib.request.urlretrieve(HAND_LANDMARKER_URL, MODEL_PATH)
+
+
+ensure_model_assets()
+
+
+def create_detector():
+    try:
+        base_options = mp_tasks.BaseOptions(model_asset_path=str(MODEL_PATH))
+        options = vision.HandLandmarkerOptions(
+            base_options=base_options,
+            num_hands=1,
+            min_hand_detection_confidence=0.5,
+        )
+        return vision.HandLandmarker.create_from_options(options)
+    except Exception as exc:
+        print(f"Could not initialize hand detector: {exc}")
+        return None
+
+
+def load_classifier():
+    if not CLASSIFIER_PATH.exists():
+        print(f"Classifier model not found at {CLASSIFIER_PATH}. Prediction endpoint will return 'unknown'.")
+        return None
+
+    try:
+        return joblib.load(CLASSIFIER_PATH)
+    except Exception as exc:
+        print(f"Could not load classifier: {exc}")
+        return None
+
+
+detector = create_detector()
+classifier = load_classifier()
 
 
 def landmarks_to_array(hand_landmarks):
@@ -68,23 +105,46 @@ def extract_features(hand_landmarks):
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "detector_ready": detector is not None,
+        "classifier_ready": classifier is not None,
+        "model_path": str(MODEL_PATH),
+        "classifier_path": str(CLASSIFIER_PATH),
+    }
 
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
+    if detector is None:
+        return JSONResponse(
+            status_code=503,
+            content={"predicted_sign": None, "confidence": 0.0, "message": "AI model is not ready"},
+        )
+
+    if classifier is None:
+        return JSONResponse(
+            status_code=200,
+            content={"predicted_sign": "unknown", "confidence": 0.0, "message": "Classifier model not trained yet"},
+        )
+
     contents = await file.read()
     nparr = np.frombuffer(contents, np.uint8)
     bgr_img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
+    if bgr_img is None:
+        return JSONResponse(
+            status_code=400,
+            content={"predicted_sign": None, "confidence": 0.0, "message": "Invalid image file"},
+        )
 
+    rgb_img = cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB)
     mp_image = Image(image_format=ImageFormat.SRGB, data=rgb_img)
     result = detector.detect(mp_image)
 
     if not result.hand_landmarks:
         return JSONResponse(
             status_code=200,
-            content={"predicted_sign": None, "confidence": 0.0, "message": "No hand detected"}
+            content={"predicted_sign": None, "confidence": 0.0, "message": "No hand detected"},
         )
 
     features = extract_features(result.hand_landmarks[0])
@@ -93,3 +153,9 @@ async def predict(file: UploadFile = File(...)):
     confidence = float(max(probabilities))
 
     return {"predicted_sign": prediction, "confidence": round(confidence, 3)}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8001)
