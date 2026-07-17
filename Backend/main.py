@@ -7,8 +7,22 @@ from services.rate_limit import rate_limiter
 from db import engine, Base
 import models.users  # noqa: F401
 import models.course  # noqa: F401
+from services import course_service
+from services import user_service
+from services import instructor_service
+from services import admin_services
+
+
 
 app = FastAPI()
+
+# Include course service router
+app.include_router(course_service.r, prefix="/courses", tags=["Courses"])
+app.include_router(user_service.r, prefix="/auth", tags=["Authenticate"])
+app.include_router(instructor_service.r, prefix="/instructors", tags=["Instructors"])
+app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
+
+
 
 # Add CORS middleware
 app.add_middleware(
