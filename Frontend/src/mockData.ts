@@ -186,3 +186,148 @@ export const categoryBreakdownData = [
   { name: 'Numbers', accuracy: 88, sessions: 8 },
   { name: 'Phrases', accuracy: 78, sessions: 4 },
 ];
+
+// =============================================
+// MILESTONE 2 – INSTRUCTOR DASHBOARD MOCK DATA
+// =============================================
+
+export interface InstructorStudent {
+  id: string;
+  name: string;
+  email: string;
+  lessonsCompleted: number;
+  accuracy: number;
+  streak: number;
+  lastActive: string;
+}
+
+export const mockInstructorStudents: InstructorStudent[] = [
+  { id: 'stu_1', name: 'Alice Johnson',  email: 'alice@school.edu',   lessonsCompleted: 14, accuracy: 94, streak: 8,  lastActive: '2 hrs ago' },
+  { id: 'stu_2', name: 'Bob Martinez',   email: 'bob@school.edu',     lessonsCompleted: 10, accuracy: 82, streak: 5,  lastActive: '1 day ago' },
+  { id: 'stu_3', name: 'Carol White',    email: 'carol@school.edu',   lessonsCompleted: 7,  accuracy: 67, streak: 2,  lastActive: '3 days ago' },
+  { id: 'stu_4', name: 'David Kim',      email: 'david@school.edu',   lessonsCompleted: 18, accuracy: 91, streak: 12, lastActive: '30 mins ago' },
+  { id: 'stu_5', name: 'Eva Nguyen',     email: 'eva@school.edu',     lessonsCompleted: 5,  accuracy: 58, streak: 1,  lastActive: '5 days ago' },
+  { id: 'stu_6', name: 'Frank Brown',    email: 'frank@school.edu',   lessonsCompleted: 11, accuracy: 79, streak: 4,  lastActive: '6 hrs ago' },
+  { id: 'stu_7', name: 'Grace Lee',      email: 'grace@school.edu',   lessonsCompleted: 16, accuracy: 96, streak: 15, lastActive: '1 hr ago' },
+  { id: 'stu_8', name: 'Henry Clark',    email: 'henry@school.edu',   lessonsCompleted: 3,  accuracy: 62, streak: 0,  lastActive: '1 week ago' },
+];
+
+export const mockInstructorClassPerformance = [
+  { lesson: 'Alphabet',   avgAccuracy: 88 },
+  { lesson: 'Greetings',  avgAccuracy: 82 },
+  { lesson: 'Numbers',    avgAccuracy: 76 },
+  { lesson: 'Questions',  avgAccuracy: 69 },
+  { lesson: 'Family',     avgAccuracy: 73 },
+  { lesson: 'Emergency',  avgAccuracy: 65 },
+];
+
+export const mockInstructorWeeklyActivity = [
+  { day: 'Mon', sessions: 42, completions: 18 },
+  { day: 'Tue', sessions: 55, completions: 24 },
+  { day: 'Wed', sessions: 38, completions: 15 },
+  { day: 'Thu', sessions: 61, completions: 28 },
+  { day: 'Fri', sessions: 49, completions: 21 },
+  { day: 'Sat', sessions: 30, completions: 12 },
+  { day: 'Sun', sessions: 22, completions: 9  },
+];
+
+// =============================================
+// MILESTONE 2 – ADMIN DASHBOARD MOCK DATA
+// =============================================
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'Admin' | 'Instructor' | 'Learner';
+  active: boolean;
+  joined: string;
+}
+
+export const mockAdminUsers: AdminUser[] = [
+  { id: 'adm_1', name: 'Sarah Connor',    email: 'sarah@signai.edu',    role: 'Admin',      active: true,  joined: 'Jan 2026' },
+  { id: 'adm_2', name: 'James Wilson',    email: 'james@signai.edu',    role: 'Instructor', active: true,  joined: 'Feb 2026' },
+  { id: 'adm_3', name: 'Maria Garcia',    email: 'maria@signai.edu',    role: 'Learner',    active: true,  joined: 'Mar 2026' },
+  { id: 'adm_4', name: 'Tom Harris',      email: 'tom@signai.edu',      role: 'Instructor', active: false, joined: 'Mar 2026' },
+  { id: 'adm_5', name: 'Lisa Thompson',   email: 'lisa@signai.edu',     role: 'Learner',    active: true,  joined: 'Apr 2026' },
+  { id: 'adm_6', name: 'Kevin Anderson',  email: 'kevin@signai.edu',    role: 'Learner',    active: true,  joined: 'May 2026' },
+];
+
+export const mockAdminPlatformActivity = [
+  { day: 'Mon', activeUsers: 186, sessions: 342 },
+  { day: 'Tue', activeUsers: 212, sessions: 401 },
+  { day: 'Wed', activeUsers: 175, sessions: 298 },
+  { day: 'Thu', activeUsers: 234, sessions: 460 },
+  { day: 'Fri', activeUsers: 198, sessions: 387 },
+  { day: 'Sat', activeUsers: 142, sessions: 230 },
+  { day: 'Sun', activeUsers: 101, sessions: 178 },
+];
+
+export const mockAdminRoleDistribution = [
+  { name: 'Learners',    value: 982 },
+  { name: 'Instructors', value: 218 },
+  { name: 'Trainers',    value: 38  },
+  { name: 'Admins',      value: 10  },
+];
+
+export const mockAdminSystemAlerts = [
+  {
+    id: 'alert_1',
+    title: 'AI Model Response Latency Spike',
+    description: 'Average sign detection response time increased to 850ms (baseline: 200ms).',
+    severity: 'warning' as const,
+    time: 'Today, 3:14 PM',
+  },
+  {
+    id: 'alert_2',
+    title: 'Video Streaming Degraded',
+    description: 'CDN node in ap-southeast-1 experiencing packet loss. Rerouting in progress.',
+    severity: 'error' as const,
+    time: 'Today, 1:42 PM',
+  },
+  {
+    id: 'alert_3',
+    title: 'Scheduled Maintenance Reminder',
+    description: 'Sunday 2:00 AM UTC – estimated 30m downtime for database cluster upgrade.',
+    severity: 'info' as const,
+    time: 'Yesterday, 10:00 AM',
+  },
+];
+
+// =============================================
+// MILESTONE 2 – ENHANCED LEARNER DASHBOARD DATA
+// =============================================
+
+export const lessonsCompletedBarData = [
+  { week: 'Week 1', completed: 2 },
+  { week: 'Week 2', completed: 3 },
+  { week: 'Week 3', completed: 1 },
+  { week: 'Week 4', completed: 4 },
+  { week: 'Week 5', completed: 2 },
+  { week: 'Week 6', completed: 5 },
+  { week: 'Week 7', completed: 3 },
+];
+
+export const mockWeakLetters = [
+  { letter: 'G', accuracy: 58, attempts: 12 },
+  { letter: 'J', accuracy: 62, attempts: 9  },
+  { letter: 'P', accuracy: 65, attempts: 15 },
+  { letter: 'Q', accuracy: 68, attempts: 7  },
+  { letter: 'Z', accuracy: 70, attempts: 11 },
+];
+
+export const mockRecentActivity = [
+  { id: 'act_1', type: 'practice', label: 'Practiced Letter A', time: '2 hrs ago',  score: 94 },
+  { id: 'act_2', type: 'lesson',   label: 'Completed Greetings Lesson', time: '5 hrs ago',  score: null },
+  { id: 'act_3', type: 'practice', label: 'Practiced HELLO sign', time: '1 day ago', score: 88 },
+  { id: 'act_4', type: 'practice', label: 'Practiced Number 3',   time: '2 days ago', score: 92 },
+  { id: 'act_5', type: 'lesson',   label: 'Started Question Words', time: '3 days ago', score: null },
+];
+
+export const mockAchievements = [
+  { id: 'ach_1', emoji: '🔥', title: '5-Day Streak',       desc: 'Practiced 5 days in a row',     unlocked: true  },
+  { id: 'ach_2', emoji: '🎓', title: 'Alphabet Master',    desc: 'Completed A-E with 90%+ accuracy', unlocked: true  },
+  { id: 'ach_3', emoji: '🤖', title: 'Vision Hero',        desc: 'Completed 25 live AI sessions', unlocked: true  },
+  { id: 'ach_4', emoji: '💬', title: 'Social Signer',      desc: 'Perfect score on Greetings',    unlocked: false },
+  { id: 'ach_5', emoji: '⚡', title: 'Speed Learner',      desc: 'Finish 3 lessons in one day',   unlocked: false },
+];

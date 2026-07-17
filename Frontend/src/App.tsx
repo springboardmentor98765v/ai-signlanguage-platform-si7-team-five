@@ -1,5 +1,4 @@
-import React from 'react';
-import { JSX } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, UserRole, Lesson, LessonStep } from './types';
 import { mockUser, mockLessons } from './mockData';
 import LoginView from './components/LoginView';
@@ -10,27 +9,26 @@ import LessonsView from './components/LessonsView';
 import PracticeView from './components/PracticeView';
 import ReportsView from './components/ReportsView';
 import ProfileView from './components/ProfileView';
-
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || "http://localhost:8000";
+import InstructorDashboard from './components/InstructorDashboard';
+import AdminDashboard from './components/AdminDashboard';
 
 export default function App() {
   // Authentication states
-  const [currentUser, setCurrentUser] = React.useState<User | null>(null);
-  const [authScreen, setAuthScreen] = React.useState<'login' | 'register'>('login');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authScreen, setAuthScreen] = useState<'login' | 'register'>('login');
 
   // Core application database states (for dynamic UI persistence)
-  const [lessons, setLessons] = React.useState<Lesson[]>([]);
-  const [token, setToken] = React.useState<string | null>(null);
+  const [lessons, setLessons] = useState<Lesson[]>(mockLessons);
 
   // Active navigation tab
-  const [activeTab, setActiveTab] = React.useState<string>('Dashboard');
+  const [activeTab, setActiveTab] = useState<string>('Dashboard');
 
   // Inter-tab parameter transfer (e.g. continuing a lesson or practicing a specific step)
-  const [selectedLessonFromNav, setSelectedLessonFromNav] = React.useState<Lesson | null>(null);
-  const [selectedPracticeStep, setSelectedPracticeStep] = React.useState<{ step: LessonStep; lessonName: string } | null>(null);
+  const [selectedLessonFromNav, setSelectedLessonFromNav] = useState<Lesson | null>(null);
+  const [selectedPracticeStep, setSelectedPracticeStep] = useState<{ step: LessonStep; lessonName: string } | null>(null);
 
   // Read session from localStorage if available (simulates persistent login)
-  React.useEffect(() => {
+  useEffect(() => {
     const cachedUser = localStorage.getItem('asl_user_session');
     if (cachedUser) {
       try {
@@ -95,7 +93,6 @@ export default function App() {
       setActiveTab('Lessons');
     } else if (tab === 'Practice') {
       if (param) {
-        // param has shape { step: LessonStep, lessonName: string }
         setSelectedPracticeStep(param);
       } else {
         setSelectedPracticeStep(null);
@@ -106,18 +103,7 @@ export default function App() {
     }
   };
 
-  // Load courses on component mount
-  React.useEffect(() => {
-    loadCourses();
-  }, []);
-
-  const loadCourses = async () => {
-    const res = await fetch(`${API_BASE_URL}/courses`);
-    const data = await res.json();
-    setLessons(data);
-  };
-
-  // Render authentications if offline
+  // Render authentication screens if not logged in
   if (!currentUser) {
     if (authScreen === 'register') {
       return (
@@ -139,6 +125,10 @@ export default function App() {
   const renderActiveView = () => {
     switch (activeTab) {
       case 'Dashboard':
+        // Role-based dashboard routing
+        if (currentUser.role === 'Instructor') {
+          return <InstructorDashboard />;
+        }
         return (
           <DashboardView
             user={currentUser}
@@ -146,6 +136,10 @@ export default function App() {
             onNavigate={handleNavigate}
           />
         );
+      case 'Instructor':
+        return <InstructorDashboard />;
+      case 'Admin':
+        return <AdminDashboard />;
       case 'Lessons':
         return (
           <LessonsView
@@ -192,4 +186,3 @@ export default function App() {
     </Layout>
   );
 }
-
