@@ -9,6 +9,9 @@ class UserSummary(BaseModel):
     name: str
     role : str
     active: bool
+
+class StatusUpdateResponse(BaseModel):
+    message: str
     
 @r.get("/admin/users", response_model=List[UserSummary])
 def view_users():
@@ -23,3 +26,9 @@ def update_user_role(user_id: int, new_role: str):
         raise HTTPException(status_code=400, detail="Invalid role")
    
     return {"message": f"User role changed to {new_role} for user {user_id}"}
+
+@r.put("/admin/users/{user_id}/status", response_model=StatusUpdateResponse)
+
+def activate_deactivate(user_id: int, active: bool):
+    
+    return {"message": f"User {user_id} status updated to {'Active' if active else 'Inactive'}"}
