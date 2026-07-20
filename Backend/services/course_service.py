@@ -52,7 +52,7 @@ def list_lessons(page: int = 1, size: int = 10, category: Optional[str] = Query(
         filtered_lessons = [l for l in filtered_lessons if l.category.lower() == category.lower()]
     return filtered_lessons[(page - 1) * size: page * size]
     if difficulty:  
-        filtered_lessons = [l for l in filtered_lessons if l.difficulty.lower() == difficulty.lower()]
+            filtered_lessons = [l for l in filtered_lessons if l.difficulty.lower() == difficulty.lower()]
     return filtered_lessons[(page - 1) * size: page * size] 
 
     start = (page - 1) * size
