@@ -70,4 +70,23 @@ def create_lesson(request: Lesson, role: str = "Instructor):
         raise HttpException(status_code=403, detail="Access Denied.")
     LESSONS.append(request.dict())
     return {"message": "Lesson created successfully."}
+  
+@r.put("/lessons/{lesson_id}")
+def update_lesson(lesson_id: int, request: Lesson, role: str = "Instructor"):
+    if role not in ["Instructor", "Admin"]:
+        raise HttpException(status_code=403, detail="Access Denied.")
+    for i, lesson in enumerate(LESSONS):
+        if lesson.lesson_id == lesson_id:
+            LESSONS[i] = request.dict()
+            return {"message": "Lesson updated successfully."}
+    raise HttpException(status_code=404, detail="Lesson not found.")
     
+@r.delete("/lessons/{lesson_id}")
+def delete_lesson(lesson_id: int, role: str = "Instructor"):
+    if role not in ["Instructor", "Admin"]:
+        raise HttpException(status_code=403, detail="Access Denied.")
+    for i, lesson in enumerate(LESSONS):
+        if lesson.lesson_id == lesson_id:
+            del LESSONS[i]
+            return {"message": "Lesson deleted successfully."}
+    raise HttpException(status_code=404, detail="Lesson not found.")  
