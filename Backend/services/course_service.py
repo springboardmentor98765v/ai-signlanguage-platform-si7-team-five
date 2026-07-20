@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, HttpException 
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -62,3 +62,12 @@ def list_lessons(page: int = 1, size: int = 10, category: Optional[str] = Query(
 @r.get("/courses/search", response_model=List[Lesson])
 def search_lessons(query: str = Query(..., description="Search")):
     return [l for l in LESSONS if query.lower() in l.title.lower()]
+
+@r.post("/lessons")
+
+def create_lesson(request: Lesson, role: str = "Instructor):
+    if role is not in ["Instructor", "Admin"]:
+        raise HttpException(status_code=403, detail="Access Denied.")
+    LESSONS.append(request.dict())
+    return {"message": "Lesson created successfully."}
+    
