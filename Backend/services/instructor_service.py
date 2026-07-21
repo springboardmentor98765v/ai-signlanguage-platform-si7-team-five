@@ -4,12 +4,12 @@ from typing import List
 
 r = APIRouter()
 
-class AssignStidentRequest(BaseModel):
+class AssignStudentRequest(BaseModel):
     student_id: int
     instructor_id: int
     
-@r.post("/instructor/assign-student")
-def assign_student(request: AssignStidentRequest):
+@r.post("/assign-student")
+def assign_student(request: AssignStudentRequest):
     # Placeholder logic for assigning a student to an instructor
     return {"message": f"Student {request.student_id} assigned to Instructor {request.instructor_id}"}
 
@@ -18,7 +18,7 @@ class StudentSummary(BaseModel):
     name: str
     accuracy: float
     
-@r.get("/instructor/students", response_model=List[StudentSummary])
+@r.get("/students", response_model=List[StudentSummary])
 def view_students(instructor_id: int):
     # Placeholder logic for retrieving students assigned to an instructor
     # In a real application, this would query a database

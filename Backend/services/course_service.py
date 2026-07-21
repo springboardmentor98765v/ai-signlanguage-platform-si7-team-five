@@ -44,7 +44,7 @@ LESSONS = [
     Lesson(lesson_id=31, title="Hello, my name is Amala", category="Intoduction", difficulty="Hard")
     ]   
 
-@r.get("/courses", response_model=List[Lesson])
+@r.get("", response_model=List[Lesson])
 def list_lessons(page: int = 1, size: int = 10, category: Optional[str] = Query(None, description="Filter by category"), difficulty: Optional[str] = Query(None, description="Filter by difficulty")):
     filtered_lessons = LESSONS
     
@@ -57,12 +57,11 @@ def list_lessons(page: int = 1, size: int = 10, category: Optional[str] = Query(
     end = start + size
     return filtered_lessons[start:end]
 
-@r.get("/courses/search", response_model=List[Lesson])
+@r.get("/search", response_model=List[Lesson])
 def search_lessons(query: str = Query(..., description="Search")):
     return [l for l in LESSONS if query.lower() in l.title.lower()]
 
 @r.post("/lessons")
-
 def create_lesson(request: Lesson, role: str = "Instructor"):
     if role not in ["Instructor", "Admin"]:
         raise HTTPException(status_code=403, detail="Access Denied.")
