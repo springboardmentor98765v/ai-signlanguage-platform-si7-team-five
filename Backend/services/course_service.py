@@ -65,7 +65,7 @@ def search_lessons(query: str = Query(..., description="Search")):
 
 @r.post("/lessons")
 
-def create_lesson(request: Lesson, role: str = "Instructor):
+def create_lesson(request: Lesson, role: str = "Instructor"):
     if role is not in ["Instructor", "Admin"]:
         raise HttpException(status_code=403, detail="Access Denied.")
     LESSONS.append(request.dict())

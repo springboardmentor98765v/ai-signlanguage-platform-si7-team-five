@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
 from datetime import datetime, timedelta
-import jwt
+import jwt 
 import os
 from dotenv import load_dotenv
 
