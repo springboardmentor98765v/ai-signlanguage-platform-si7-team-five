@@ -162,3 +162,4 @@
 - `POST /auth/login` accepts `username` and `password`
 - `/auth/me`, `/courses`, and course modification routes require bearer auth
 - Role checks are enforced by `services.rbac.role_required`
+
