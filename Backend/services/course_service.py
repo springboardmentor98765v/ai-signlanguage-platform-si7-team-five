@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, HttpException 
+from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -65,26 +65,26 @@ def search_lessons(query: str = Query(..., description="Search")):
 
 def create_lesson(request: Lesson, role: str = "Instructor"):
     if role not in ["Instructor", "Admin"]:
-        raise HttpException(status_code=403, detail="Access Denied.")
-    LESSONS.append(request.dict())
+        raise HTTPException(status_code=403, detail="Access Denied.")
+    LESSONS.append(request.model_dump())
     return {"message": "Lesson created successfully."}
   
 @r.put("/lessons/{lesson_id}")
 def update_lesson(lesson_id: int, request: Lesson, role: str = "Instructor"):
     if role not in ["Instructor", "Admin"]:
-        raise HttpException(status_code=403, detail="Access Denied.")
+        raise HTTPException(status_code=403, detail="Access Denied.")
     for i, lesson in enumerate(LESSONS):
         if lesson.lesson_id == lesson_id:
-            LESSONS[i] = request.dict()
+            LESSONS[i] = request.model_dump()
             return {"message": "Lesson updated successfully."}
-    raise HttpException(status_code=404, detail="Lesson not found.")
+    raise HTTPException(status_code=404, detail="Lesson not found.")
     
 @r.delete("/lessons/{lesson_id}")
 def delete_lesson(lesson_id: int, role: str = "Instructor"):
     if role not in ["Instructor", "Admin"]:
-        raise HttpException(status_code=403, detail="Access Denied.")
+        raise HTTPException(status_code=403, detail="Access Denied.")
     for i, lesson in enumerate(LESSONS):
         if lesson.lesson_id == lesson_id:
             del LESSONS[i]
             return {"message": "Lesson deleted successfully."}
-    raise HttpException(status_code=404, detail="Lesson not found.")  
+    raise HTTPException(status_code=404, detail="Lesson not found.")
