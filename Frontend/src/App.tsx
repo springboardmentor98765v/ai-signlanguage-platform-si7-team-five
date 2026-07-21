@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, UserRole, Lesson, LessonStep } from './types';
 import { apiBaseUrl } from './utils/api';
-import { mockLessons } from './mockData';
-import { mockUser, mockLessons } from './mockData';
+import { mockLessons, mockUser } from './mockData';
 import LoginView from './components/LoginView';
 import RegisterView from './components/RegisterView';
 import Layout from './components/Layout';
