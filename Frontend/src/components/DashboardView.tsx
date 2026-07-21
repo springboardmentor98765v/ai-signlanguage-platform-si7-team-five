@@ -28,11 +28,11 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
     .concat(lessons.filter(l => l.progress === 0))
     .slice(0, 3);
 
-  const stats = [
+  const derivedStats = [
     {
       id: 'stat_lessons',
       title: 'Lessons Completed',
-      value: user.lessonsCompleted,
+      value: user.lessonsCompleted || 0,
       change: '+2 this week',
       changeType: 'increase' as const,
       icon: BookOpen,
@@ -42,7 +42,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
     {
       id: 'stat_sessions',
       title: 'Practice Sessions',
-      value: user.practiceSessions,
+      value: user.practiceSessions || 0,
       change: '+6 vs last week',
       changeType: 'increase' as const,
       icon: Camera,
@@ -52,7 +52,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
     {
       id: 'stat_accuracy',
       title: 'Current Score',
-      value: `${user.avgAccuracy}%`,
+      value: `${user.avgAccuracy || 0}%`,
       change: '+1.4% change',
       changeType: 'increase' as const,
       icon: Target,
@@ -62,7 +62,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
     {
       id: 'stat_streak',
       title: 'Current Streak',
-      value: `${user.streak} Days`,
+      value: `${user.streak || 0} Days`,
       change: 'Active today',
       changeType: 'increase' as const,
       icon: Zap,
@@ -70,6 +70,8 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
       iconColor: 'text-amber-500',
     },
   ];
+
+  const stats = derivedStats;
 
   return (
     <div id="dashboard_view" className="space-y-6">

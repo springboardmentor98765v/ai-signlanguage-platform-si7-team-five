@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, CheckSquare, Square, Eye, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
+import { apiBaseUrl } from '../utils/api';
 
 interface LoginViewProps {
   onLogin: (email: string, name: string, role: 'Learner' | 'Instructor' | 'Accessibility Trainer') => void;
@@ -14,7 +15,7 @@ export default function LoginView({ onLogin, onNavigateToRegister }: LoginViewPr
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
       setError('Please fill in all fields.');
@@ -23,12 +24,25 @@ export default function LoginView({ onLogin, onNavigateToRegister }: LoginViewPr
     setError('');
     setIsSubmitting(true);
 
-    // Simulate login
-    setTimeout(() => {
+    try {
+      const response = await fetch(`${apiBaseUrl}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || 'Login failed');
+      }
+
+      localStorage.setItem('asl_access_token', data.access_token);
+      onLogin(email, 'Signed In User', data.role || 'Learner');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
       setIsSubmitting(false);
-      // Pass the name and default role
-      onLogin(email, 'Jane Doe', 'Learner');
-    }, 800);
+    }
   };
 
   const handleDemoLogin = (role: 'Learner' | 'Instructor' | 'Accessibility Trainer') => {

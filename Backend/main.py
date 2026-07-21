@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from routers.health import health_router
@@ -13,8 +15,16 @@ from services import instructor_service
 from services import admin_services
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as exc:
+        print(f"Database initialization skipped: {exc}")
+    yield
 
-app = FastAPI()
+
+app = FastAPI(lifespan=lifespan)
 
 # Include course service router
 app.include_router(course_service.r, prefix="/courses", tags=["Courses"])
@@ -27,7 +37,12 @@ app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,11 +52,6 @@ app.add_middleware(
 async def rate_limit_middleware(request: Request, call_next):
     rate_limiter(request)
     return await call_next(request)
-
-
-@app.on_event("startup")
-def create_tables():
-    Base.metadata.create_all(bind=engine)
 
 
 app.include_router(health_router)

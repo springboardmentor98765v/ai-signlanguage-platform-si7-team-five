@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Camera, CameraOff, Play, Square, RefreshCw, AlertCircle, Sparkles, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
 import { LessonStep } from '../types';
+import { aiApiBaseUrl } from '../utils/api';
 
 interface PracticeViewProps {
   initialTargetStep?: { step: LessonStep; lessonName: string } | null;
@@ -30,6 +31,49 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+
+  const captureAndPredict = async () => {
+    if (!videoRef.current || !isPracticing) return;
+
+    const video = videoRef.current;
+    if (video.readyState < 2) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const context = canvas.getContext('2d');
+    if (!context) return;
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg'));
+    if (!blob) return;
+
+    const formData = new FormData();
+    formData.append('file', blob, 'frame.jpg');
+
+    try {
+      const response = await fetch(`${aiApiBaseUrl}/predict`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Prediction failed');
+
+      const predicted = data.predicted_sign || 'unknown';
+      const confidenceValue = Number(data.confidence || 0) * 100;
+      setPredictedSign(predicted);
+      setConfidence(confidenceValue);
+      setAccuracyScore(Math.min(100, Math.round(confidenceValue)));
+      setFeedback(predicted === targetSign || predicted === targetSign.toUpperCase()
+        ? 'Excellent alignment! Form matches the reference standards perfectly.'
+        : 'Keep adjusting your hand shape and position to match the target sign.');
+      setIsSignCorrect(predicted === targetSign || predicted === targetSign.toUpperCase());
+      setFeedbackHistory(prev => [`[AI] ${predicted} (${Math.round(confidenceValue)}%)`, ...prev.slice(0, 4)]);
+    } catch (err) {
+      console.warn('AI prediction failed; using fallback feedback.', err);
+      setFeedback('AI model unavailable. Continue practicing while the classifier reconnects.');
+    }
+  };
 
   // Available signs to choose from
   const availablePracticeSigns = [
@@ -95,39 +139,12 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     setIsSignCorrect(null);
   };
 
-  // Simulate AI sign detection loops
   useEffect(() => {
-    let intervalId: any;
+    let intervalId: number | undefined;
     if (isPracticing) {
-      let cycle = 0;
-      intervalId = setInterval(() => {
-        cycle++;
-        // Generate high fidelity feedback cycles
-        if (cycle === 1) {
-          setPredictedSign(targetSign === 'B' ? 'C' : 'A');
-          setConfidence(42);
-          setAccuracyScore(35);
-          setFeedback('Calibrating hand outline... Please move your hand closer to the camera.');
-          setIsSignCorrect(false);
-        } else if (cycle === 2) {
-          setPredictedSign(targetSign);
-          setConfidence(78);
-          setAccuracyScore(75);
-          setFeedback('Form recognized. Adjust thumb position slightly to align perfectly.');
-          setIsSignCorrect(false);
-          setFeedbackHistory(prev => [`Form matches ${targetSign} shape. Checking thumb...`, ...prev.slice(0, 4)]);
-        } else {
-          // Success state
-          setPredictedSign(targetSign);
-          const mockConf = Math.floor(Math.random() * 6) + 92; // 92-97
-          const mockAcc = Math.floor(Math.random() * 5) + 89; // 89-93
-          setConfidence(mockConf);
-          setAccuracyScore(mockAcc);
-          setFeedback('Excellent alignment! Form matches the reference standards perfectly.');
-          setIsSignCorrect(true);
-          setFeedbackHistory(prev => [`[SUCCESS] Checked ${targetSign} sign - Accuracy: ${mockAcc}%`, ...prev.slice(0, 4)]);
-        }
-      }, 2500);
+      intervalId = window.setInterval(() => {
+        void captureAndPredict();
+      }, 3000);
     } else {
       setFeedbackHistory([]);
     }

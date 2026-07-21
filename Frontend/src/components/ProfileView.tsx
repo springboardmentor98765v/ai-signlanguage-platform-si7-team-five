@@ -54,8 +54,6 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileLoading(true);
-    // Simulate API latency
-    await new Promise((res) => setTimeout(res, 800));
     onUpdateProfile({ name, email, role, avatarUrl: avatarUrl || undefined });
     setProfileLoading(false);
     setProfileSaved(true);

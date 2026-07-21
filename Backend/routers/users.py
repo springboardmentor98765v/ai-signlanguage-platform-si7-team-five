@@ -33,12 +33,25 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return {"username": db_user.username, "email": db_user.email, "role": db_user.role}
+
+    token = create_access_token(data={"sub": db_user.username, "role": db_user.role})
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "username": db_user.username,
+        "email": db_user.email,
+        "role": db_user.role,
+    }
 
 
 @r.post("/login")
 def login_user(user: UserLogin, db: Session = Depends(get_db)):
-    db_user = db.query(User).filter(User.username == user.username).first()
+    identifier = user.username
+    db_user = (
+        db.query(User)
+        .filter((User.username == identifier) | (User.email == identifier))
+        .first()
+    )
     if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -46,4 +59,10 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
         )
 
     token = create_access_token(data={"sub": db_user.username, "role": db_user.role})
-    return {"access_token": token, "token_type": "bearer"}
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "username": db_user.username,
+        "email": db_user.email,
+        "role": db_user.role,
+    }

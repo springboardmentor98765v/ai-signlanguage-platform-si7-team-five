@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Users, BookOpen, BarChart3, ShieldCheck, TrendingUp,
   AlertCircle, Settings, Bell, Activity, Database,
@@ -14,12 +14,48 @@ import {
   mockAdminRoleDistribution,
   mockAdminSystemAlerts
 } from '../mockData';
+import { apiBaseUrl } from '../utils/api';
 
 const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#EF4444'];
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'system'>('overview');
   const [showBanner, setShowBanner] = useState(true);
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [newLessonTitle, setNewLessonTitle] = useState('');
+  const [newLessonCategory, setNewLessonCategory] = useState('Basics');
+  const [newLessonDifficulty, setNewLessonDifficulty] = useState('Beginner');
+
+  useEffect(() => {
+    fetch(`${apiBaseUrl}/courses`)
+      .then((response) => response.json())
+      .then((data) => setLessons(data || []))
+      .catch(() => setLessons([]));
+  }, []);
+
+  const handleCreateLesson = async () => {
+    if (!newLessonTitle.trim()) return;
+    const payload = {
+      lesson_id: Date.now(),
+      title: newLessonTitle.trim(),
+      category: newLessonCategory,
+      difficulty: newLessonDifficulty,
+    };
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/lessons`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (response.ok) {
+        setLessons((prev) => [payload, ...prev]);
+        setNewLessonTitle('');
+      }
+    } catch (error) {
+      console.warn('Unable to create lesson via API', error);
+    }
+  };
 
   const platformStats = [
     {
@@ -218,73 +254,140 @@ export default function AdminDashboard() {
 
       {/* ---- USERS TAB ---- */}
       {activeTab === 'users' && (
-        <div id="admin_users_panel" className="bg-white rounded-xl border border-gray-100 shadow-sm">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-base text-gray-900">All Users</h3>
-              <p className="text-xs text-gray-500">{mockAdminUsers.length} total users</p>
+        <div id="admin_users_panel" className="space-y-6">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-base text-gray-900">Create Lesson</h3>
+                <p className="text-xs text-gray-500">Add a new lesson entry to the backend catalog.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <input
+                value={newLessonTitle}
+                onChange={(e) => setNewLessonTitle(e.target.value)}
+                placeholder="Lesson title"
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm"
+              />
+              <input
+                value={newLessonCategory}
+                onChange={(e) => setNewLessonCategory(e.target.value)}
+                placeholder="Category"
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm"
+              />
+              <select
+                value={newLessonDifficulty}
+                onChange={(e) => setNewLessonDifficulty(e.target.value)}
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm"
+              >
+                <option value="Beginner">Beginner</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
             </div>
             <button
-              id="admin_add_user_btn"
-              className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 rounded-lg text-xs font-semibold text-white hover:bg-blue-700 transition"
+              onClick={handleCreateLesson}
+              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
             >
-              <Plus className="h-4 w-4" />
-              Add User
+              Save Lesson
             </button>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
-                  <th className="px-5 py-3 text-left font-semibold">User</th>
-                  <th className="px-5 py-3 text-left font-semibold">Role</th>
-                  <th className="px-5 py-3 text-left font-semibold">Status</th>
-                  <th className="px-5 py-3 text-left font-semibold">Joined</th>
-                  <th className="px-5 py-3 text-left font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {mockAdminUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 transition">
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-700 font-bold flex items-center justify-center text-xs uppercase">
-                          {user.name.substring(0, 2)}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900">{user.name}</p>
-                          <p className="text-xs text-gray-400">{user.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4">
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.role === 'Admin' ? 'bg-red-50 text-red-700' :
-                        user.role === 'Instructor' ? 'bg-blue-50 text-blue-700' :
-                        'bg-emerald-50 text-emerald-700'
-                      }`}>{user.role}</span>
-                    </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-1.5">
-                        <span className={`h-2 w-2 rounded-full ${user.active ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                        <span className="text-xs text-gray-600">{user.active ? 'Active' : 'Inactive'}</span>
-                      </div>
-                    </td>
-                    <td className="px-5 py-4 text-xs text-gray-500">{user.joined}</td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition">
-                          <Edit className="h-3.5 w-3.5" />
-                        </button>
-                        <button className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition">
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </td>
+
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div className="p-5 border-b border-gray-100">
+              <h3 className="font-bold text-base text-gray-900">Backend Lessons</h3>
+              <p className="text-xs text-gray-500">Live lesson entries from the API.</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
+                    <th className="px-5 py-3 text-left font-semibold">Title</th>
+                    <th className="px-5 py-3 text-left font-semibold">Category</th>
+                    <th className="px-5 py-3 text-left font-semibold">Difficulty</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {lessons.map((lesson, index) => (
+                    <tr key={lesson.lesson_id ?? index} className="hover:bg-gray-50 transition">
+                      <td className="px-5 py-4 font-semibold text-gray-900">{lesson.title}</td>
+                      <td className="px-5 py-4 text-gray-600">{lesson.category}</td>
+                      <td className="px-5 py-4 text-gray-600">{lesson.difficulty}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-base text-gray-900">All Users</h3>
+                <p className="text-xs text-gray-500">{mockAdminUsers.length} total users</p>
+              </div>
+              <button
+                id="admin_add_user_btn"
+                className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 rounded-lg text-xs font-semibold text-white hover:bg-blue-700 transition"
+              >
+                <Plus className="h-4 w-4" />
+                Add User
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
+                    <th className="px-5 py-3 text-left font-semibold">User</th>
+                    <th className="px-5 py-3 text-left font-semibold">Role</th>
+                    <th className="px-5 py-3 text-left font-semibold">Status</th>
+                    <th className="px-5 py-3 text-left font-semibold">Joined</th>
+                    <th className="px-5 py-3 text-left font-semibold">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {mockAdminUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-gray-50 transition">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-700 font-bold flex items-center justify-center text-xs uppercase">
+                            {user.name.substring(0, 2)}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{user.name}</p>
+                            <p className="text-xs text-gray-400">{user.email}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          user.role === 'Admin' ? 'bg-red-50 text-red-700' :
+                          user.role === 'Instructor' ? 'bg-blue-50 text-blue-700' :
+                          'bg-emerald-50 text-emerald-700'
+                        }`}>{user.role}</span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`h-2 w-2 rounded-full ${user.active ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+                          <span className="text-xs text-gray-600">{user.active ? 'Active' : 'Inactive'}</span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-xs text-gray-500">{user.joined}</td>
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-2">
+                          <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition">
+                            <Edit className="h-3.5 w-3.5" />
+                          </button>
+                          <button className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

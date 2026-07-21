@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, UserRole, Lesson, LessonStep } from './types';
+import { apiBaseUrl } from './utils/api';
+import { mockLessons } from './mockData';
 import { mockUser, mockLessons } from './mockData';
 import LoginView from './components/LoginView';
 import RegisterView from './components/RegisterView';
@@ -37,6 +39,42 @@ export default function App() {
         console.warn('Error restoring session cached state', e);
       }
     }
+
+    fetch(`${apiBaseUrl}/health`)
+      .then((response) => response.json())
+      .catch(() => console.warn('Backend health check unavailable'));
+
+    fetch(`${apiBaseUrl}/courses`)
+      .then((response) => response.json())
+      .then((data) => {
+        const mappedLessons: Lesson[] = (data || []).map((item: any, index: number) => ({
+          id: `lesson_${item.lesson_id ?? index}`,
+          name: item.title || `Lesson ${index + 1}`,
+          description: `${item.category || 'General'} lesson for practicing ${item.title || 'signs'}`,
+          difficulty: item.difficulty === 'Medium' ? 'Intermediate' : item.difficulty === 'Hard' ? 'Advanced' : 'Beginner',
+          category: item.category || 'Basics',
+          progress: index % 2 === 0 ? 45 : 80,
+          duration: '15 mins',
+          steps: [
+            {
+              id: `${item.lesson_id ?? index}-step-1`,
+              title: 'Introduction',
+              description: `Practice the ${item.title || 'target'} sign with a calm and steady posture.`,
+              signSymbol: item.title?.split(' ')[0] || 'A',
+            },
+            {
+              id: `${item.lesson_id ?? index}-step-2`,
+              title: 'Form Check',
+              description: 'Focus on hand shape, movement, and alignment.',
+              signSymbol: item.title?.split(' ')[0] || 'A',
+            },
+          ],
+        }));
+        setLessons(mappedLessons);
+      })
+      .catch(() => {
+        setLessons(mockLessons);
+      });
   }, []);
 
   const handleLogin = (email: string, name: string, role: UserRole) => {

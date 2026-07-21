@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, Eye, EyeOff, ShieldCheck, GraduationCap, Users, Accessibility } from 'lucide-react';
 import { UserRole } from '../types';
+import { apiBaseUrl } from '../utils/api';
 
 interface RegisterViewProps {
   onRegister: (email: string, name: string, role: UserRole) => void;
@@ -17,7 +18,7 @@ export default function RegisterView({ onRegister, onNavigateToLogin }: Register
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !password || !confirmPassword) {
       setError('Please fill in all fields.');
@@ -35,10 +36,25 @@ export default function RegisterView({ onRegister, onNavigateToLogin }: Register
     setError('');
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch(`${apiBaseUrl}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: name, email, password, role }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.detail || 'Registration failed');
+      }
+
+      localStorage.setItem('asl_access_token', 'demo-token');
       onRegister(email, name, role);
-    }, 800);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
