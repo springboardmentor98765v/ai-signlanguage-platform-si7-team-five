@@ -50,11 +50,9 @@ def list_lessons(page: int = 1, size: int = 10, category: Optional[str] = Query(
     
     if category:
         filtered_lessons = [l for l in filtered_lessons if l.category.lower() == category.lower()]
-    return filtered_lessons[(page - 1) * size: page * size]
     if difficulty:  
-            filtered_lessons = [l for l in filtered_lessons if l.difficulty.lower() == difficulty.lower()]
-    return filtered_lessons[(page - 1) * size: page * size] 
-
+        filtered_lessons = [l for l in filtered_lessons if l.difficulty.lower() == difficulty.lower()]
+    
     start = (page - 1) * size
     end = start + size
     return filtered_lessons[start:end]
@@ -66,7 +64,7 @@ def search_lessons(query: str = Query(..., description="Search")):
 @r.post("/lessons")
 
 def create_lesson(request: Lesson, role: str = "Instructor"):
-    if role is not in ["Instructor", "Admin"]:
+    if role not in ["Instructor", "Admin"]:
         raise HttpException(status_code=403, detail="Access Denied.")
     LESSONS.append(request.dict())
     return {"message": "Lesson created successfully."}
