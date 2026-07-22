@@ -11,3 +11,9 @@ def init_error_handlers(app):
             status_code=exc.status_code,
             content={"error": True, "messagae": exc.detail},
         )
+    @app.exception_handler(Exception)
+    async def generic_exception_handler(request: Request, exc: Exception):
+        return JSONResponse(
+            status_code=500,
+            content={"error": True, "message": str(exc)},
+        )

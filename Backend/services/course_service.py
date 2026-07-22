@@ -87,3 +87,4 @@ def delete_lesson(lesson_id: int, role: str = "Instructor"):
             del LESSONS[i]
             return {"message": "Lesson deleted successfully."}
     raise HTTPException(status_code=404, detail="Lesson not found.")
+
