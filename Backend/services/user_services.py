@@ -22,3 +22,9 @@ def forgot_password(request: ForgotPasswordRequest):
     reset_link = f"http://localhost:8000/reset-password?email={request.email}"
     print(f"[DEBUG] Reset link : {reset_link}")
     return {"message": "Password reset link generated."}
+
+
+@r.post("/user/reset-password")
+
+def change_password(email: str, old_password: str, new_password: str):
+    return user_services.change_password(email, old_password, new_password) 
