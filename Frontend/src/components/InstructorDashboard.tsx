@@ -12,10 +12,13 @@ import {
   mockInstructorClassPerformance,
   mockInstructorWeeklyActivity
 } from '../mockData';
+import StudentProfileModal from './StudentProfileModal';
 
 export default function InstructorDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'at-risk' | 'top'>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'progress'>('name');
+  const [selectedStudentName, setSelectedStudentName] = useState<string | null>(null);
 
   const stats = [
     {
@@ -29,18 +32,8 @@ export default function InstructorDashboard() {
       color: 'text-blue-600',
     },
     {
-      id: 'instr_stat_lessons',
-      label: 'Active Lessons',
-      value: '8',
-      change: '2 pending review',
-      changePositive: null,
-      icon: BookOpen,
-      bg: 'bg-emerald-50',
-      color: 'text-emerald-600',
-    },
-    {
       id: 'instr_stat_accuracy',
-      label: 'Class Avg Accuracy',
+      label: 'Average Accuracy',
       value: '81%',
       change: '+2.4% this week',
       changePositive: true,
@@ -49,25 +42,44 @@ export default function InstructorDashboard() {
       color: 'text-violet-600',
     },
     {
-      id: 'instr_stat_completions',
-      label: 'Completions',
-      value: '127',
-      change: '+18 this week',
+      id: 'instr_stat_active',
+      label: 'Active Students',
+      value: '28',
+      change: 'practiced this week',
       changePositive: true,
-      icon: Award,
+      icon: CheckCircle,
+      bg: 'bg-emerald-50',
+      color: 'text-emerald-600',
+    },
+    {
+      id: 'instr_stat_completed',
+      label: 'Lessons Completed Today',
+      value: '14',
+      change: '+4 vs yesterday',
+      changePositive: true,
+      icon: BookOpen,
       bg: 'bg-amber-50',
       color: 'text-amber-500',
     },
   ];
 
-  const filteredStudents = mockInstructorStudents.filter((s) => {
-    const matchesSearch =
-      s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      s.email.toLowerCase().includes(searchQuery.toLowerCase());
-    if (activeFilter === 'at-risk') return matchesSearch && s.accuracy < 70;
-    if (activeFilter === 'top') return matchesSearch && s.accuracy >= 90;
-    return matchesSearch;
-  });
+  const filteredStudents = mockInstructorStudents
+    .filter((s) => {
+      const matchesSearch =
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.email.toLowerCase().includes(searchQuery.toLowerCase());
+      if (activeFilter === 'at-risk') return matchesSearch && s.accuracy < 70;
+      if (activeFilter === 'top') return matchesSearch && s.accuracy >= 90;
+      return matchesSearch;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'progress') {
+        const progressA = (a.lessonsCompleted / 30) * 100;
+        const progressB = (b.lessonsCompleted / 30) * 100;
+        return progressB - progressA; 
+      }
+      return a.name.localeCompare(b.name);
+    });
 
   const getStatusBadge = (accuracy: number) => {
     if (accuracy >= 90) return { label: 'Excellent', cls: 'bg-emerald-50 text-emerald-700' };
@@ -175,6 +187,14 @@ export default function InstructorDashboard() {
             {/* Filter */}
             <div className="flex items-center gap-1">
               <Filter className="h-4 w-4 text-gray-400" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'name' | 'progress')}
+                className="text-xs border border-gray-200 rounded-lg p-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer mr-2"
+              >
+                <option value="name">Sort by Name</option>
+                <option value="progress">Sort by Progress</option>
+              </select>
               {(['all', 'at-risk', 'top'] as const).map((f) => (
                 <button
                   key={f}
@@ -195,6 +215,7 @@ export default function InstructorDashboard() {
               <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
                 <th className="px-5 py-3 text-left font-semibold">Student</th>
                 <th className="px-5 py-3 text-left font-semibold">Lessons Done</th>
+                <th className="px-5 py-3 text-left font-semibold">Progress %</th>
                 <th className="px-5 py-3 text-left font-semibold">Avg Accuracy</th>
                 <th className="px-5 py-3 text-left font-semibold">Streak</th>
                 <th className="px-5 py-3 text-left font-semibold">Status</th>
@@ -219,6 +240,7 @@ export default function InstructorDashboard() {
                       </div>
                     </td>
                     <td className="px-5 py-4 text-gray-700 font-medium">{student.lessonsCompleted}</td>
+                    <td className="px-5 py-4 text-gray-700 font-medium">{Math.round((student.lessonsCompleted / 30) * 100)}%</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 max-w-20 bg-gray-100 rounded-full h-1.5">
@@ -239,8 +261,11 @@ export default function InstructorDashboard() {
                     </td>
                     <td className="px-5 py-4 text-xs text-gray-500">{student.lastActive}</td>
                     <td className="px-5 py-4">
-                      <button className="text-blue-600 hover:text-blue-800 transition">
-                        <ChevronRight className="h-4 w-4" />
+                      <button 
+                        onClick={() => setSelectedStudentName(student.name)}
+                        className="text-blue-600 hover:text-blue-800 transition flex items-center gap-1 text-xs font-semibold"
+                      >
+                        View Progress <ChevronRight className="h-4 w-4" />
                       </button>
                     </td>
                   </tr>
@@ -270,6 +295,14 @@ export default function InstructorDashboard() {
           </button>
         </div>
       </div>
+
+      {/* Modal */}
+      {selectedStudentName && (
+        <StudentProfileModal 
+          studentName={selectedStudentName} 
+          onClose={() => setSelectedStudentName(null)} 
+        />
+      )}
     </div>
   );
 }

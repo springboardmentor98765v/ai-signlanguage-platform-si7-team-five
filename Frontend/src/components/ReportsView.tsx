@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Award, Zap, Clock, ShieldCheck, CheckCircle2, Search, Filter, ArrowUpRight } from 'lucide-react';
+import { Camera, Award, Zap, Clock, ShieldCheck, CheckCircle2, Search, Filter, ArrowUpRight, Trophy, Star, Download, Printer } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { mockPracticeHistory, accuracyProgressData, categoryBreakdownData } from '../mockData';
 
@@ -87,8 +87,8 @@ export default function ReportsView() {
         {/* Practice Time Chart */}
         <div id="chart_practice_time" className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between">
           <div>
-            <h3 className="font-sans font-bold text-base text-gray-950">Daily Engagement Time</h3>
-            <p className="text-xs text-gray-500">Minutes spent practicing signs on camera per day</p>
+            <h3 className="font-sans font-bold text-base text-gray-950">Weekly Progress Graph</h3>
+            <p className="text-xs text-gray-500">Minutes spent practicing signs on camera this week</p>
           </div>
           <div className="h-72 w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -108,8 +108,8 @@ export default function ReportsView() {
         {/* Category Accuracy Chart */}
         <div id="chart_category_breakdown" className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between">
           <div>
-            <h3 className="font-sans font-bold text-base text-gray-950">Accuracy Breakdown by Category</h3>
-            <p className="text-xs text-gray-500">Average accuracy score across different syllabus domains</p>
+            <h3 className="font-sans font-bold text-base text-gray-950">Monthly Progress Graph</h3>
+            <p className="text-xs text-gray-500">Average accuracy score across different syllabus domains this month</p>
           </div>
           <div className="h-72 w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
@@ -134,8 +134,71 @@ export default function ReportsView() {
 
       </div>
 
-      {/* Recent assessments table */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Performance Insights Section */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden p-6 lg:col-span-1">
+          <div className="mb-4">
+            <h3 className="font-sans font-bold text-base text-gray-950">Performance Insights</h3>
+            <p className="text-xs text-gray-500">Signs that need attention</p>
+          </div>
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-3">
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Strong Signs
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {['Hello', 'Thank You', 'Yes', 'No', 'A', 'B'].map((sign) => (
+                  <span key={sign} className="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-100">
+                    {sign}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-gray-700 flex items-center gap-2 mb-3">
+                <Zap className="h-4 w-4 text-amber-500" /> Weak Signs
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {['Letter J', 'Letter Z', 'Sorry', 'Please'].map((sign) => (
+                  <span key={sign} className="px-3 py-1 bg-amber-50 text-amber-700 text-xs font-semibold rounded-full border border-amber-100">
+                    {sign}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Achievement Badges Section */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden p-6 lg:col-span-2">
+          <div className="mb-4">
+            <h3 className="font-sans font-bold text-base text-gray-950">Achievement Badges</h3>
+            <p className="text-xs text-gray-500">Your earned recognitions</p>
+          </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {[
+            { title: 'Fast Learner', desc: 'Completed 5 lessons in a day', icon: Zap, color: 'text-amber-500', bg: 'bg-amber-100' },
+            { title: 'Perfect Accuracy', desc: '100% in a practice session', icon: Star, color: 'text-emerald-500', bg: 'bg-emerald-100' },
+            { title: 'Consistent', desc: '7 day practice streak', icon: Trophy, color: 'text-blue-500', bg: 'bg-blue-100' },
+            { title: 'Sign Master', desc: 'Top 10% in class', icon: ShieldCheck, color: 'text-purple-500', bg: 'bg-purple-100' },
+          ].map((badge, idx) => {
+            const Icon = badge.icon;
+            return (
+              <div key={idx} className="flex flex-col items-center p-4 border border-gray-100 rounded-xl text-center bg-gray-50">
+                <div className={`p-3 rounded-full ${badge.bg} ${badge.color} mb-3`}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                <h4 className="text-sm font-bold text-gray-900">{badge.title}</h4>
+                <p className="text-[10px] text-gray-500 mt-1">{badge.desc}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+
+    {/* Recent assessments table */}
+    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-gray-50/50">
           <div>
             <h3 className="font-sans font-bold text-base text-gray-950">Recent Assessment Audits</h3>
@@ -216,6 +279,57 @@ export default function ReportsView() {
               )}
             </tbody>
           </table>
+        </div>
+      </div>
+
+      {/* Professional Certificate Section */}
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden p-8 relative">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-blue-500"></div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <div>
+            <h3 className="font-sans font-bold text-xl text-gray-950">Professional Certificate</h3>
+            <p className="text-xs text-gray-500">Official proof of completion</p>
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-semibold transition">
+              <Printer className="h-4 w-4" /> Print
+            </button>
+            <button className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition">
+              <Download className="h-4 w-4" /> Download PDF
+            </button>
+          </div>
+        </div>
+
+        {/* Certificate Preview */}
+        <div className="border border-gray-200 rounded-xl p-8 bg-gray-50/50 relative overflow-hidden flex flex-col items-center text-center">
+          <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+            <Award className="w-64 h-64 text-emerald-600" />
+          </div>
+          <Award className="h-12 w-12 text-emerald-600 mb-4" />
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Certificate of Completion</p>
+          <h2 className="text-3xl font-serif text-gray-900 mb-6">Alex Mitchell</h2>
+          <p className="text-sm text-gray-600 max-w-md mx-auto mb-6">
+            Has successfully completed the comprehensive program in <span className="font-semibold text-gray-900">Advanced Sign Language Specialization</span> and is awarded this official certificate.
+          </p>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-left w-full max-w-2xl mt-4 border-t border-gray-200 pt-6">
+            <div>
+              <p className="text-[10px] text-gray-500 uppercase font-semibold">Date of Issue</p>
+              <p className="text-sm font-bold text-gray-900">July 25, 2026</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-500 uppercase font-semibold">Average Score</p>
+              <p className="text-sm font-bold text-gray-900">88% (Grade A)</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-500 uppercase font-semibold">Duration</p>
+              <p className="text-sm font-bold text-gray-900">120 Hours</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-500 uppercase font-semibold">Certificate ID</p>
+              <p className="text-sm font-bold text-gray-900 font-mono">ASL-26-9081</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

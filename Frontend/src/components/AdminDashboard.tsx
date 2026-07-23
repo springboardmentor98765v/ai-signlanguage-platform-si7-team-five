@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Users, BookOpen, BarChart3, ShieldCheck, TrendingUp,
   AlertCircle, Settings, Bell, Activity, Database,
-  UserCheck, Trash2, Edit, Plus, X
+  UserCheck, Trash2, Edit, Plus, X, Search, Filter, CheckCircle, Eye, PlayCircle, Clock
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -57,6 +57,11 @@ export default function AdminDashboard() {
     }
   };
 
+  // User table filters
+  const [searchQuery, setSearchQuery] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'All' | 'Learner' | 'Instructor' | 'Admin'>('All');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive'>('All');
+
   const platformStats = [
     {
       id: 'admin_stat_users',
@@ -68,33 +73,49 @@ export default function AdminDashboard() {
       color: 'text-blue-600',
     },
     {
+      id: 'admin_stat_learners',
+      label: 'Total Learners',
+      value: '1,102',
+      change: '+98 this month',
+      icon: UserCheck,
+      bg: 'bg-emerald-50',
+      color: 'text-emerald-600',
+    },
+    {
+      id: 'admin_stat_instructors',
+      label: 'Total Instructors',
+      value: '146',
+      change: '+26 this month',
+      icon: ShieldCheck,
+      bg: 'bg-purple-50',
+      color: 'text-purple-600',
+    },
+    {
       id: 'admin_stat_lessons',
       label: 'Total Lessons',
       value: '48',
       change: '6 published today',
       icon: BookOpen,
-      bg: 'bg-emerald-50',
-      color: 'text-emerald-600',
-    },
-    {
-      id: 'admin_stat_sessions',
-      label: 'Sessions This Week',
-      value: '3,782',
-      change: '+18% vs last week',
-      icon: Activity,
-      bg: 'bg-violet-50',
-      color: 'text-violet-600',
-    },
-    {
-      id: 'admin_stat_uptime',
-      label: 'System Uptime',
-      value: '99.8%',
-      change: 'All systems nominal',
-      icon: ShieldCheck,
       bg: 'bg-amber-50',
       color: 'text-amber-500',
     },
+    {
+      id: 'admin_stat_active_today',
+      label: 'Active Users Today',
+      value: '342',
+      change: '+42 vs yesterday',
+      icon: Activity,
+      bg: 'bg-rose-50',
+      color: 'text-rose-500',
+    },
   ];
+
+  const filteredUsers = mockAdminUsers.filter((user) => {
+    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.email.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRole = roleFilter === 'All' || user.role === roleFilter;
+    const matchesStatus = statusFilter === 'All' || (statusFilter === 'Active' ? user.active : !user.active);
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -167,7 +188,7 @@ export default function AdminDashboard() {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {platformStats.map((stat) => {
               const Icon = stat.icon;
               return (
@@ -249,11 +270,82 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Lesson Overview Card */}
+            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+              <div className="mb-4 flex justify-between items-center">
+                <div>
+                  <h3 className="font-bold text-base text-gray-900">Lesson Overview</h3>
+                  <p className="text-xs text-gray-500">Most engaged content</p>
+                </div>
+                <button className="text-blue-600 hover:text-blue-700 text-xs font-semibold">View All</button>
+              </div>
+              <div className="space-y-4">
+                {[
+                  { name: 'Basic Greetings', plays: 1240, status: 'Active' },
+                  { name: 'Alphabet A-M', plays: 980, status: 'Active' },
+                  { name: 'Family & Relations', plays: 830, status: 'Active' },
+                  { name: 'Numbers 1-20', plays: 720, status: 'Draft' },
+                ].map((lesson, idx) => (
+                  <div key={idx} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-100 rounded text-blue-600">
+                        <PlayCircle className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{lesson.name}</p>
+                        <p className="text-xs text-gray-500">{lesson.plays} completions</p>
+                      </div>
+                    </div>
+                    <div>
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${lesson.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-200 text-gray-600'}`}>{lesson.status}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Recent Activities Panel */}
+            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+              <div className="mb-4">
+                <h3 className="font-bold text-base text-gray-900">Recent Activities</h3>
+                <p className="text-xs text-gray-500">Live platform events</p>
+              </div>
+              <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                {[
+                  { user: 'Sarah J.', action: 'completed lesson', target: 'Basic Greetings', time: '10 mins ago', icon: CheckCircle, color: 'text-emerald-500', bg: 'bg-emerald-100' },
+                  { user: 'Admin User', action: 'updated role for', target: 'Michael T.', time: '1 hour ago', icon: Edit, color: 'text-blue-500', bg: 'bg-blue-100' },
+                  { user: 'Alex H.', action: 'registered as', target: 'Learner', time: '2 hours ago', icon: UserCheck, color: 'text-purple-500', bg: 'bg-purple-100' },
+                  { user: 'System', action: 'triggered backup', target: 'Database', time: '5 hours ago', icon: Database, color: 'text-gray-500', bg: 'bg-gray-100' },
+                ].map((act, idx) => {
+                  const Icon = act.icon;
+                  return (
+                    <div key={idx} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                      <div className={`flex items-center justify-center w-10 h-10 rounded-full border-4 border-white ${act.bg} ${act.color} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 mx-auto`}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-gray-100 bg-white shadow-sm flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <p className="text-xs font-semibold text-gray-900">{act.user}</p>
+                          <span className="text-[10px] text-gray-500">{act.time}</span>
+                        </div>
+                        <p className="text-xs text-gray-600">
+                          {act.action} <span className="font-semibold">{act.target}</span>
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
       {/* ---- USERS TAB ---- */}
       {activeTab === 'users' && (
+
         <div id="admin_users_panel" className="space-y-6">
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 space-y-4">
             <div className="flex items-center justify-between">
@@ -320,74 +412,119 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
-              <div>
-                <h3 className="font-bold text-base text-gray-900">All Users</h3>
-                <p className="text-xs text-gray-500">{mockAdminUsers.length} total users</p>
+          
+        <div id="admin_users_panel" className="bg-white rounded-xl border border-gray-100 shadow-sm">
+          <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h3 className="font-bold text-base text-gray-900">All Users</h3>
+              <p className="text-xs text-gray-500">{filteredUsers.length} users found</p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-48"
+                />
               </div>
+              <div className="flex items-center gap-2">
+                <select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value as any)}
+                  className="border border-gray-200 rounded-lg text-xs p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer"
+                >
+                  <option value="All">All Roles</option>
+                  <option value="Learner">Learner</option>
+                  <option value="Instructor">Instructor</option>
+                  <option value="Admin">Admin</option>
+                </select>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  className="border border-gray-200 rounded-lg text-xs p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white cursor-pointer"
+                >
+                  <option value="All">All Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+              
               <button
                 id="admin_add_user_btn"
-                className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 rounded-lg text-xs font-semibold text-white hover:bg-blue-700 transition"
+                className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 rounded-lg text-xs font-semibold text-white hover:bg-blue-700 transition ml-0 sm:ml-2"
               >
                 <Plus className="h-4 w-4" />
                 Add User
               </button>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
-                    <th className="px-5 py-3 text-left font-semibold">User</th>
-                    <th className="px-5 py-3 text-left font-semibold">Role</th>
-                    <th className="px-5 py-3 text-left font-semibold">Status</th>
-                    <th className="px-5 py-3 text-left font-semibold">Joined</th>
-                    <th className="px-5 py-3 text-left font-semibold">Actions</th>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
+                  <th className="px-5 py-3 text-left font-semibold">User</th>
+                  <th className="px-5 py-3 text-left font-semibold">Role</th>
+                  <th className="px-5 py-3 text-left font-semibold">Status</th>
+                  <th className="px-5 py-3 text-left font-semibold">Joined</th>
+                  <th className="px-5 py-3 text-left font-semibold">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {filteredUsers.length > 0 ? filteredUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50 transition">
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-700 font-bold flex items-center justify-center text-xs uppercase">
+                          {user.name.substring(0, 2)}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">{user.name}</p>
+                          <p className="text-xs text-gray-400">{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                        user.role === 'Admin' ? 'bg-red-50 text-red-700' :
+                        user.role === 'Instructor' ? 'bg-blue-50 text-blue-700' :
+                        'bg-emerald-50 text-emerald-700'
+                      }`}>{user.role}</span>
+                    </td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`h-2 w-2 rounded-full ${user.active ? 'bg-emerald-500' : 'bg-gray-300'}`} />
+                        <span className="text-xs text-gray-600">{user.active ? 'Active' : 'Inactive'}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-xs text-gray-500">{user.joined}</td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-2">
+                        <button className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition" title={user.active ? "Deactivate" : "Activate"}>
+                          <CheckCircle className="h-3.5 w-3.5" />
+                        </button>
+                        <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="Edit">
+                          <Edit className="h-3.5 w-3.5" />
+                        </button>
+                        <button className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition" title="Delete">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {mockAdminUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50 transition">
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-blue-50 text-blue-700 font-bold flex items-center justify-center text-xs uppercase">
-                            {user.name.substring(0, 2)}
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-900">{user.name}</p>
-                            <p className="text-xs text-gray-400">{user.email}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.role === 'Admin' ? 'bg-red-50 text-red-700' :
-                          user.role === 'Instructor' ? 'bg-blue-50 text-blue-700' :
-                          'bg-emerald-50 text-emerald-700'
-                        }`}>{user.role}</span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`h-2 w-2 rounded-full ${user.active ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                          <span className="text-xs text-gray-600">{user.active ? 'Active' : 'Inactive'}</span>
-                        </div>
-                      </td>
-                      <td className="px-5 py-4 text-xs text-gray-500">{user.joined}</td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-2">
-                          <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition">
-                            <Edit className="h-3.5 w-3.5" />
-                          </button>
-                          <button className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                )) : (
+                  <tr>
+                    <td colSpan={5} className="px-5 py-12 text-center text-gray-400 text-sm">
+                      No users match the selected filters.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
           </div>
         </div>
       )}
