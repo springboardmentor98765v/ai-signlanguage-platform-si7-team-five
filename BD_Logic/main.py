@@ -15,7 +15,7 @@ from analytics.analytics_engine import AnalyticsEngine
 from recommendation.recommendation_engine import RecommendationEngine
 from api.assessment_api import router as api_router
 from api.analytics_api import router as analytics_router
-
+from api.recommendation_api import router as recommendation_router
 
 print("Milestone 2 Day 1 ")
 
@@ -31,3 +31,4 @@ app.include_router(analytics_router)
 app.include_router(workflow_router)
 app.include_router(assessment_router, prefix="/api/v1")
 app.include_router(analytics_router, prefix="/api/v1")
+app.include_router(recommendation_router, prefix="/api/v1")
