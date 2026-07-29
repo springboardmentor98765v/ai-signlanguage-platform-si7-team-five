@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 
-from app.schemas.assessment_schema import AssessmentRequest
+from schemas.assessment_schemas import AssessmentRequest
 
-from app.assessment.assessment_service import AssessmentService
+from services.assessment_service import AssessmentService
 
-from app.utils.response import success
+from utils.response import success
 
 router = APIRouter()
 
