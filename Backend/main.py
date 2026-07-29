@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from routers.health import health_router
 from routers.users import r as user_router
@@ -36,6 +36,7 @@ app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
 
 
 
+
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -64,6 +65,10 @@ app.include_router(course_router, prefix="/courses", tags=["Courses"])
 @app.get("/")
 def root():
     return {"message": "Backend skeleton running"}
+
+@app.get("/favicon.ico, include_in_schema=False" )
+async def favicon():
+    return Response(status_code=204)
 
 
 if __name__ == "__main__":
