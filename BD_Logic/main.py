@@ -9,7 +9,12 @@ from routers.assessment_router import router as assessment_router
 from routers.feedback_routers import router as feedback_router
 from routers.analytics_router import router as analytics_router
 from routers.workflow_routers import router as workflow_router
+from assessment.scoring_engine import WeightedScoringEngine
+from feedback.feedback_engine import FeedbackEngine
+from analytics.analytics_engine import AnalyticsEngine
+from recommendation.recommendation_engine import RecommendationEngine
 
+print("Milestone 2 Day 1 ")
 
 app = FastAPI(
     
