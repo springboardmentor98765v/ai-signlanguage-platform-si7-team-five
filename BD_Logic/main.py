@@ -13,7 +13,7 @@ from assessment.scoring_engine import WeightedScoringEngine
 from feedback.feedback_engine import FeedbackEngine
 from analytics.analytics_engine import AnalyticsEngine
 from recommendation.recommendation_engine import RecommendationEngine
-
+from api.assessment_api import router as api_router
 print("Milestone 2 Day 1 ")
 
 app = FastAPI(
@@ -26,3 +26,4 @@ app.include_router(assessment_router)
 app.include_router(feedback_router)
 app.include_router(analytics_router)
 app.include_router(workflow_router)
+app.include_router(assessment_router, prefix="/api/v1")

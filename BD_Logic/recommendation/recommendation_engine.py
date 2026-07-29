@@ -1,5 +1,5 @@
 class RecommendationEngine:
-    def recommend(self,weak_letters) 
+    def recommend(self,weak_letters):
        recommendations = []
     
        for letter in weak_letters:

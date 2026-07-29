@@ -21,7 +21,7 @@ class AssessmentRequest(BaseModel):
 
     timing: float
     
- class AssessmentResponse(BaseModel):
+class AssessmentResponse(BaseModel):
     
     accuracy: float
     result: str

@@ -4,8 +4,11 @@ from AIML_CV.src.day5_train_classifier import predict_sign_from_frame
 from model.assessment import Assessment
 from repository.assessment_repository import save
 from utils.score_calculator import calculate_accuracy
+from assessment.scoring_engine import WeightedScoringEngine
 import cv2
 import os 
+
+
 def create_assessment(request):
     video_path = os.path.join("data", "sessions", f"{request.session_id}.mp4")
     cap = cv2.VideoCapture(video_path)
@@ -45,3 +48,42 @@ def create_assessment(request):
         "confidence": assessment.confidence,
         "accuracy": assessment.accuracy
     }
+class AssessmentService:
+
+    def __init__(self):
+
+        self.engine = WeightedScoringEngine()
+
+    def assess(self, request):
+
+        score = self.engine.calculate_score(
+
+            hand_shape=request.hand_shape,
+
+            finger_position=request.finger_position,
+
+            motion=request.motion,
+
+            timing=request.timing,
+
+            confidence=request.confidence
+
+        )
+
+        if request.expected_sign == request.predicted_sign:
+
+            score = min(score + 10, 100)
+
+        else:
+
+            score = max(score - 10, 0)
+
+        result = "PASS" if score >= 80 else "FAIL"
+
+        return {
+
+            "accuracy": round(score, 2),
+
+            "result": result
+
+        }
