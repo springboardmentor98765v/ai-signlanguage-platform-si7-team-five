@@ -13,6 +13,7 @@ from services import course_service
 from services import user_services
 from services import instructor_service
 from services import admin_services
+from services import predictions
 
 
 @asynccontextmanager
@@ -31,6 +32,7 @@ app.include_router(course_service.r, prefix="/courses", tags=["Courses"])
 app.include_router(user_services.r, prefix="/auth", tags=["Authenticate"])
 app.include_router(instructor_service.r, prefix="/instructors", tags=["Instructors"])
 app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
+app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
 
 
 

@@ -16,7 +16,7 @@ def main():
     print("--- Starting BD Logic ML Pipeline ---")
     
     # Define file paths
-    data_path = "postgresql://postgres:VinayBellamkonda@db.ovvvcudvagbnlojfmmnx.supabase.co:5432/postgresql"
+    data_path = "data.csv"
     model_path = "model.pkl"
 
     # Ensure the data file exists before running
