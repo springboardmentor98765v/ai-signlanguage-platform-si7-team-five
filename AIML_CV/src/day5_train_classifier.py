@@ -53,3 +53,31 @@ for i, row in df.iterrows():
     pred = knn.predict([X[i]])[0]
     match = "OK" if pred == y[i] else "MISMATCH"
     print(f"  {row['filename']}: true={row['label']}, predicted={pred} [{match}]")
+# AIML CV/src/day5_train_classifier.py
+
+import joblib
+import numpy as np
+import cv2
+from AIML_CV.src.day3_features import extract_features  # reuse your feature extractor
+
+# Path to your trained model
+MODEL_PATH = "AIML CV/src/models/sign_classifier.pkl"
+
+# Load the trained classifier
+classifier = joblib.load(MODEL_PATH)
+
+def predict_sign_from_frame(frame):
+    """
+    Predicts the sign from a single video frame using the trained AIML CV model.
+    Returns a dictionary with predicted sign and confidence score.
+    """
+    features = extract_features(frame)
+    if features is None:
+        return {"predicted_sign": "Unknown", "confidence": 0.0}
+
+    probs = classifier.predict_proba([features])[0]
+    predicted_idx = int(np.argmax(probs))
+    confidence = float(np.max(probs))
+    predicted_sign = classifier.classes_[predicted_idx]
+
+    return {"predicted_sign": predicted_sign, "confidence": confidence}

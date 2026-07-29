@@ -1,8 +1,8 @@
-def calculator_accuracy(expected, predicted, confidence):
-    if expected == predicted:
+def calculator_accuracy(expected_sign, predicted_sign, confidence):
+    if expected_sign == predicted_sign:
         return round(confidence*100,2)
-    
-    return 0.0
+    else: 
+        return round((1-confidence)*100,2)
 
     
         

@@ -9,7 +9,7 @@ class StartPracticeRequest(BaseModel):
 class AttemptRequest(BaseModel):
     session_id: str
     
-class PracticeResponse(BaseModel):
+class EndPracticeResponse(BaseModel):
     session_id: str
     accuracy: float
     success: bool

@@ -1,5 +1,5 @@
-from BD_Logic.model.practice_session import PracticeSession
-from BD_Logic.repository.assessment_repository import (
+from model.practice_session import PracticeSession
+from repository.assessment_repository import (
     save,
     get,
     update
@@ -28,7 +28,7 @@ def start_practice(data):
         "success": True,
     }
 
-def record_attempt(session_id, accuracy):
+def record_practice(session_id, accuracy):
     session = get(session_id)
     if session is None:
         return {

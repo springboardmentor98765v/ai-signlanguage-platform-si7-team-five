@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
-from BD_Logic.schemas.practice_schema import (
+from schemas.practice_schema import (
     StartPracticeRequest,
     AttemptRequest,
-    EndPracticeResponse
+    EndPracticeResponse 
 )
 
-from BD_Logic.sevices.practice_service import (
+from services.practice_service import (
     start_practice,
     record_practice,
     end_practice
@@ -28,8 +28,8 @@ def attempt(request: AttemptRequest):
 
 
 
-@router.post("/end", response_model=EndPracticeResponse)
+@router.post("/end")
 
-def end_session(session_id: str):
-    response = end_practice(session_id)
-    return response
+def end_session(request = EndPracticeResponse):
+    
+    return end_practice(request)
