@@ -413,7 +413,7 @@ export default function AdminDashboard() {
           </div>
 
           
-        <div id="admin_users_panel" className="bg-white rounded-xl border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
           <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h3 className="font-bold text-base text-gray-900">All Users</h3>
@@ -527,6 +527,7 @@ export default function AdminDashboard() {
 
           </div>
         </div>
+      </div>
       )}
 
       {/* ---- SYSTEM STATUS TAB ---- */}

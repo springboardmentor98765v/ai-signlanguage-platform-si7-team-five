@@ -117,6 +117,15 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     }
   };
 
+  useEffect(() => {
+    if (isPracticing && stream && videoRef.current) {
+      if (videoRef.current.srcObject !== stream) {
+        videoRef.current.srcObject = stream;
+      }
+      videoRef.current.play().catch(e => console.warn('Could not auto-play video:', e));
+    }
+  }, [isPracticing, stream]);
+
   const handleStartPractice = () => {
     setIsPracticing(true);
     startCamera();
