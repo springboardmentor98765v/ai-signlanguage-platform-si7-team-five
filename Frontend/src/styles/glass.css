@@ -1,0 +1,130 @@
+/* ════════════════════════════════════════════════════════════════
+   PREMIUM GLASS DESIGN SYSTEM
+   Floating panels, modals, dropdowns, and tooltips
+   ════════════════════════════════════════════════════════════════ */
+
+/* ─── Glass Surface Tokens ─────────────────────────────────── */
+:root {
+  /* Glass backgrounds */
+  --glass-bg:           rgba(255, 255, 255, 0.10);
+  --glass-bg-elevated:  rgba(255, 255, 255, 0.14);
+  --glass-bg-solid:     rgba(255, 255, 255, 0.82);
+
+  /* Borders */
+  --glass-border:       1px solid rgba(255, 255, 255, 0.18);
+  --glass-border-light: 1px solid rgba(255, 255, 255, 0.12);
+
+  /* Blur */
+  --glass-blur:         blur(30px);
+  --glass-blur-heavy:   blur(40px);
+  --glass-blur-light:   blur(16px);
+
+  /* Shadows */
+  --glass-shadow-outer: 0 8px 32px rgba(31, 38, 135, 0.12),
+                         0 2px 8px rgba(0, 0, 0, 0.06);
+  --glass-shadow-inner: inset 0 1px 1px rgba(255, 255, 255, 0.25),
+                         inset 0 -1px 1px rgba(0, 0, 0, 0.03);
+  --glass-shadow-glow:  0 0 40px rgba(16, 185, 129, 0.08);
+
+  /* Radii */
+  --glass-radius-panel: 1.5rem;
+  --glass-radius-modal: 2rem;
+  --glass-radius-dropdown: 1.25rem;
+
+  /* Backdrop for modals */
+  --glass-backdrop:     rgba(15, 23, 42, 0.45);
+}
+
+/* ─── Glass Panel Base ─────────────────────────────────────── */
+.glass-panel {
+  background: var(--glass-bg-solid);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--glass-radius-panel);
+  box-shadow: var(--glass-shadow-outer), var(--glass-shadow-inner);
+  will-change: transform;
+}
+
+/* ─── Glass Dropdown ───────────────────────────────────────── */
+.glass-dropdown {
+  background: var(--glass-bg-solid);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: var(--glass-radius-dropdown);
+  box-shadow: var(--glass-shadow-outer), var(--glass-shadow-inner), var(--glass-shadow-glow);
+  will-change: transform, opacity;
+}
+
+/* ─── Glass Modal ──────────────────────────────────────────── */
+.glass-modal {
+  background: var(--glass-bg-solid);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border: var(--glass-border);
+  border-radius: var(--glass-radius-modal);
+  box-shadow: var(--glass-shadow-outer), var(--glass-shadow-inner);
+  will-change: transform, opacity;
+}
+
+/* ─── Glass Backdrop Overlay ───────────────────────────────── */
+.glass-backdrop {
+  background: var(--glass-backdrop);
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+}
+
+/* ─── Dynamic Light Spot (applied via inline style from hook) ─ */
+.glass-light-spot {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-light-spot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    600px circle at var(--light-x, 50%) var(--light-y, 50%),
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* ─── Reflection Shimmer (top border highlight) ────────────── */
+.glass-panel::after,
+.glass-dropdown::after,
+.glass-modal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.5) 70%,
+    transparent 100%
+  );
+  border-radius: 100%;
+  pointer-events: none;
+}
+
+/* ─── Reduced Motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .glass-panel,
+  .glass-dropdown,
+  .glass-modal {
+    will-change: auto;
+    transition: none !important;
+    animation: none !important;
+  }
+}
