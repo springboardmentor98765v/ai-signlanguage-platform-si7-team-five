@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 
-from BD_Logic.schemas.report_schema import ReportRequest, ReportSchema
+from BD_Logic.schemas.report_schema import ReportRequest
 from BD_Logic.reports.reports_service import ReportService
 
 router = APIRouter()
 
-service = ReportService
+service = ReportService()
 
 @router.post("/report")
  

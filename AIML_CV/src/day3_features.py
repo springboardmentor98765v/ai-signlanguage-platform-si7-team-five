@@ -1,18 +1,30 @@
+import os
 import numpy as np
 import cv2
 from mediapipe.tasks import python as mp_tasks
 from mediapipe.tasks.python import vision
 from mediapipe import Image
 
-MODEL_PATH = "models/hand_landmarker.task"
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "models", "hand_landmarker.task")
 
-base_options = mp_tasks.BaseOptions(model_asset_path=MODEL_PATH)
-options = vision.HandLandmarkerOptions(
-    base_options=base_options,
-    num_hands=2,
-    min_hand_detection_confidence=0.5
-)
-detector = vision.HandLandmarker.create_from_options(options)
+_detector = None
+
+def _load_detector():
+    global _detector
+    if _detector is None:
+        if not os.path.exists(MODEL_PATH):
+            raise FileNotFoundError(
+                f"Hand landmark model not found at {MODEL_PATH}. "
+                "Please ensure the AIML_CV model asset is available."
+            )
+        base_options = mp_tasks.BaseOptions(model_asset_path=MODEL_PATH)
+        options = vision.HandLandmarkerOptions(
+            base_options=base_options,
+            num_hands=2,
+            min_hand_detection_confidence=0.5
+        )
+        _detector = vision.HandLandmarker.create_from_options(options)
+    return _detector
 
 WRIST = 0
 FINGERTIPS = [4, 8, 12, 16, 20]
@@ -71,6 +83,7 @@ def extract_features(hand_landmarks):
 
 def run_on_image(image_path):
     img = Image.create_from_file(image_path)
+    detector = _load_detector()
     result = detector.detect(img)
 
     print(f"Hands detected: {len(result.hand_landmarks)}\n")

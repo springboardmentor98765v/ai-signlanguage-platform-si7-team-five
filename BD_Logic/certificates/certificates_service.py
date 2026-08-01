@@ -1,7 +1,6 @@
 from BD_Logic.analytics.services import AnalyticsService
 from BD_Logic.analytics.analytics_engine import AnalyticsEngine
-from BD_Logic.certificates.certificate_engine import CertificatesEngine
-
+from BD_Logic.certificates.certificate_engine import CertificateEngine
 
 
 class CertificateService:
@@ -9,11 +8,11 @@ class CertificateService:
     
     def __init__(self):
         
-        self.analytics=AnalyticsService()
+        self.analytics = AnalyticsService()
         
-        self.engine=AnalyticsEngine()
+        self.engine = AnalyticsEngine()
         
-        self.certificates=CertificatesEngine()
+        self.certificates = CertificateEngine()
     def generate_certificate(self,user_id,student_name):
         
         history=self.analytics.get_user_history(user_id)

@@ -14,9 +14,9 @@ class DatabaseService:
         session.add(assessment)
         session.commit()
         session.close()
-        
-        def get_history(self, user_id):
-            session = SessionLocal()
-            history = session.query(Assessment).filter_by(user_id=user_id).all()
-            session.close()
-            return history
+
+    def get_history(self, user_id):
+        session = SessionLocal()
+        history = session.query(Assessment).filter_by(user_id=user_id).all()
+        session.close()
+        return history

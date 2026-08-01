@@ -2,6 +2,11 @@ import os
 import sys
 from contextlib import asynccontextmanager
 
+# Ensure Backend package imports work regardless of current working directory.
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, backend_dir)
+sys.path.insert(0, os.path.dirname(backend_dir))
+
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from routers.health import health_router
@@ -17,7 +22,6 @@ from services import instructor_service
 from services import admin_services
 from services import predictions
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from BD_Logic.main import app as bd_logic_app
 
 

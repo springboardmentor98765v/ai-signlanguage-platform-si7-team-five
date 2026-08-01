@@ -1,6 +1,9 @@
+import os
 import sys
-import os 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
 from fastapi import FastAPI
 
@@ -22,16 +25,14 @@ from BD_Logic.api.report_api import router as report_router
 from BD_Logic.database.connection import Base
 from BD_Logic.database.connection import engine
 from BD_Logic.api.health_check_api import router as health_router
-from BD_Logic.middleware.exception_handler import (
-    global_exception_handler
-)
+from BD_Logic.middleware.exception_handler import exception_handler as global_exception_handler
 from BD_Logic.api.version_api import (
     router as version_router
 )
 
-from BD_Logic.deployment.startup import initialize
+from BD_Logic.deployment.startup import initialize_logger
 
-initialize()
+initialize_logger()
 
 
 app = FastAPI(

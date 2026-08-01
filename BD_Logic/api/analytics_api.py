@@ -12,13 +12,10 @@ engine = AnalyticsEngine()
 
 
 @router.post("/analytics")
-
 def analytics(request: AnalyticsRequest):
-
-    history = service.get_user_history(
-
-        request.user_id
-
+    history = service.get_user_history(request.user_id)
+    return engine.generate_summary(
+        history,
+        scores=request.scores,
+        weak=request.weak_signs
     )
-
-    return engine.generate_summary(history)
