@@ -1,4 +1,4 @@
-# BD_Logic/services/assessment_service.py
+
 from AIML_CV.src.day5_train_classifier import predict_sign_from_frame
 
 from model.assessment import Assessment
@@ -87,3 +87,16 @@ class AssessmentService:
             "result": result
 
         }
+        analytics.save_assessment({
+
+               "user_id":request.user_id,
+
+               "course_id":request.course_id,
+
+                "expected_sign":request.expected_sign,
+
+                "predicted_sign":request.predicted_sign,
+
+                "score":score
+
+    })

@@ -19,7 +19,10 @@ from api.recommendation_api import router as recommendation_router
 from api.certificate_api import router as certificate_router
 
 from api.report_api import router as report_router
-print("Milestone 2 Day 1 ")
+from database.connection import Base
+from database.connection import engine
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     
