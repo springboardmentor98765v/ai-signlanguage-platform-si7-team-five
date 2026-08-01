@@ -21,7 +21,7 @@ from services import user_services
 from services import instructor_service
 from services import admin_services
 from services import predictions
-
+from docs.api_reference import app
 from BD_Logic.main import app as bd_logic_app
 from utils import error_handler
 
