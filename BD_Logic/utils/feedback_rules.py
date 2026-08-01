@@ -6,24 +6,25 @@ def generate_feedback(
 ):
     if accuracy == 100:
         return (
-            "Excellent! You are perfect in signing '{expected_sign}' ."
+            "perfect",
+            f"Excellent! You are perfect in signing '{expected_sign}'."
         )
     if accuracy >= 80:
         return (
-            "Good! Your sign '{predicted_sign}' is correct but needs improvement."
-            
-        
+            "good",
+            f"Good! Your sign '{predicted_sign}' is correct but needs improvement."
         )
     if predicted_sign != expected_sign:
         return (
-            "Your sign '{predicted_sign}' is incorrect."
-            f"You should sign '{expected_sign}'."
+            "incorrect",
+            f"Your sign '{predicted_sign}' is incorrect. You should sign '{expected_sign}'."
         )
-    if confidence <0.70:
-        return(
+    if confidence < 0.70:
+        return (
+            "low_confidence",
             "Low Confidence! You should practice again."
-            
         )
-    return(
-        "Needs Practice!"
+    return (
+        "needs_practice",
+        "Needs practice!"
     )

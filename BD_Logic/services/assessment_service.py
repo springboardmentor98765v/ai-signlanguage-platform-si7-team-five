@@ -1,10 +1,10 @@
 
 from AIML_CV.src.day5_train_classifier import predict_sign_from_frame
 
-from model.assessment import Assessment
-from repository.assessment_repository import save
-from utils.score_calculator import calculate_accuracy
-from assessment.scoring_engine import WeightedScoringEngine
+from BD_Logic.model.assessment import Assessment
+from BD_Logic.repository.assessment_repository import save
+from BD_Logic.utils.score_calculator import calculate_accuracy
+from BD_Logic.assessment.scoring_engine import WeightedScoringEngine
 import cv2
 import os 
 

@@ -1,13 +1,12 @@
-from services.assessment_service import evaluate
-from services.feedback_service import create_feedback
-from services.analytics_service import generate_dashboard
+from BD_Logic.services.assessment_service import create_assessment
+from BD_Logic.services.feedback_service import create_feedback
+from BD_Logic.services.analytics_service import generate_dashboard
 
 def complete_practice(
-    assesment_request,
+    assessment_request,
     analytics_request
 ):
-    
-    assessment = evaluate(assesment_request)
+    assessment = create_assessment(assessment_request)
     feedback = create_feedback(
         type(
             "FeedbackRequest",
@@ -21,14 +20,10 @@ def complete_practice(
             }
         )
     )
-    
-    analytics = generate_dashboard(
-        analytics_request
-        )
-    
-    return { 
-            "assessment": assessment,
-            "feedback": feedback,
-            "analytics": analytics
-            }
+    analytics = generate_dashboard(analytics_request)
+    return {
+        "assessment": assessment,
+        "feedback": feedback,
+        "analytics": analytics
+    }
     

@@ -4,48 +4,47 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI
 
-from routers.practice_router import router as practice_router
-from routers.assessment_router import router as assessment_router
-from routers.feedback_routers import router as feedback_router
-from routers.analytics_router import router as analytics_router
-from routers.workflow_routers import router as workflow_router
-from assessment.scoring_engine import WeightedScoringEngine
-from feedback.feedback_engine import FeedbackEngine
-from analytics.analytics_engine import AnalyticsEngine
-from recommendation.recommendation_engine import RecommendationEngine
-from api.assessment_api import router as api_router
-from api.analytics_api import router as analytics_api_router
-from api.recommendation_api import router as recommendation_router
-from api.certificate_api import router as certificate_router
-from api.export_api import router as export_router
-from api.report_api import router as report_router
-from database.connection import Base
-from database.connection import engine
-from api.health_check_api import router as health_router
-from middleware.exception_handler import (
+from BD_Logic.routers.practice_router import router as practice_router
+from BD_Logic.routers.assessment_router import router as assessment_router
+from BD_Logic.routers.feedback_routers import router as feedback_router
+from BD_Logic.routers.analytics_router import router as analytics_router
+from BD_Logic.routers.workflow_routers import router as workflow_router
+from BD_Logic.assessment.scoring_engine import WeightedScoringEngine
+from BD_Logic.feedback.feedback_engine import FeedbackEngine
+from BD_Logic.analytics.analytics_engine import AnalyticsEngine
+from BD_Logic.recommendation.recommendation_engine import RecommendationEngine
+from BD_Logic.api.assessment_api import router as api_router
+from BD_Logic.api.analytics_api import router as analytics_api_router
+from BD_Logic.api.recommendation_api import router as recommendation_router
+from BD_Logic.api.certificate_api import router as certificate_router
+from BD_Logic.api.export_api import router as export_router
+from BD_Logic.api.report_api import router as report_router
+from BD_Logic.database.connection import Base
+from BD_Logic.database.connection import engine
+from BD_Logic.api.health_check_api import router as health_router
+from BD_Logic.middleware.exception_handler import (
     global_exception_handler
 )
-from api.version_api import (
+from BD_Logic.api.version_api import (
     router as version_router
 )
 
-from deployment.startup import initialize
+from BD_Logic.deployment.startup import initialize
 
 initialize()
 
 
-
+app = FastAPI(
+    title="AI Sign Language Platform",
+    version="2.0.0"
+    
+)
 
 
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    
-    title="AI Sign Language Platform",
-    version="2.0.0"
-    
-)
+
 app.include_router(practice_router)
 app.include_router(feedback_router)
 app.include_router(analytics_router)

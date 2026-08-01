@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from schemas.assessment_schemas import AssessmentRequest
-from schemas.analytics_schema import AnalyticRequest
-from services.workflow_services import complete_practice
+from BD_Logic.schemas.assessment_schemas import AssessmentRequest
+from BD_Logic.schemas.analytics_schema import AnalyticRequest
+from BD_Logic.services.workflow_services import complete_practice
 
 router = APIRouter(prefix="/workflow", tags=["Workflow"])
 

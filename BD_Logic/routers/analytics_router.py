@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from schemas.analytics_schema import AnalyticRequest
-from services.analytics_service import generate_dashboard
+from BD_Logic.schemas.analytics_schema import AnalyticRequest
+from BD_Logic.services.analytics_service import generate_dashboard
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 

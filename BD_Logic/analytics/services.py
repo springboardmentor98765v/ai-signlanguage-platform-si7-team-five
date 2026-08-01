@@ -1,4 +1,4 @@
-from database.crud import DatabaseService
+from BD_Logic.database.crud import DatabaseService
 
 
 class AnalyticsService:

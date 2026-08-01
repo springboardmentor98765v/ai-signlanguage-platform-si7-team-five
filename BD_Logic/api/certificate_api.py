@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from schemas.certificate_schemas import CertificateRequest  
-from certificates.certificates_service import CertificateService
+from BD_Logic.schemas.certificate_schemas import CertificateRequest
+from BD_Logic.certificates.certificates_service import CertificateService
 
 
 router = APIRouter()

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from schemas.export_schema import ExportRequest
-from exports.export_service import ExportService
+from BD_Logic.schemas.export_schema import ExportRequest
+from BD_Logic.exports.export_service import ExportService
 
 router = APIRouter()
 

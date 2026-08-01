@@ -1,5 +1,5 @@
-from model.practice_session import PracticeSession
-from repository.assessment_repository import (
+from BD_Logic.model.practice_session import PracticeSession
+from BD_Logic.repository.assessment_repository import (
     save,
     get,
     update

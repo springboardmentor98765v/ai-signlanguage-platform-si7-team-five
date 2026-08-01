@@ -1,4 +1,4 @@
-from analytics.analytics_engine import AnalyticsEngine
+from BD_Logic.analytics.analytics_engine import AnalyticsEngine
 
 def test_summary():
     engine = AnalyticsEngine()

@@ -1,4 +1,4 @@
-from assessment.scoring_engine import WeightedScoringEngine
+from BD_Logic.assessment.scoring_engine import WeightedScoringEngine
 
 def test_score():
     engine = WeightedScoringEngine()

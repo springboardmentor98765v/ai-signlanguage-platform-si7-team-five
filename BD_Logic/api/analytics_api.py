@@ -1,10 +1,8 @@
 from fastapi import APIRouter
 
-from schemas.analytics_schema import AnalyticsRequest
-
-from analytics.services import AnalyticsService
-
-from analytics.analytics_engine import AnalyticsEngine
+from BD_Logic.schemas.analytics_schema import AnalyticsRequest
+from BD_Logic.analytics.services import AnalyticsService
+from BD_Logic.analytics.analytics_engine import AnalyticsEngine
 
 router = APIRouter()
 

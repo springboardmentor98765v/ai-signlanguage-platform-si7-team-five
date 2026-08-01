@@ -1,11 +1,9 @@
-from services.assessment_service import AssessmentService
-from analytics.services import AnalyticsService
-from recommendation.recommendation_services import RecommendationService
-from certificates.certificates_service import CertificateService
-
-from reports.reports_service import ReportService
-
-from exports.export_service import ExportService
+from BD_Logic.services.assessment_service import AssessmentService
+from BD_Logic.analytics.services import AnalyticsService
+from BD_Logic.recommendation.recommendation_services import RecommendationService
+from BD_Logic.certificates.certificates_service import CertificateService
+from BD_Logic.reports.reports_service import ReportService
+from BD_Logic.exports.export_service import ExportService
 
 class IntegrationService:
     def __init__(self):

@@ -1,4 +1,4 @@
-from recommendation.recommendation_engine import RecommendationEngine
+from BD_Logic.recommendation.recommendation_engine import RecommendationEngine
 
 def test_recommendation():
     engine = RecommendationEngine()

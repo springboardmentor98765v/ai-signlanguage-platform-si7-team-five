@@ -1,12 +1,9 @@
-from model.analytics import Analytics
-
-from repository.analytics_repo import save
-
-from utils.analytics_utils import(
-   calculate_average,
-   best_scores
-   
-    ) 
+from BD_Logic.model.analytics import Analytics
+from BD_Logic.repository.analytics_repo import save
+from BD_Logic.utils.analytics_utils import (
+    calculate_average,
+    best_scores
+)
 
 def generate_dashboard(request):
     average = calculate_average(request.scores)

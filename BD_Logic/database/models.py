@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float
 
-from database.connection import Base
+from BD_Logic.database.connection import Base
+
 class Assessment(Base):
     __tablename__ = "assessments"
     id = Column(Integer, primary_key=True)

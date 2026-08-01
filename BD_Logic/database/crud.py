@@ -1,5 +1,5 @@
-from database.connection import SessionLocal
-from database.models import Assessment
+from BD_Logic.database.connection import SessionLocal
+from BD_Logic.database.models import Assessment
 
 class DatabaseService:
     def save_assessment(self, data):

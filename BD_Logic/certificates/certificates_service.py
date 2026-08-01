@@ -1,6 +1,6 @@
-from analytics.services import AnalyticsService
-from analytics.analytics_engine import AnalyticsEngine
-from certificates.certificate_engine import CertificatesEngine
+from BD_Logic.analytics.services import AnalyticsService
+from BD_Logic.analytics.analytics_engine import AnalyticsEngine
+from BD_Logic.certificates.certificate_engine import CertificatesEngine
 
 
 

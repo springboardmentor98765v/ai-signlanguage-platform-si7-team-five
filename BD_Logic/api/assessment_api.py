@@ -1,10 +1,8 @@
 from fastapi import APIRouter
 
-from schemas.assessment_schemas import AssessmentRequest
-
-from services.assessment_service import AssessmentService
-
-from utils.response import success
+from BD_Logic.schemas.assessment_schemas import AssessmentRequest
+from BD_Logic.services.assessment_service import AssessmentService
+from BD_Logic.utils.response import success
 
 router = APIRouter()
 

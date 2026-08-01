@@ -1,14 +1,13 @@
 from datetime import datetime
 from uuid import uuid4
 
-class Feedback: 
+class Feedback:
     def __init__(
         self,
         assessment_id,
-        feedback,
+        feedback_type,
         message
     ):
-        
         self.feedback_id = str(uuid4())
         self.assessment_id = assessment_id
         self.feedback_type = feedback_type

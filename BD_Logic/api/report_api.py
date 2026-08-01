@@ -1,8 +1,7 @@
 from fastapi import APIRouter
 
-from schemas.report_schema import ReportRequest, ReportSchema
-
-from reports.reports_service import ReportService
+from BD_Logic.schemas.report_schema import ReportRequest, ReportSchema
+from BD_Logic.reports.reports_service import ReportService
 
 router = APIRouter()
 

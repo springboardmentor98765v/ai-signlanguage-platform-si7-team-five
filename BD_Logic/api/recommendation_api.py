@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from schemas.recommendation_schema import RecommendationRequest
-from recommendation.recommendation_services import RecommendationService
+from BD_Logic.schemas.recommendation_schema import RecommendationRequest
+from BD_Logic.recommendation.recommendation_services import RecommendationService
 
 router = APIRouter()
 

@@ -1,5 +1,5 @@
-from reports.reports_service import ReportService
-from exports.export_engine import ExportRequest 
+from BD_Logic.reports.reports_service import ReportService
+from BD_Logic.exports.export_engine import ExportRequest 
 
 class ExportService:
     def __init__(self):

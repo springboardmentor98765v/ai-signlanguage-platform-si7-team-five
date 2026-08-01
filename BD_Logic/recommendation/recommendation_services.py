@@ -1,8 +1,6 @@
-from analytics.services import AnalyticsService
-
-from analytics.analytics_engine import AnalyticsEngine
-
-from recommendation.recommendation_engine import RecommendationEngine
+from BD_Logic.analytics.services import AnalyticsService
+from BD_Logic.analytics.analytics_engine import AnalyticsEngine
+from BD_Logic.recommendation.recommendation_engine import RecommendationEngine
 
 
 class RecommendationService:

@@ -1,10 +1,8 @@
-from analytics.services import AnalyticsService
-from analytics.analytics_engine import AnalyticsEngine
-from recommendation.recommendation_services import RecommendationService
-
-from certificates.certificates_service import CertificateService
-
-from reports.reports_engine import ReportEngine
+from BD_Logic.analytics.services import AnalyticsService
+from BD_Logic.analytics.analytics_engine import AnalyticsEngine
+from BD_Logic.recommendation.recommendation_services import RecommendationService
+from BD_Logic.certificates.certificates_service import CertificateService
+from BD_Logic.reports.reports_engine import ReportEngine
 
 
 class ReportService:

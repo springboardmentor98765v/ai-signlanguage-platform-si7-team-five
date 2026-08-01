@@ -1,3 +1,5 @@
+import os
+import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
@@ -14,6 +16,9 @@ from services import user_services
 from services import instructor_service
 from services import admin_services
 from services import predictions
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from BD_Logic.main import app as bd_logic_app
 
 
 @asynccontextmanager
@@ -33,6 +38,7 @@ app.include_router(user_services.r, prefix="/auth", tags=["Authenticate"])
 app.include_router(instructor_service.r, prefix="/instructors", tags=["Instructors"])
 app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
 app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
+app.mount("/bd_logic", bd_logic_app)
 
 
 
@@ -66,7 +72,7 @@ app.include_router(course_router, prefix="/courses", tags=["Courses"])
 def root():
     return {"message": "Backend skeleton running"}
 
-@app.get("/favicon.ico, include_in_schema=False" )
+@app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     return Response(status_code=204)
 

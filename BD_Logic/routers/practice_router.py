@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 
-from schemas.practice_schema import (
+from BD_Logic.schemas.practice_schema import (
     StartPracticeRequest,
     AttemptRequest,
     EndPracticeResponse 
 )
 
-from services.practice_service import (
+from BD_Logic.services.practice_service import (
     start_practice,
     record_practice,
     end_practice

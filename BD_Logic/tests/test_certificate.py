@@ -1,4 +1,4 @@
-from certificates.certificate_engine import CertificatesEngine
+from BD_Logic.certificates.certificate_engine import CertificatesEngine
 def test_certificate():
     engine = CertificatesEngine()
     
