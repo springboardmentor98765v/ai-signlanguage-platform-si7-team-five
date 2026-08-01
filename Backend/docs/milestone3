@@ -54,3 +54,7 @@
 - [x] Per-user rate limiting implemented for sensitive endpoints (login, password reset)
 - [x] Normal user tested (not blocked during regular use)
 - [x] Rapid repeated attempts correctly blocked
+## Day 7 - Automated Unit Tests
+- [x] Pytest installed and configured
+- [x] Unit tests written for at least 10 key endpoints
+- [x] All tests run successfully (green/passing)
