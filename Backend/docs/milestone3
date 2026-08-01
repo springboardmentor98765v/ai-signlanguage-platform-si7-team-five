@@ -1,0 +1,38 @@
+# Milestone 3 Day 1 
+
+## Reviewed APIs (Milestone 1 & 2)
+- Auth: login, register, update profile, reset/change password
+- User: update profile, forgot password
+- Instructor: assign student, view students
+- Admin: list users, change role
+- Lessons: CRUD, search, pagination
+
+## New APIs for Milestone 3
+1. **Notification Service**
+   - Create notification
+   - Get user notifications
+   - Mark notification as read
+
+2. **Bulk Admin Operations**
+   - Activate/deactivate multiple users
+   - CSV bulk lesson upload
+
+3. **Security Enhancements**
+   - Stronger input validation
+   - Per-user rate limiting
+
+4. **Automated Testing**
+   - Unit tests for all major endpoints
+   - Integration tests with Docker Compose
+
+## Checkpoints
+- [x] List of new APIs written
+- [x] Old APIs re-tested
+- [x] Plan shared with team
+
+
+## Day 2 - Notification Service
+- [x] Notifications table created (stub in memory for now)
+- [x] Create notification API working
+- [x] Get my notifications API working
+- [x] Mark as read API working
