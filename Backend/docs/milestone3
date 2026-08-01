@@ -50,3 +50,7 @@
 - [x] Input validation reviewed for all major APIs
 - [x] Tested with bad input examples (script tags, SQL-like text)
 - [x] Weak spots fixed using validation utilities
+## Day 6 - Per-User Rate Limiting
+- [x] Per-user rate limiting implemented for sensitive endpoints (login, password reset)
+- [x] Normal user tested (not blocked during regular use)
+- [x] Rapid repeated attempts correctly blocked
