@@ -22,11 +22,28 @@ from api.report_api import router as report_router
 from database.connection import Base
 from database.connection import engine
 from api.health_check_api import router as health_router
+from middleware.exception_handler import (
+    global_exception_handler
+)
+from api.version_api import (
+    router as version_router
+)
+
+from deployment.startup import initialize
+
+initialize()
+
+
+
+
+
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     
-    title="AI Sign Language Platform"
+    title="AI Sign Language Platform",
+    version="2.0.0"
     
 )
 app.include_router(practice_router)
@@ -40,3 +57,5 @@ app.include_router(api_router, prefix="/api/v1")
 app.include_router(report_router, prefix="/api/v1")
 app.include_router(certificate_router, prefix="/api/v1")
 app.include_router(health_router, prefix="/api/v1")
+app.add_exception_handler(Exception, global_exception_handler)
+app.include_router(version_router, prefix="/api/v1")
