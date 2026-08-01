@@ -58,3 +58,8 @@
 - [x] Pytest installed and configured
 - [x] Unit tests written for at least 10 key endpoints
 - [x] All tests run successfully (green/passing)
+## Day 8 - Integration Tests
+- [x] Docker Compose used to run backend locally
+- [x] Full user journey integration test written (register → login → view lessons → notifications)
+- [x] Admin bulk operations integration test written (bulk activate → CSV upload)
+- [x] Tests run successfully against local stack
