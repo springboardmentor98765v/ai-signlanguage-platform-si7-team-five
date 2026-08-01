@@ -331,3 +331,276 @@ export const mockAchievements = [
   { id: 'ach_4', emoji: '💬', title: 'Social Signer',      desc: 'Perfect score on Greetings',    unlocked: false },
   { id: 'ach_5', emoji: '⚡', title: 'Speed Learner',      desc: 'Finish 3 lessons in one day',   unlocked: false },
 ];
+
+// =============================================
+// MILESTONE 3 MOCK DATASETS
+// =============================================
+import { NotificationItem, AchievementBadge, LeaderboardUser, StreakDetails } from './types';
+
+export const mockNotifications: NotificationItem[] = [
+  {
+    id: 'notif_1',
+    title: 'Streak Level Up! 🔥',
+    message: 'Congratulations! You reached a 5-day signing streak. Keep the momentum going!',
+    timestamp: '10 mins ago',
+    read: false,
+    type: 'streak',
+    actionUrl: 'Dashboard'
+  },
+  {
+    id: 'notif_2',
+    title: 'Badge Unlocked: Alphabet Master 🎓',
+    message: 'You scored 94% on ASL Alphabet: Letters A-E and unlocked a new achievement badge.',
+    timestamp: '2 hours ago',
+    read: false,
+    type: 'achievement',
+    actionUrl: 'Reports'
+  },
+  {
+    id: 'notif_3',
+    title: 'New Lesson Available 📚',
+    message: 'Emergency Phrase Signing module is now live with real-time AI computer vision feedback.',
+    timestamp: '1 day ago',
+    read: false,
+    type: 'lesson',
+    actionUrl: 'Lessons'
+  },
+  {
+    id: 'notif_4',
+    title: 'Weekly Performance Summary Ready 📊',
+    message: 'Your average signing accuracy improved by +6% this week across 42 practice sessions.',
+    timestamp: '2 days ago',
+    read: true,
+    type: 'system',
+    actionUrl: 'Reports'
+  },
+  {
+    id: 'notif_5',
+    title: 'Leaderboard Ranking Update 🏆',
+    message: 'You climbed to Rank #4 on the global weekly leaderboard with 1,840 XP points!',
+    timestamp: '3 days ago',
+    read: true,
+    type: 'achievement',
+    actionUrl: 'Leaderboard'
+  }
+];
+
+export const mockDetailedBadges: AchievementBadge[] = [
+  {
+    id: 'badge_1',
+    title: 'First Sign Gesture',
+    description: 'Complete your first live camera AI practice session with 80%+ accuracy.',
+    category: 'Beginner',
+    iconName: 'Sparkles',
+    unlocked: true,
+    unlockedAt: '2026-07-01',
+    progress: 100,
+    totalRequired: 1,
+    currentCount: 1
+  },
+  {
+    id: 'badge_2',
+    title: '5-Day Streak Flame',
+    description: 'Maintain a continuous 5-day daily signing practice streak.',
+    category: 'Consistency',
+    iconName: 'Flame',
+    unlocked: true,
+    unlockedAt: '2026-07-05',
+    progress: 100,
+    totalRequired: 5,
+    currentCount: 5
+  },
+  {
+    id: 'badge_3',
+    title: 'Alphabet Master',
+    description: 'Master the ASL alphabet letters A through E with 90%+ average accuracy score.',
+    category: 'Mastery',
+    iconName: 'Award',
+    unlocked: true,
+    unlockedAt: '2026-07-06',
+    progress: 100,
+    totalRequired: 5,
+    currentCount: 5
+  },
+  {
+    id: 'badge_4',
+    title: 'Vision AI Hero',
+    description: 'Complete 25 live camera AI assessment sessions with instant keypoint validation.',
+    category: 'Speed',
+    iconName: 'Zap',
+    unlocked: true,
+    unlockedAt: '2026-07-10',
+    progress: 100,
+    totalRequired: 25,
+    currentCount: 25
+  },
+  {
+    id: 'badge_5',
+    title: 'Social Greeting Champion',
+    description: 'Achieve a 95%+ score on all Social Greetings module practice steps.',
+    category: 'Mastery',
+    iconName: 'MessageSquare',
+    unlocked: false,
+    progress: 75,
+    totalRequired: 4,
+    currentCount: 3
+  },
+  {
+    id: 'badge_6',
+    title: 'Number Ninja 1-10',
+    description: 'Accurately complete all number handshapes 1 through 10 in under 3 minutes.',
+    category: 'Speed',
+    iconName: 'Target',
+    unlocked: false,
+    progress: 50,
+    totalRequired: 10,
+    currentCount: 5
+  },
+  {
+    id: 'badge_7',
+    title: '30-Day Signing Legend',
+    description: 'Maintain a 30-day active daily practice streak without missing a day.',
+    category: 'Consistency',
+    iconName: 'Crown',
+    unlocked: false,
+    progress: 16,
+    totalRequired: 30,
+    currentCount: 5
+  },
+  {
+    id: 'badge_8',
+    title: 'Emergency Responder',
+    description: 'Pass all Emergency Phrase Signing hand gesture assessments on the first attempt.',
+    category: 'Special',
+    iconName: 'ShieldAlert',
+    unlocked: false,
+    progress: 0,
+    totalRequired: 4,
+    currentCount: 0
+  }
+];
+
+export const mockStreakDetails: StreakDetails = {
+  currentStreak: 5,
+  longestStreak: 12,
+  todayCompleted: true,
+  nextMilestoneDays: 7,
+  nextMilestoneReward: '7-Day Silver Flame Badge & +100 Bonus XP',
+  weeklyCalendar: [
+    { dayName: 'Mon', dateStr: '2026-07-27', completed: true, isToday: false },
+    { dayName: 'Tue', dateStr: '2026-07-28', completed: true, isToday: false },
+    { dayName: 'Wed', dateStr: '2026-07-29', completed: true, isToday: false },
+    { dayName: 'Thu', dateStr: '2026-07-30', completed: true, isToday: false },
+    { dayName: 'Fri', dateStr: '2026-07-31', completed: true, isToday: true },
+    { dayName: 'Sat', dateStr: '2026-08-01', completed: false, isToday: false },
+    { dayName: 'Sun', dateStr: '2026-08-02', completed: false, isToday: false },
+  ]
+};
+
+export const mockLeaderboardUsers: LeaderboardUser[] = [
+  {
+    id: 'lb_1',
+    rank: 1,
+    name: 'Grace Lee',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 96,
+    streak: 15,
+    lessonsCompleted: 16,
+    badgesCount: 12,
+    points: 2480,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_2',
+    rank: 2,
+    name: 'Alice Johnson',
+    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 94,
+    streak: 14,
+    lessonsCompleted: 14,
+    badgesCount: 10,
+    points: 2210,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_3',
+    rank: 3,
+    name: 'David Kim',
+    avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 91,
+    streak: 12,
+    lessonsCompleted: 18,
+    badgesCount: 9,
+    points: 2050,
+    isCurrentUser: false
+  },
+  {
+    id: 'usr_1', // Matches mockUser
+    rank: 4,
+    name: 'Jane Doe',
+    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 88,
+    streak: 5,
+    lessonsCompleted: 12,
+    badgesCount: 4,
+    points: 1840,
+    isCurrentUser: true
+  },
+  {
+    id: 'lb_5',
+    rank: 5,
+    name: 'Bob Martinez',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 82,
+    streak: 5,
+    lessonsCompleted: 10,
+    badgesCount: 6,
+    points: 1620,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_6',
+    rank: 6,
+    name: 'Frank Brown',
+    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 79,
+    streak: 4,
+    lessonsCompleted: 11,
+    badgesCount: 5,
+    points: 1450,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_7',
+    rank: 7,
+    name: 'Carol White',
+    avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 67,
+    streak: 2,
+    lessonsCompleted: 7,
+    badgesCount: 3,
+    points: 980,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_8',
+    rank: 8,
+    name: 'Henry Clark',
+    avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 62,
+    streak: 0,
+    lessonsCompleted: 3,
+    badgesCount: 1,
+    points: 420,
+    isCurrentUser: false
+  }
+];
+

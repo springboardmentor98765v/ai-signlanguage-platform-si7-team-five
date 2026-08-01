@@ -10,6 +10,7 @@ import LessonsView from './components/LessonsView';
 import PracticeView from './components/PracticeView';
 import ReportsView from './components/ReportsView';
 import ProfileView from './components/ProfileView';
+import LeaderboardView from './components/LeaderboardView';
 import InstructorDashboard from './components/InstructorDashboard';
 import AdminDashboard from './components/AdminDashboard';
 
@@ -194,6 +195,8 @@ export default function App() {
         );
       case 'Reports':
         return <ReportsView />;
+      case 'Leaderboard':
+        return <LeaderboardView />;
       case 'Profile':
         return (
           <ProfileView
