@@ -92,7 +92,9 @@ export default function InstructorDashboard() {
     <div id="instructor_dashboard" className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-bold text-2xl text-gray-900 tracking-tight">Instructor Dashboard</h1>
+        <h1 className="font-bold text-2xl text-gray-900 tracking-tight flex items-center">
+          Instructor Dashboard <img src="/signs/hello_nobg.png" alt="ASL Hello Gesture" className="inline-block h-8 w-8 ml-3 hover:animate-asl-salute transition-transform origin-bottom drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)] pb-1 pointer-events-none select-none" />
+        </h1>
         <p className="text-sm text-gray-500 mt-1">Monitor student progress, lesson completion, and class performance metrics.</p>
       </div>
 

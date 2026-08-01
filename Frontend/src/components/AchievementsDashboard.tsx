@@ -211,7 +211,7 @@ export default function AchievementsDashboard() {
               <Trophy className="h-3.5 w-3.5" />
               <span>Learner Trophies & Badges</span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight">Achievements Gallery</h2>
+            <h2 className="text-xl md:text-2xl font-bold tracking-tight">Achievements Gallery</h2>
             <p className="text-emerald-100 text-sm max-w-xl">
               Unlock badges as you practice ASL hand gestures, maintain daily streaks, and achieve milestone speed & accuracy!
             </p>

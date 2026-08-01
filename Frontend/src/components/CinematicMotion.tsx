@@ -26,7 +26,7 @@ export function CinematicSection({ children, delay = 0, className = '', id, xOff
       initial={shouldReduce ? false : { opacity: 0, x: xOffset, y: yOffset, scale: 0.97, filter: 'blur(6px)' }}
       whileInView={{ opacity: 1, x: 0, y: 0, scale: 1, filter: 'blur(0px)' }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ ...SPRING_PANEL, delay }}
+      transition={{ ...SPRING_PANEL, delay: 0 }}
       className={className}
     >
       {children}
@@ -51,10 +51,10 @@ export function StaggeredGrid({ children, className = '', id, staggerDelay = 0.0
     <div id={id} className={className}>
       {React.Children.map(children, (child, i) => (
         <motion.div
-          initial={shouldReduce ? false : { opacity: 0, y: 30, scale: 0.95 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          initial={shouldReduce ? false : { opacity: 0, x: 40, y: 30, scale: 0.95 }}
+          whileInView={{ opacity: 1, x: 0, y: 0, scale: 1 }}
           viewport={{ once: true, margin: '-40px' }}
-          transition={{ ...SPRING_PANEL, delay: i * staggerDelay }}
+          transition={{ ...SPRING_PANEL, delay: i * 0.03 }}
         >
           {child}
         </motion.div>

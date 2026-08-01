@@ -89,6 +89,6 @@ export function useGlassTilt<T extends HTMLElement = HTMLDivElement>(enabled = t
 }
 
 // ─── Animation Constants ───────────────────────────────────────
-export const SPRING_PANEL = { type: 'spring' as const, stiffness: 300, damping: 24, mass: 0.8 };
-export const SPRING_MODAL = { type: 'spring' as const, stiffness: 260, damping: 20, mass: 1 };
-export const SPRING_BACKDROP = { type: 'spring' as const, stiffness: 200, damping: 30 };
+export const SPRING_PANEL = { type: 'spring' as const, stiffness: 120, damping: 20, mass: 1 };
+export const SPRING_MODAL = { type: 'spring' as const, stiffness: 150, damping: 22, mass: 1 };
+export const SPRING_BACKDROP = { type: 'spring' as const, stiffness: 100, damping: 20, mass: 1 };
