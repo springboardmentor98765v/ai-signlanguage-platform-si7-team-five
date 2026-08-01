@@ -46,3 +46,7 @@
 - [x] Bulk activate/deactivate API working with list of user IDs
 - [x] CSV bulk-lesson-upload API working (using Python csv module)
 - [x] Tested with sample CSV file of 5+ lessons
+## Day 5 - Input Validation
+- [x] Input validation reviewed for all major APIs
+- [x] Tested with bad input examples (script tags, SQL-like text)
+- [x] Weak spots fixed using validation utilities

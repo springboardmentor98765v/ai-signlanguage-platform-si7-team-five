@@ -1,10 +1,11 @@
 from utils.db_connection import get_db
 from fastapi import HTTPException
-
+from utils.validation import validate_string
 # Example schema (SQLite/Postgres)
 NOTIFICATIONS = []
 
 def create_notification(user_id: int, message: str):
+    message = validate_string(message, "Notification message", max_length=200)
     notification = {
         "id": len(NOTIFICATIONS) + 1,
         "user_id": user_id,
