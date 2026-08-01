@@ -23,7 +23,7 @@ from services import admin_services
 from services import predictions
 
 from BD_Logic.main import app as bd_logic_app
-
+from utils import error_handler
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -34,7 +34,13 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+     title="Sign Language Platform",
+   
+    version="3.0.0"
+    
+    
+  )
 
 # Include course service router
 app.include_router(course_service.r, prefix="/courses", tags=["Courses"])
@@ -44,11 +50,13 @@ app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
 app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
 app.mount("/bd_logic", bd_logic_app)
 
-
+error_handler.init_error_handlers(app)
+for router in routers:
+    app.include_router(router)
 
 
 # Add CORS middleware
-app.add_middleware(
+    app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
@@ -71,6 +79,9 @@ app.include_router(health_router)
 app.include_router(user_router, prefix="/auth", tags=["Authenticate"])
 app.include_router(course_router, prefix="/courses", tags=["Courses"])
 
+@app.get("/health", tags=["System"])
+def health_check():
+    return {"status": "ok", "message": "Milestone 3 backend running"}
 
 @app.get("/")
 def root():
