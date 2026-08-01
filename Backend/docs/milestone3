@@ -36,3 +36,8 @@
 - [x] Create notification API working
 - [x] Get my notifications API working
 - [x] Mark as read API working
+## Day 3 - Event Hooks for Notifications
+- [x] Event list agreed with Intern 4 (badge earned, certificate ready, new recommendation)
+- [x] Notification-creation hook implemented
+- [x] Tested with at least 2 event types
+- [x] Notifications appear correctly when triggered

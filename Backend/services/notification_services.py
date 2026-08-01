@@ -1,4 +1,3 @@
-
 from utils.db_connection import get_db
 from fastapi import HTTPException
 
@@ -24,3 +23,7 @@ def mark_as_read(notification_id: int):
             n["read"] = True
             return {"message": "Notification marked as read"}
     raise HTTPException(status_code=404, detail="Notification not found")
+
+def notify_event(user_id: int, event_type: str):
+    from services.event_hooks import trigger_event
+    return trigger_event(user_id, event_type)
