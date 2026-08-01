@@ -17,7 +17,7 @@ from api.assessment_api import router as api_router
 from api.analytics_api import router as analytics_router
 from api.recommendation_api import router as recommendation_router
 from api.certificate_api import router as certificate_router
-
+from api.export_api import router as export_router
 from api.report_api import router as report_router
 from database.connection import Base
 from database.connection import engine
@@ -39,3 +39,4 @@ app.include_router(analytics_router, prefix="/api/v1")
 app.include_router(recommendation_router, prefix="/api/v1")
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(report_router, prefix="/api/v1")
+app.include_router(certificate_router, prefix="/api/v1")
