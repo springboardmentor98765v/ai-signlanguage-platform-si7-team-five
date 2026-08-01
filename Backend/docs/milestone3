@@ -41,3 +41,8 @@
 - [x] Notification-creation hook implemented
 - [x] Tested with at least 2 event types
 - [x] Notifications appear correctly when triggered
+
+## Day 4 - Bulk Admin Operations
+- [x] Bulk activate/deactivate API working with list of user IDs
+- [x] CSV bulk-lesson-upload API working (using Python csv module)
+- [x] Tested with sample CSV file of 5+ lessons
