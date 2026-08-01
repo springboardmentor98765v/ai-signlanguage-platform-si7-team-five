@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'motion/react';
 import {
   BookOpen, Camera, Award, Zap, ArrowRight, Play, CheckCircle,
   TrendingUp, Activity, AlertTriangle, Target, MoreVertical
@@ -95,7 +96,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
 
               <div className="relative z-10 max-w-xl">
                 <h1 id="welcome_title" className="font-bold text-[34px] tracking-tight text-white mb-3">
-                  Hello, {user.name}! <span className="inline-block hover:animate-waving-hand origin-bottom-right">👋</span>
+                  Hello, {user.name}! <img src="/signs/hello_nobg.png" alt="ASL Hello Gesture" className="inline-block h-10 w-10 ml-2 hover:animate-asl-salute transition-transform origin-bottom drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)] pb-1 pointer-events-none select-none" />
                 </h1>
                 <p className="text-[15px] text-emerald-50/90 font-medium leading-relaxed">
                   You're on a <span className="font-bold text-white">{user.streak}-day</span> streak. Keep up the momentum —<br/> practice today to maintain your progress!
@@ -142,7 +143,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
               >
                 <div className="flex flex-col">
                   <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">{stat.title}</p>
-                  <h3 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-none mt-3">{stat.value}</h3>
+                  <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-none mt-3">{stat.value}</h3>
                   <span className={`inline-flex items-center text-[11px] font-bold ${stat.iconColor} mt-2`}>
                     {stat.change}
                   </span>
@@ -268,13 +269,16 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
                 </div>
               ))}
             </div>
-            <button
+            <motion.button
               id="practice_weak_signs_btn"
               onClick={() => onNavigate('Practice')}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
               className="w-full mt-2 py-2 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition"
             >
               Practice Weak Signs →
-            </button>
+            </motion.button>
           </div>
 
           {/* Recent Activity Card */}
@@ -328,13 +332,16 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
                 </div>
               ))}
             </div>
-            <button
+            <motion.button
               id="view_all_achievements_btn"
               onClick={() => onNavigate('Profile')}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
               className="w-full py-2 text-xs font-semibold text-violet-700 bg-violet-50 hover:bg-violet-100 rounded-lg transition"
             >
               View All Achievements →
-            </button>
+            </motion.button>
           </div>
         </div>
       </CinematicSection>
@@ -410,14 +417,17 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
                 </div>
 
                 <div className="flex justify-end">
-                  <button
+                  <motion.button
                     id={`resume_lesson_${lesson.id}`}
                     onClick={() => onNavigate('Lessons', lesson)}
-                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center space-x-1"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center space-x-1 bg-emerald-50/50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg origin-right"
                   >
                     <span>{lesson.progress === 100 ? 'Review' : 'Resume'}</span>
-                    <Play className="h-2.5 w-2.5 fill-current" />
-                  </button>
+                    <Play className="h-3 w-3 fill-current" />
+                  </motion.button>
                 </div>
               </div>
             ))}

@@ -74,7 +74,7 @@ export default function LeaderboardView() {
             <Trophy className="h-3.5 w-3.5 text-amber-500" />
             <span>Global Signing Community</span>
           </div>
-          <h1 id="leaderboard_title" className="text-2xl md:text-3xl font-black text-gray-950 tracking-tight">
+          <h1 id="leaderboard_title" className="text-xl md:text-2xl font-bold text-gray-950 tracking-tight">
             Leaderboard Rankings
           </h1>
           <p className="text-sm text-gray-500 mt-1">
@@ -84,22 +84,27 @@ export default function LeaderboardView() {
 
         {/* Current User Rank Card (Quick Banner) */}
         {currentUserRank && (
-          <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-2xl shadow-md border border-emerald-400 flex items-center space-x-4 shrink-0">
-            <div className="h-12 w-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center font-black text-lg text-amber-200">
+          <motion.button 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }} 
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            className="bg-emerald-50/80 backdrop-blur-xl text-emerald-900 p-4 rounded-2xl shadow-sm border border-emerald-200 flex items-center justify-start text-left space-x-4 shrink-0 hover:bg-emerald-100 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <div className="h-12 w-12 rounded-xl bg-emerald-100 flex items-center justify-center font-black text-lg text-emerald-700 border border-emerald-200/50">
               #{currentUserRank.rank}
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xs font-bold text-emerald-100 uppercase tracking-wider">Your Rank</span>
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Your Rank</span>
                 <span className="px-1.5 py-0.2 rounded bg-amber-400 text-amber-950 text-[10px] font-black uppercase">
                   YOU
                 </span>
               </div>
-              <p className="text-sm font-extrabold text-white">
+              <p className="text-sm font-extrabold text-emerald-900">
                 {currentUserRank.points.toLocaleString()} Points • {currentUserRank.accuracy}% Acc
               </p>
             </div>
-          </div>
+          </motion.button>
         )}
       </div>
 

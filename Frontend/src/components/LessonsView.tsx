@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { Search, Filter, BookOpen, Star, Play, CheckCircle, ChevronRight, X, ArrowLeft, Camera } from 'lucide-react';
 import { Lesson, Difficulty, LessonStep } from '../types';
 import { CinematicSection, StaggeredGrid, Premium3DCard } from './CinematicMotion';
@@ -131,7 +132,7 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
 
                   {/* Demonstration Placeholder Graphic */}
                   <div className="bg-white p-6 rounded-xl border border-gray-100 flex flex-col items-center justify-center space-y-4 min-h-64 shadow-sm">
-                    <div className="h-28 w-28 rounded-full bg-emerald-50 border-2 border-dashed border-emerald-300 flex items-center justify-center text-emerald-700 font-sans font-extrabold text-4xl">
+                    <div className="min-h-[7rem] min-w-[7rem] w-fit px-6 py-4 mx-auto rounded-[3rem] bg-emerald-50 border-2 border-dashed border-emerald-300 flex items-center justify-center text-emerald-700 font-sans font-extrabold text-3xl sm:text-4xl text-center shadow-inner break-words max-w-full">
                       {activeLessonModal.steps[currentStepIndex].signSymbol}
                     </div>
                     <div className="text-center">
@@ -268,14 +269,17 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                   {/* Actions */}
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-gray-400">{lesson.steps.length} learning modules</span>
-                    <button
+                    <motion.button
                       id={`continue_btn_${lesson.id}`}
                       onClick={() => handleOpenLesson(lesson)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       aria-label={lesson.progress === 100 ? 'Review Lesson' : 'Continue Lesson'}
-                      className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition shadow-sm"
+                      className="px-4 py-2 bg-emerald-50/80 text-emerald-700 font-semibold rounded-lg hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors shadow-sm"
                     >
                       {lesson.progress === 100 ? 'Review Lesson' : 'Continue'}
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
               </Premium3DCard>

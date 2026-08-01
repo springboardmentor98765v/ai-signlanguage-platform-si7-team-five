@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { Camera, CameraOff, Play, Square, RefreshCw, AlertCircle, Sparkles, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
 import { LessonStep } from '../types';
 import { aiApiBaseUrl } from '../utils/api';
@@ -281,25 +282,31 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
             <div className="p-4 bg-white border-t border-gray-100 flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 {!isPracticing ? (
-                  <button
+                  <motion.button
                     id="start_practice_btn"
                     onClick={handleStartPractice}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     aria-label="Start Practice"
-                    className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition flex items-center space-x-2 shadow-sm"
+                    className="px-5 py-2.5 bg-emerald-50/80 text-emerald-700 text-sm font-semibold rounded-lg hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors flex items-center space-x-2 shadow-sm"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     <span>Start Practice</span>
-                  </button>
+                  </motion.button>
                 ) : (
-                  <button
+                  <motion.button
                     id="stop_practice_btn"
                     onClick={handleStopPractice}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     aria-label="Stop Practice"
-                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition flex items-center space-x-2 shadow-sm"
+                    className="px-5 py-2.5 bg-gray-100 text-gray-900 border border-gray-200 text-sm font-semibold rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-colors flex items-center space-x-2 shadow-sm"
                   >
                     <Square className="h-4 w-4" />
                     <span>Stop Practice</span>
-                  </button>
+                  </motion.button>
                 )}
               </div>
 

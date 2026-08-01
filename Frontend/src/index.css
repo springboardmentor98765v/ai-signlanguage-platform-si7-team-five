@@ -81,6 +81,23 @@
   :root {
     font-size: 15px;
   }
+  /* Custom 3D Flip */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+}
+
+/* ─── Custom ASL Keyframes ──────────────────────────────────── */
+
+@keyframes asl-salute {
+  0% { transform: rotate(0deg) translate(0px, 0px) scale(1); }
+  45% { transform: rotate(20deg) translate(6px, -4px) scale(1.05); }
+  55% { transform: rotate(20deg) translate(6px, -4px) scale(1.05); }
+  100% { transform: rotate(0deg) translate(0px, 0px) scale(1); }
+}
+
+.hover\:animate-asl-salute:hover {
+  animation: asl-salute 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
 }
 
 @media (max-width: 480px) {

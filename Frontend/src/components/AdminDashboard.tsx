@@ -128,7 +128,9 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="font-bold text-2xl text-gray-900 tracking-tight">Admin Dashboard</h1>
+          <h1 className="font-bold text-2xl text-gray-900 tracking-tight flex items-center">
+            Admin Dashboard <img src="/signs/hello_nobg.png" alt="ASL Hello Gesture" className="inline-block h-8 w-8 ml-3 hover:animate-asl-salute transition-transform origin-bottom drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)] pb-1 pointer-events-none select-none" />
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Platform-wide analytics, user management, and system configuration.</p>
         </div>
         <div className="flex gap-2">

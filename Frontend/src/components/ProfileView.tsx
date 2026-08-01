@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { motion } from 'motion/react';
 import {
   User, Shield, GraduationCap, Users, Accessibility, Check,
   Award, Camera, Lock, Eye, EyeOff, AlertCircle, Edit2, X
@@ -282,9 +283,9 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                         aria-pressed={role === r.value}
                         aria-label={`Select role ${r.label}`}
                         onClick={() => setRole(r.value)}
-                        className={`p-4 border rounded-xl flex flex-col items-center justify-center text-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ${
+                        className={`p-4 border rounded-xl flex flex-col items-center justify-center text-center focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition ${
                           role === r.value
-                            ? 'border-blue-500 bg-blue-50 text-blue-800 font-semibold shadow-sm'
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold shadow-sm'
                             : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                         }`}
                       >
@@ -300,20 +301,23 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                 </div>
 
                 <div className="pt-2 flex justify-end">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     id="profile_save_btn"
                     type="submit"
                     disabled={profileLoading}
                     aria-label="Save Profile Changes"
-                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition shadow-sm"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-emerald-50/80 hover:bg-emerald-100 disabled:opacity-60 text-emerald-700 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors shadow-sm"
                   >
                     {profileLoading ? (
-                      <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      <span className="animate-spin h-4 w-4 border-2 border-emerald-700 border-t-transparent rounded-full" />
                     ) : (
                       <Check className="h-4 w-4" />
                     )}
                     {profileLoading ? 'Saving...' : 'Save Profile'}
-                  </button>
+                  </motion.button>
                 </div>
               </form>
             </div>
@@ -445,20 +449,23 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                 )}
 
                 <div className="pt-2 flex justify-end">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     id="password_save_btn"
                     type="submit"
                     disabled={passwordLoading}
                     aria-label="Update Password"
-                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition shadow-sm"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-emerald-50/80 hover:bg-emerald-100 disabled:opacity-60 text-emerald-700 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors shadow-sm"
                   >
                     {passwordLoading ? (
-                      <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      <span className="animate-spin h-4 w-4 border-2 border-emerald-700 border-t-transparent rounded-full" />
                     ) : (
                       <Lock className="h-4 w-4" />
                     )}
                     {passwordLoading ? 'Updating...' : 'Update Password'}
-                  </button>
+                  </motion.button>
                 </div>
               </form>
             </div>
