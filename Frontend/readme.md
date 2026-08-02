@@ -1,8 +1,6 @@
-# 🤟 SignAI Learn
+# SignAI Learn
 
 > AI-Powered Sign Language Learning and Assessment Platform
-
-![Banner](public/signs/new_pedestal_peace.png)
 
 ---
 
