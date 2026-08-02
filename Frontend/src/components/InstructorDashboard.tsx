@@ -134,7 +134,8 @@ export default function InstructorDashboard() {
                 <XAxis dataKey="lesson" stroke="#9CA3AF" fontSize={10} tickLine={false} axisLine={false} />
                 <YAxis domain={[0, 100]} stroke="#9CA3AF" fontSize={10} tickLine={false} axisLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E5E7EB', fontSize: '12px' }}
+                  cursor={{ fill: 'rgba(0, 0, 0, 0.04)', rx: 8, ry: 8 }}
+                  contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: '12px', border: '1px solid rgba(0, 0, 0, 0.08)', fontSize: '12px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
                   formatter={(v: number) => [`${v}%`, 'Avg Accuracy']}
                 />
                 <Bar dataKey="avgAccuracy" fill="#2563EB" radius={[4, 4, 0, 0]} />

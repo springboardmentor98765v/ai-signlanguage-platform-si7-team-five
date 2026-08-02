@@ -199,54 +199,89 @@ export default function AchievementsDashboard() {
   const unlockedCount = badges.filter((b) => b.unlocked).length;
   const completionPercentage = badges.length ? Math.round((unlockedCount / badges.length) * 100) : 0;
 
+  // 3D glass tilt for the banner
+  const { ref: bannerRef, style: bannerTiltStyle, springLightX: bannerLightX, springLightY: bannerLightY } = useGlassTilt<HTMLDivElement>(true);
+  const bannerLightGradient = useMotionTemplate`radial-gradient(600px circle at ${bannerLightX}% ${bannerLightY}%, rgba(255,255,255,0.15) 0%, rgba(16,185,129,0.06) 30%, transparent 70%)`;
+
   return (
     <div id="achievements_dashboard_root" className="space-y-6">
-      {/* Overview Banner */}
-      <div className="bg-gradient-to-r from-emerald-600/95 via-teal-600/95 to-emerald-700/95 backdrop-blur-2xl rounded-[2rem] p-6 md:p-8 text-white shadow-premium relative overflow-hidden border border-emerald-500/30">
-        <div className="absolute right-0 top-0 -mt-10 -mr-10 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-bold text-emerald-100">
-              <Trophy className="h-3.5 w-3.5" />
-              <span>Learner Trophies & Badges</span>
-            </div>
-            <h2 className="text-xl md:text-2xl font-bold tracking-tight">Achievements Gallery</h2>
-            <p className="text-emerald-100 text-sm max-w-xl">
-              Unlock badges as you practice ASL hand gestures, maintain daily streaks, and achieve milestone speed & accuracy!
-            </p>
-          </div>
-
-          {/* Stat Pill */}
-          <div className="bg-white/15 backdrop-blur-md p-4 rounded-2xl border border-white/20 flex items-center space-x-5 shrink-0">
-            <div>
-              <span className="text-xs font-semibold text-emerald-100 uppercase tracking-wider block">
-                Total Unlocked
-              </span>
-              <span className="text-2xl font-black text-white">{unlockedCount} / {badges.length}</span>
-            </div>
-            <div className="h-10 w-px bg-white/20" />
-            <div>
-              <span className="text-xs font-semibold text-emerald-100 uppercase tracking-wider block">
-                Progress
-              </span>
-              <span className="text-2xl font-black text-emerald-200">{completionPercentage}%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Global Progress Track */}
-        <div className="mt-6 pt-4 border-t border-white/15 flex items-center space-x-3">
-          <div className="flex-1 bg-black/20 h-2.5 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${completionPercentage}%` }}
-              transition={{ duration: 1, ease: 'easeOut' }}
-              className="h-full bg-gradient-to-r from-amber-300 to-yellow-400 rounded-full"
+      {/* 3D Overview Banner */}
+      <div style={{ perspective: '1200px' }}>
+        <motion.div
+          ref={bannerRef}
+          style={{
+            ...bannerTiltStyle,
+            backgroundImage: bannerLightGradient,
+          }}
+          className="bg-white/20 backdrop-blur-2xl rounded-[2rem] p-6 md:p-8 shadow-glass relative overflow-hidden border border-white/30 transition-shadow duration-300 hover:shadow-premium"
+        >
+          {/* 3D Floating Depth Orbs */}
+          <div className="absolute inset-0 pointer-events-none" style={{ transformStyle: 'preserve-3d' }}>
+            <div
+              className="absolute -right-6 -top-6 w-48 h-48 bg-emerald-400/15 rounded-full blur-2xl"
+              style={{ transform: 'translateZ(40px)' }}
             />
+            <div
+              className="absolute -left-10 -bottom-10 w-56 h-56 bg-teal-300/10 rounded-full blur-3xl"
+              style={{ transform: 'translateZ(20px)' }}
+            />
+            <div
+              className="absolute right-1/4 top-1/3 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl"
+              style={{ transform: 'translateZ(60px)' }}
+            />
+            {/* Shimmer edge highlight */}
+            <div className="absolute inset-0 rounded-[2rem] ring-1 ring-inset ring-white/20" style={{ transform: 'translateZ(2px)' }} />
           </div>
-          <span className="text-xs font-bold text-emerald-100">{completionPercentage}% Completed</span>
-        </div>
+
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6" style={{ transformStyle: 'preserve-3d' }}>
+            <div className="space-y-2" style={{ transform: 'translateZ(30px)' }}>
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md text-xs font-bold text-emerald-700 border border-emerald-400/20">
+                <Trophy className="h-3.5 w-3.5" />
+                <span>Learner Trophies & Badges</span>
+              </div>
+              <h2 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900">Achievements Gallery</h2>
+              <p className="text-gray-600 text-sm max-w-xl">
+                Unlock badges as you practice ASL hand gestures, maintain daily streaks, and achieve milestone speed & accuracy!
+              </p>
+            </div>
+
+            {/* Stat Pill — lifted in Z-space */}
+            <div
+              className="bg-white/35 backdrop-blur-xl p-4 rounded-2xl border border-white/50 flex items-center space-x-5 shrink-0 shadow-lg"
+              style={{ transform: 'translateZ(50px)', transformStyle: 'preserve-3d' }}
+            >
+              <div>
+                <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider block">
+                  Total Unlocked
+                </span>
+                <span className="text-2xl font-black text-gray-900">{unlockedCount} / {badges.length}</span>
+              </div>
+              <div className="h-10 w-px bg-gray-300/40" />
+              <div>
+                <span className="text-xs font-semibold text-emerald-700 uppercase tracking-wider block">
+                  Progress
+                </span>
+                <span className="text-2xl font-black text-emerald-600">{completionPercentage}%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Global Progress Track — slightly lifted */}
+          <div
+            className="mt-6 pt-4 border-t border-gray-200/30 flex items-center space-x-3 relative z-10"
+            style={{ transform: 'translateZ(20px)' }}
+          >
+            <div className="flex-1 bg-gray-300/40 h-2.5 rounded-full overflow-hidden shadow-inner">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${completionPercentage}%` }}
+                transition={{ duration: 1, ease: 'easeOut' }}
+                className="h-full bg-gradient-to-r from-emerald-400 to-green-500 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.4)]"
+              />
+            </div>
+            <span className="text-xs font-bold text-emerald-700">{completionPercentage}% Completed</span>
+          </div>
+        </motion.div>
       </div>
 
       {/* Category Filter Navigation */}

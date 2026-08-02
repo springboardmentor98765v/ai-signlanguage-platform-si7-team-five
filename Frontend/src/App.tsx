@@ -44,10 +44,12 @@ export default function App() {
       .then((response) => response.json())
       .catch(() => console.warn('Backend health check unavailable'));
 
-    fetch(`${apiBaseUrl}/courses`)
+    fetch(`${apiBaseUrl}/courses?size=50`)
       .then((response) => response.json())
       .then((data) => {
-        const mappedLessons: Lesson[] = (data || []).map((item: any, index: number) => ({
+        // Exclude backend's basic 'Letter' items if they duplicate the rich mocked alphabet
+        const backendCourses = (data || []).filter((item: any) => !item.title?.startsWith('Letter '));
+        const mappedLessons: Lesson[] = backendCourses.map((item: any, index: number) => ({
           id: `lesson_${item.lesson_id ?? index}`,
           name: item.title || `Lesson ${index + 1}`,
           description: `${item.category || 'General'} lesson for practicing ${item.title || 'signs'}`,
@@ -70,7 +72,7 @@ export default function App() {
             },
           ],
         }));
-        setLessons(mappedLessons);
+        setLessons([...mockLessons, ...mappedLessons]);
       })
       .catch(() => {
         setLessons(mockLessons);
