@@ -179,9 +179,9 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
 
         {/* ──── PROFILE SECTION ──── */}
         {activeSection === 'profile' && (
-          <>
+          <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-[calc(100vh-240px)] items-start">
             {/* Left: Profile Edit Form */}
-            <div id="profile_edit_card" className="lg:col-span-7 bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-6 hover:bg-white/85 hover:shadow-premium transition-all duration-300 space-y-6">
+            <div id="profile_edit_card" className="lg:col-span-7 bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-5 hover:bg-white/85 hover:shadow-premium transition-all duration-300 space-y-5 lg:max-h-full overflow-y-auto custom-scrollbar">
               {/* Avatar Section */}
               <div className="flex items-center space-x-5 pb-5 border-b border-gray-100">
                 <div className="relative group">
@@ -323,7 +323,7 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
             </div>
 
             {/* Right: Achievements */}
-            <div className="lg:col-span-5 space-y-5">
+            <div className="lg:col-span-5 space-y-5 lg:max-h-full overflow-y-auto custom-scrollbar pr-1">
               <div id="achievements_card" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-4">
                 <h3 className="font-bold text-sm text-gray-950 uppercase tracking-wider">Achievements & Badges</h3>
                 <div className="space-y-3">
@@ -365,7 +365,7 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                 ))}
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* ──── ACHIEVEMENTS SECTION ──── */}

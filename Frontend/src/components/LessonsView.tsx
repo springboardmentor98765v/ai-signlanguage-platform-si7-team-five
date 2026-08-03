@@ -170,7 +170,7 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                   id="start_practice_for_step"
                   onClick={() => handleLaunchPractice(activeLessonModal.steps[currentStepIndex], activeLessonModal.name)}
                   aria-label="Start Live Webcam Assessment"
-                  className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition flex items-center justify-center space-x-2"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-emerald-50/70 backdrop-blur-md border border-emerald-200/50 text-emerald-600 text-xs font-bold rounded-lg hover:bg-emerald-100/90 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition flex items-center justify-center space-x-2"
                 >
                   <Camera className="h-4 w-4" />
                   <span>Start Live Webcam Assessment</span>

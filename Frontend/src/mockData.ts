@@ -30,18 +30,68 @@ export const mockLessons: Lesson[] = [
     ]
   },
   {
-    id: 'les_2',
-    name: 'Essential Social Greetings',
-    description: 'Master polite gestures to start and end conversations in the Deaf and Hard-of-Hearing community.',
+    id: 'les_7',
+    name: 'ASL Alphabet: Letters F-J',
+    description: 'Continue learning the foundational handshapes for the letters F through J of the ASL alphabet.',
     difficulty: 'Beginner',
-    category: 'Phrases',
-    progress: 60,
-    duration: '15 mins',
+    category: 'Alphabet',
+    progress: 0,
+    duration: '10 mins',
     steps: [
-      { id: 'les_2_s1', title: 'Hello', description: 'Bring your dominant hand to your forehead, slightly above your temple, and salute outwards with palm facing forward.', signSymbol: 'HELLO' },
-      { id: 'les_2_s2', title: 'Thank You', description: 'Touch the fingertips of your flat dominant hand to your lips, then move your hand down and forward toward the person.', signSymbol: 'THANK YOU' },
-      { id: 'les_2_s3', title: 'Please', description: 'Place your flat dominant hand on the center of your chest and rub it in a circular motion clockwise a couple of times.', signSymbol: 'PLEASE' },
-      { id: 'les_2_s4', title: 'Goodbye', description: 'Raise your hand to about shoulder height, palm facing forward, and wave your fingers up and down together.', signSymbol: 'GOODBYE' },
+      { id: 'les_7_s1', title: 'Letter F', description: 'Touch index finger and thumb together, extending your other three fingers up and slightly apart.', signSymbol: 'F' },
+      { id: 'les_7_s2', title: 'Letter G', description: 'Extend index finger pointing to the side, with the thumb parallel underneath. Hand is sideways.', signSymbol: 'G' },
+      { id: 'les_7_s3', title: 'Letter H', description: 'Extend both index and middle fingers point to the side, thumb tucked alongside. Hand is sideways.', signSymbol: 'H' },
+      { id: 'les_7_s4', title: 'Letter I', description: 'Close your hand into a fist, but keep your pinky finger extended straight up.', signSymbol: 'I' },
+      { id: 'les_7_s5', title: 'Letter J', description: 'Start with the I handshape (pinky extended), then trace a "J" shape in the air downward and curving outward.', signSymbol: 'J' },
+    ]
+  },
+  {
+    id: 'les_8',
+    name: 'ASL Alphabet: Letters K-O',
+    description: 'Master the ASL alphabet handshapes for the letters K through O.',
+    difficulty: 'Beginner',
+    category: 'Alphabet',
+    progress: 0,
+    duration: '10 mins',
+    steps: [
+      { id: 'les_8_s1', title: 'Letter K', description: 'Extend index and middle fingers straight up with space between them. Rest your thumb on the middle joint of the middle finger.', signSymbol: 'K' },
+      { id: 'les_8_s2', title: 'Letter L', description: 'Extend index finger straight up and thumb straight out to the side, forming an "L" shape. Other fingers curled inward.', signSymbol: 'L' },
+      { id: 'les_8_s3', title: 'Letter M', description: 'Make a fist and tuck your thumb beneath your first three fingers (index, middle, ring).', signSymbol: 'M' },
+      { id: 'les_8_s4', title: 'Letter N', description: 'Make a fist and tuck your thumb beneath your first two fingers (index, middle).', signSymbol: 'N' },
+      { id: 'les_8_s5', title: 'Letter O', description: 'Curve all fingers inward and touch them against the tip of your thumb to form an "O" shape.', signSymbol: 'O' },
+    ]
+  },
+  {
+    id: 'les_9',
+    name: 'ASL Alphabet: Letters P-T',
+    description: 'Learn the handshapes for the letters P through T of the American Sign Language alphabet.',
+    difficulty: 'Beginner',
+    category: 'Alphabet',
+    progress: 0,
+    duration: '10 mins',
+    steps: [
+      { id: 'les_9_s1', title: 'Letter P', description: 'Point your index finger forward, drop your middle finger straight down, and place your thumb between them. Like an upside-down K.', signSymbol: 'P' },
+      { id: 'les_9_s2', title: 'Letter Q', description: 'Point your thumb and index finger downward, roughly parallel. Hand is sideways. Like an upside-down G.', signSymbol: 'Q' },
+      { id: 'les_9_s3', title: 'Letter R', description: 'Cross your middle finger tightly over the back of your index finger. Other fingers are tucked into the palm.', signSymbol: 'R' },
+      { id: 'les_9_s4', title: 'Letter S', description: 'Make a tight fist, and wrap your thumb completely across the front of your curled fingers.', signSymbol: 'S' },
+      { id: 'les_9_s5', title: 'Letter T', description: 'Make a fist and tuck your thumb underneath just your index finger.', signSymbol: 'T' },
+    ]
+  },
+  {
+    id: 'les_10',
+    name: 'ASL Alphabet: Letters U-Z',
+    description: 'Finish the ASL alphabet with the handshapes for the final letters U through Z.',
+    difficulty: 'Beginner',
+    category: 'Alphabet',
+    progress: 0,
+    duration: '12 mins',
+    steps: [
+      { id: 'les_10_s1', title: 'Letter U', description: 'Extend your index and middle fingers straight up, keeping them pressed tightly together.', signSymbol: 'U' },
+      { id: 'les_10_s2', title: 'Letter V', description: 'Extend your index and middle fingers straight up, but spread them apart into a "V" shape.', signSymbol: 'V' },
+      { id: 'les_10_s3', title: 'Letter W', description: 'Extend your index, middle, and ring fingers straight up and spread them apart. Your thumb holds down your pinky.', signSymbol: 'W' },
+      { id: 'les_10_s4', title: 'Letter X', description: 'Curl your hand into a fist, but keep your index finger slightly raised and bent to form a hook shape.', signSymbol: 'X' },
+      { id: 'les_10_s5', title: 'Letter Y', description: 'Extend your thumb and pinky finger outward as far as possible, with your other three fingers curled into your palm.', signSymbol: 'Y' },
+      { id: 'les_10_s6', title: 'Letter Z', description: 'Extend only your index finger and use it to trace the shape of the letter "Z" in the air.', signSymbol: 'Z' },
     ]
   },
   {
@@ -58,6 +108,21 @@ export const mockLessons: Lesson[] = [
       { id: 'les_3_s3', title: 'Number 3', description: 'Palm faces backward. Raise your thumb, index finger, and middle finger.', signSymbol: '3' },
       { id: 'les_3_s4', title: 'Number 4', description: 'Palm faces backward. Raise index, middle, ring, and pinky fingers, keeping thumb tucked.', signSymbol: '4' },
       { id: 'les_3_s5', title: 'Number 5', description: 'Palm faces backward. Open your entire hand with all fingers and thumb spread out.', signSymbol: '5' },
+    ]
+  },
+  {
+    id: 'les_2',
+    name: 'Essential Social Greetings',
+    description: 'Master polite gestures to start and end conversations in the Deaf and Hard-of-Hearing community.',
+    difficulty: 'Beginner',
+    category: 'Phrases',
+    progress: 60,
+    duration: '15 mins',
+    steps: [
+      { id: 'les_2_s1', title: 'Hello', description: 'Bring your dominant hand to your forehead, slightly above your temple, and salute outwards with palm facing forward.', signSymbol: 'HELLO' },
+      { id: 'les_2_s2', title: 'Thank You', description: 'Touch the fingertips of your flat dominant hand to your lips, then move your hand down and forward toward the person.', signSymbol: 'THANK YOU' },
+      { id: 'les_2_s3', title: 'Please', description: 'Place your flat dominant hand on the center of your chest and rub it in a circular motion clockwise a couple of times.', signSymbol: 'PLEASE' },
+      { id: 'les_2_s4', title: 'Goodbye', description: 'Raise your hand to about shoulder height, palm facing forward, and wave your fingers up and down together.', signSymbol: 'GOODBYE' },
     ]
   },
   {

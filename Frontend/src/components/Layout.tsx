@@ -35,6 +35,7 @@ interface LayoutProps {
 
 export default function Layout({ activeTab, onTabChange, user, onLogout, children }: LayoutProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -115,9 +116,9 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
     <>
       <div className="space-y-6 pt-6 flex-1 flex flex-col">
         {/* Logo / Brand */}
-        <div className="px-6 flex items-center space-x-2 text-emerald-600">
-          <ShieldCheck className="h-8 w-8 text-emerald-600" />
-          <span className="font-sans font-bold text-lg tracking-tight text-gray-900">SignAI Learn</span>
+        <div className={`px-6 flex items-center ${isSidebarCollapsed ? 'justify-center px-0' : 'space-x-2'} text-emerald-600 transition-all duration-300 overflow-hidden`}>
+          <ShieldCheck className="h-8 w-8 text-emerald-600 shrink-0" />
+          <span className={`font-sans font-bold text-lg tracking-tight text-gray-900 whitespace-nowrap transition-all duration-300 ${isSidebarCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>SignAI Learn</span>
         </div>
 
         {/* Navigation Links */}
@@ -132,7 +133,7 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
                 onClick={() => handleNavClick(item.name)}
                 whileHover={{ x: isActive ? 0 : 4 }}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full flex items-center space-x-4 px-4 py-3.5 rounded-[1.25rem] text-[15px] font-bold transition-all duration-300 relative ${
+                className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center space-x-0 px-2' : 'space-x-4 px-4'} py-3.5 rounded-[1.25rem] text-[15px] font-bold transition-all duration-300 relative ${
                   isActive
                     ? 'bg-gradient-to-r from-emerald-500/10 to-emerald-400/5 backdrop-blur-xl text-emerald-700 shadow-[inset_0_1px_1px_rgba(255,255,255,0.8),_0_8px_16px_-4px_rgba(16,185,129,0.15)] border border-emerald-200/50'
                     : 'text-gray-500 hover:bg-white/40 border border-transparent hover:border-white/50'
@@ -141,8 +142,8 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
                 {isActive && (
                   <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-emerald-500 rounded-r-full shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
                 )}
-                <IconComponent className={`h-[22px] w-[22px] transition-transform duration-300 stroke-[2px] ${isActive ? 'text-emerald-500 drop-shadow-[0_2px_4px_rgba(16,185,129,0.4)]' : 'text-gray-400'}`} />
-                <span>{item.name}</span>
+                <IconComponent className={`h-[22px] w-[22px] shrink-0 transition-transform duration-300 stroke-[2px] ${isActive ? 'text-emerald-500 drop-shadow-[0_2px_4px_rgba(16,185,129,0.4)]' : 'text-gray-400'}`} />
+                <span className={`whitespace-nowrap transition-all duration-300 ${isSidebarCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}`}>{item.name}</span>
               </motion.button>
             );
           })}
@@ -150,12 +151,12 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
       </div>
 
       {/* Sidebar Footer */}
-      <div id="desktop_sidebar_footer" className="p-6 border-t border-white/20 mt-auto bg-gradient-to-t from-white/30 to-transparent">
-        <div className="flex items-center space-x-3 p-3 bg-white/70 backdrop-blur-xl rounded-2xl border border-white/80 shadow-[0_8px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all cursor-pointer">
+      <div id="desktop_sidebar_footer" className={`p-6 border-t border-white/20 mt-auto bg-gradient-to-t from-white/30 to-transparent transition-all duration-300 ${isSidebarCollapsed ? 'px-3' : ''}`}>
+        <div className={`flex items-center space-x-3 p-3 bg-white/70 backdrop-blur-xl rounded-2xl border border-white/80 shadow-[0_8px_24px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all cursor-pointer ${isSidebarCollapsed ? 'justify-center space-x-0 px-0' : ''}`}>
           <div className="h-10 w-10 rounded-full bg-emerald-50 border border-emerald-100/50 text-emerald-600 font-bold flex items-center justify-center text-sm uppercase shrink-0">
             {user.name.substring(0, 2)}
           </div>
-          <div className="min-w-0 flex-1">
+          <div className={`min-w-0 flex-1 transition-all duration-300 ${isSidebarCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}`}>
             <p className="text-[13px] font-bold text-gray-900 truncate tracking-tight">{user.name}</p>
             <div className="flex items-center space-x-1 mt-0.5">
               <span className="text-emerald-500 shrink-0">{getRoleIcon(user.role)}</span>
@@ -169,10 +170,10 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
           onClick={onLogout}
           whileHover={{ scale: 1.02, backgroundColor: 'rgba(254,226,226,0.5)' }}
           whileTap={{ scale: 0.98 }}
-          className="w-full flex items-center space-x-3 px-4 py-2.5 rounded-xl text-xs font-bold text-gray-500 hover:text-red-600 border border-transparent hover:border-red-100 transition-colors"
+          className={`w-full flex mt-4 items-center ${isSidebarCollapsed ? 'justify-center space-x-0' : 'space-x-3 px-4'} py-2.5 rounded-xl text-xs font-bold text-gray-500 hover:text-red-600 border border-transparent hover:border-red-100 transition-colors`}
         >
-          <LogOut className="h-4.5 w-4.5" />
-          <span>Sign Out</span>
+          <LogOut className="h-4.5 w-4.5 shrink-0" />
+          <span className={`whitespace-nowrap transition-all duration-300 ${isSidebarCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}`}>Sign Out</span>
         </motion.button>
       </div>
     </>
@@ -197,12 +198,14 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
       {/* ========================================== */}
       {/* DESKTOP SIDEBAR - PERSISTENT LEFT SIDEBAR   */}
       {/* ========================================== */}
-      <aside 
+      <motion.aside 
         id="desktop_sidebar" 
-        className="hidden md:flex flex-col w-[260px] bg-white/40 backdrop-blur-3xl border-r border-white/50 flex-shrink-0 justify-between h-screen sticky top-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 overflow-visible"
+        animate={{ width: isSidebarCollapsed ? 88 : 260 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="hidden md:flex flex-col bg-white/40 backdrop-blur-3xl border-r border-white/50 flex-shrink-0 justify-between h-screen sticky top-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 overflow-hidden"
       >
         <SidebarContent />
-      </aside>
+      </motion.aside>
 
       {/* ========================================== */}
       {/* MOBILE DRAWER / SIDEBAR (COLLAPSIBLE OVERLAY) */}
@@ -323,6 +326,13 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
               id="mobile_drawer_toggle"
               onClick={() => setIsMobileOpen(true)}
               className="md:hidden p-2 text-gray-500 hover:text-gray-900"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <button
+              id="desktop_sidebar_toggle"
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="hidden md:block p-2 text-gray-500 hover:text-gray-900 bg-white/60 backdrop-blur-md rounded-lg shadow-sm border border-gray-100 transition hover:bg-white"
             >
               <Menu className="h-5 w-5" />
             </button>
