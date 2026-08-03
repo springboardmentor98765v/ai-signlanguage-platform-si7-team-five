@@ -30,18 +30,68 @@ export const mockLessons: Lesson[] = [
     ]
   },
   {
-    id: 'les_2',
-    name: 'Essential Social Greetings',
-    description: 'Master polite gestures to start and end conversations in the Deaf and Hard-of-Hearing community.',
+    id: 'les_7',
+    name: 'ASL Alphabet: Letters F-J',
+    description: 'Continue learning the foundational handshapes for the letters F through J of the ASL alphabet.',
     difficulty: 'Beginner',
-    category: 'Phrases',
-    progress: 60,
-    duration: '15 mins',
+    category: 'Alphabet',
+    progress: 0,
+    duration: '10 mins',
     steps: [
-      { id: 'les_2_s1', title: 'Hello', description: 'Bring your dominant hand to your forehead, slightly above your temple, and salute outwards with palm facing forward.', signSymbol: 'HELLO' },
-      { id: 'les_2_s2', title: 'Thank You', description: 'Touch the fingertips of your flat dominant hand to your lips, then move your hand down and forward toward the person.', signSymbol: 'THANK YOU' },
-      { id: 'les_2_s3', title: 'Please', description: 'Place your flat dominant hand on the center of your chest and rub it in a circular motion clockwise a couple of times.', signSymbol: 'PLEASE' },
-      { id: 'les_2_s4', title: 'Goodbye', description: 'Raise your hand to about shoulder height, palm facing forward, and wave your fingers up and down together.', signSymbol: 'GOODBYE' },
+      { id: 'les_7_s1', title: 'Letter F', description: 'Touch index finger and thumb together, extending your other three fingers up and slightly apart.', signSymbol: 'F' },
+      { id: 'les_7_s2', title: 'Letter G', description: 'Extend index finger pointing to the side, with the thumb parallel underneath. Hand is sideways.', signSymbol: 'G' },
+      { id: 'les_7_s3', title: 'Letter H', description: 'Extend both index and middle fingers point to the side, thumb tucked alongside. Hand is sideways.', signSymbol: 'H' },
+      { id: 'les_7_s4', title: 'Letter I', description: 'Close your hand into a fist, but keep your pinky finger extended straight up.', signSymbol: 'I' },
+      { id: 'les_7_s5', title: 'Letter J', description: 'Start with the I handshape (pinky extended), then trace a "J" shape in the air downward and curving outward.', signSymbol: 'J' },
+    ]
+  },
+  {
+    id: 'les_8',
+    name: 'ASL Alphabet: Letters K-O',
+    description: 'Master the ASL alphabet handshapes for the letters K through O.',
+    difficulty: 'Beginner',
+    category: 'Alphabet',
+    progress: 0,
+    duration: '10 mins',
+    steps: [
+      { id: 'les_8_s1', title: 'Letter K', description: 'Extend index and middle fingers straight up with space between them. Rest your thumb on the middle joint of the middle finger.', signSymbol: 'K' },
+      { id: 'les_8_s2', title: 'Letter L', description: 'Extend index finger straight up and thumb straight out to the side, forming an "L" shape. Other fingers curled inward.', signSymbol: 'L' },
+      { id: 'les_8_s3', title: 'Letter M', description: 'Make a fist and tuck your thumb beneath your first three fingers (index, middle, ring).', signSymbol: 'M' },
+      { id: 'les_8_s4', title: 'Letter N', description: 'Make a fist and tuck your thumb beneath your first two fingers (index, middle).', signSymbol: 'N' },
+      { id: 'les_8_s5', title: 'Letter O', description: 'Curve all fingers inward and touch them against the tip of your thumb to form an "O" shape.', signSymbol: 'O' },
+    ]
+  },
+  {
+    id: 'les_9',
+    name: 'ASL Alphabet: Letters P-T',
+    description: 'Learn the handshapes for the letters P through T of the American Sign Language alphabet.',
+    difficulty: 'Beginner',
+    category: 'Alphabet',
+    progress: 0,
+    duration: '10 mins',
+    steps: [
+      { id: 'les_9_s1', title: 'Letter P', description: 'Point your index finger forward, drop your middle finger straight down, and place your thumb between them. Like an upside-down K.', signSymbol: 'P' },
+      { id: 'les_9_s2', title: 'Letter Q', description: 'Point your thumb and index finger downward, roughly parallel. Hand is sideways. Like an upside-down G.', signSymbol: 'Q' },
+      { id: 'les_9_s3', title: 'Letter R', description: 'Cross your middle finger tightly over the back of your index finger. Other fingers are tucked into the palm.', signSymbol: 'R' },
+      { id: 'les_9_s4', title: 'Letter S', description: 'Make a tight fist, and wrap your thumb completely across the front of your curled fingers.', signSymbol: 'S' },
+      { id: 'les_9_s5', title: 'Letter T', description: 'Make a fist and tuck your thumb underneath just your index finger.', signSymbol: 'T' },
+    ]
+  },
+  {
+    id: 'les_10',
+    name: 'ASL Alphabet: Letters U-Z',
+    description: 'Finish the ASL alphabet with the handshapes for the final letters U through Z.',
+    difficulty: 'Beginner',
+    category: 'Alphabet',
+    progress: 0,
+    duration: '12 mins',
+    steps: [
+      { id: 'les_10_s1', title: 'Letter U', description: 'Extend your index and middle fingers straight up, keeping them pressed tightly together.', signSymbol: 'U' },
+      { id: 'les_10_s2', title: 'Letter V', description: 'Extend your index and middle fingers straight up, but spread them apart into a "V" shape.', signSymbol: 'V' },
+      { id: 'les_10_s3', title: 'Letter W', description: 'Extend your index, middle, and ring fingers straight up and spread them apart. Your thumb holds down your pinky.', signSymbol: 'W' },
+      { id: 'les_10_s4', title: 'Letter X', description: 'Curl your hand into a fist, but keep your index finger slightly raised and bent to form a hook shape.', signSymbol: 'X' },
+      { id: 'les_10_s5', title: 'Letter Y', description: 'Extend your thumb and pinky finger outward as far as possible, with your other three fingers curled into your palm.', signSymbol: 'Y' },
+      { id: 'les_10_s6', title: 'Letter Z', description: 'Extend only your index finger and use it to trace the shape of the letter "Z" in the air.', signSymbol: 'Z' },
     ]
   },
   {
@@ -58,6 +108,21 @@ export const mockLessons: Lesson[] = [
       { id: 'les_3_s3', title: 'Number 3', description: 'Palm faces backward. Raise your thumb, index finger, and middle finger.', signSymbol: '3' },
       { id: 'les_3_s4', title: 'Number 4', description: 'Palm faces backward. Raise index, middle, ring, and pinky fingers, keeping thumb tucked.', signSymbol: '4' },
       { id: 'les_3_s5', title: 'Number 5', description: 'Palm faces backward. Open your entire hand with all fingers and thumb spread out.', signSymbol: '5' },
+    ]
+  },
+  {
+    id: 'les_2',
+    name: 'Essential Social Greetings',
+    description: 'Master polite gestures to start and end conversations in the Deaf and Hard-of-Hearing community.',
+    difficulty: 'Beginner',
+    category: 'Phrases',
+    progress: 60,
+    duration: '15 mins',
+    steps: [
+      { id: 'les_2_s1', title: 'Hello', description: 'Bring your dominant hand to your forehead, slightly above your temple, and salute outwards with palm facing forward.', signSymbol: 'HELLO' },
+      { id: 'les_2_s2', title: 'Thank You', description: 'Touch the fingertips of your flat dominant hand to your lips, then move your hand down and forward toward the person.', signSymbol: 'THANK YOU' },
+      { id: 'les_2_s3', title: 'Please', description: 'Place your flat dominant hand on the center of your chest and rub it in a circular motion clockwise a couple of times.', signSymbol: 'PLEASE' },
+      { id: 'les_2_s4', title: 'Goodbye', description: 'Raise your hand to about shoulder height, palm facing forward, and wave your fingers up and down together.', signSymbol: 'GOODBYE' },
     ]
   },
   {
@@ -331,3 +396,276 @@ export const mockAchievements = [
   { id: 'ach_4', emoji: '💬', title: 'Social Signer',      desc: 'Perfect score on Greetings',    unlocked: false },
   { id: 'ach_5', emoji: '⚡', title: 'Speed Learner',      desc: 'Finish 3 lessons in one day',   unlocked: false },
 ];
+
+// =============================================
+// MILESTONE 3 MOCK DATASETS
+// =============================================
+import { NotificationItem, AchievementBadge, LeaderboardUser, StreakDetails } from './types';
+
+export const mockNotifications: NotificationItem[] = [
+  {
+    id: 'notif_1',
+    title: 'Streak Level Up! 🔥',
+    message: 'Congratulations! You reached a 5-day signing streak. Keep the momentum going!',
+    timestamp: '10 mins ago',
+    read: false,
+    type: 'streak',
+    actionUrl: 'Dashboard'
+  },
+  {
+    id: 'notif_2',
+    title: 'Badge Unlocked: Alphabet Master 🎓',
+    message: 'You scored 94% on ASL Alphabet: Letters A-E and unlocked a new achievement badge.',
+    timestamp: '2 hours ago',
+    read: false,
+    type: 'achievement',
+    actionUrl: 'Reports'
+  },
+  {
+    id: 'notif_3',
+    title: 'New Lesson Available 📚',
+    message: 'Emergency Phrase Signing module is now live with real-time AI computer vision feedback.',
+    timestamp: '1 day ago',
+    read: false,
+    type: 'lesson',
+    actionUrl: 'Lessons'
+  },
+  {
+    id: 'notif_4',
+    title: 'Weekly Performance Summary Ready 📊',
+    message: 'Your average signing accuracy improved by +6% this week across 42 practice sessions.',
+    timestamp: '2 days ago',
+    read: true,
+    type: 'system',
+    actionUrl: 'Reports'
+  },
+  {
+    id: 'notif_5',
+    title: 'Leaderboard Ranking Update 🏆',
+    message: 'You climbed to Rank #4 on the global weekly leaderboard with 1,840 XP points!',
+    timestamp: '3 days ago',
+    read: true,
+    type: 'achievement',
+    actionUrl: 'Leaderboard'
+  }
+];
+
+export const mockDetailedBadges: AchievementBadge[] = [
+  {
+    id: 'badge_1',
+    title: 'First Sign Gesture',
+    description: 'Complete your first live camera AI practice session with 80%+ accuracy.',
+    category: 'Beginner',
+    iconName: 'Sparkles',
+    unlocked: true,
+    unlockedAt: '2026-07-01',
+    progress: 100,
+    totalRequired: 1,
+    currentCount: 1
+  },
+  {
+    id: 'badge_2',
+    title: '5-Day Streak Flame',
+    description: 'Maintain a continuous 5-day daily signing practice streak.',
+    category: 'Consistency',
+    iconName: 'Flame',
+    unlocked: true,
+    unlockedAt: '2026-07-05',
+    progress: 100,
+    totalRequired: 5,
+    currentCount: 5
+  },
+  {
+    id: 'badge_3',
+    title: 'Alphabet Master',
+    description: 'Master the ASL alphabet letters A through E with 90%+ average accuracy score.',
+    category: 'Mastery',
+    iconName: 'Award',
+    unlocked: true,
+    unlockedAt: '2026-07-06',
+    progress: 100,
+    totalRequired: 5,
+    currentCount: 5
+  },
+  {
+    id: 'badge_4',
+    title: 'Vision AI Hero',
+    description: 'Complete 25 live camera AI assessment sessions with instant keypoint validation.',
+    category: 'Speed',
+    iconName: 'Zap',
+    unlocked: true,
+    unlockedAt: '2026-07-10',
+    progress: 100,
+    totalRequired: 25,
+    currentCount: 25
+  },
+  {
+    id: 'badge_5',
+    title: 'Social Greeting Champion',
+    description: 'Achieve a 95%+ score on all Social Greetings module practice steps.',
+    category: 'Mastery',
+    iconName: 'MessageSquare',
+    unlocked: false,
+    progress: 75,
+    totalRequired: 4,
+    currentCount: 3
+  },
+  {
+    id: 'badge_6',
+    title: 'Number Ninja 1-10',
+    description: 'Accurately complete all number handshapes 1 through 10 in under 3 minutes.',
+    category: 'Speed',
+    iconName: 'Target',
+    unlocked: false,
+    progress: 50,
+    totalRequired: 10,
+    currentCount: 5
+  },
+  {
+    id: 'badge_7',
+    title: '30-Day Signing Legend',
+    description: 'Maintain a 30-day active daily practice streak without missing a day.',
+    category: 'Consistency',
+    iconName: 'Crown',
+    unlocked: false,
+    progress: 16,
+    totalRequired: 30,
+    currentCount: 5
+  },
+  {
+    id: 'badge_8',
+    title: 'Emergency Responder',
+    description: 'Pass all Emergency Phrase Signing hand gesture assessments on the first attempt.',
+    category: 'Special',
+    iconName: 'ShieldAlert',
+    unlocked: false,
+    progress: 0,
+    totalRequired: 4,
+    currentCount: 0
+  }
+];
+
+export const mockStreakDetails: StreakDetails = {
+  currentStreak: 5,
+  longestStreak: 12,
+  todayCompleted: true,
+  nextMilestoneDays: 7,
+  nextMilestoneReward: '7-Day Silver Flame Badge & +100 Bonus XP',
+  weeklyCalendar: [
+    { dayName: 'Mon', dateStr: '2026-07-27', completed: true, isToday: false },
+    { dayName: 'Tue', dateStr: '2026-07-28', completed: true, isToday: false },
+    { dayName: 'Wed', dateStr: '2026-07-29', completed: true, isToday: false },
+    { dayName: 'Thu', dateStr: '2026-07-30', completed: true, isToday: false },
+    { dayName: 'Fri', dateStr: '2026-07-31', completed: true, isToday: true },
+    { dayName: 'Sat', dateStr: '2026-08-01', completed: false, isToday: false },
+    { dayName: 'Sun', dateStr: '2026-08-02', completed: false, isToday: false },
+  ]
+};
+
+export const mockLeaderboardUsers: LeaderboardUser[] = [
+  {
+    id: 'lb_1',
+    rank: 1,
+    name: 'Grace Lee',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 96,
+    streak: 15,
+    lessonsCompleted: 16,
+    badgesCount: 12,
+    points: 2480,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_2',
+    rank: 2,
+    name: 'Alice Johnson',
+    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 94,
+    streak: 14,
+    lessonsCompleted: 14,
+    badgesCount: 10,
+    points: 2210,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_3',
+    rank: 3,
+    name: 'David Kim',
+    avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 91,
+    streak: 12,
+    lessonsCompleted: 18,
+    badgesCount: 9,
+    points: 2050,
+    isCurrentUser: false
+  },
+  {
+    id: 'usr_1', // Matches mockUser
+    rank: 4,
+    name: 'Jane Doe',
+    avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 88,
+    streak: 5,
+    lessonsCompleted: 12,
+    badgesCount: 4,
+    points: 1840,
+    isCurrentUser: true
+  },
+  {
+    id: 'lb_5',
+    rank: 5,
+    name: 'Bob Martinez',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 82,
+    streak: 5,
+    lessonsCompleted: 10,
+    badgesCount: 6,
+    points: 1620,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_6',
+    rank: 6,
+    name: 'Frank Brown',
+    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 79,
+    streak: 4,
+    lessonsCompleted: 11,
+    badgesCount: 5,
+    points: 1450,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_7',
+    rank: 7,
+    name: 'Carol White',
+    avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 67,
+    streak: 2,
+    lessonsCompleted: 7,
+    badgesCount: 3,
+    points: 980,
+    isCurrentUser: false
+  },
+  {
+    id: 'lb_8',
+    rank: 8,
+    name: 'Henry Clark',
+    avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=120',
+    role: 'Learner',
+    accuracy: 62,
+    streak: 0,
+    lessonsCompleted: 3,
+    badgesCount: 1,
+    points: 420,
+    isCurrentUser: false
+  }
+];
+

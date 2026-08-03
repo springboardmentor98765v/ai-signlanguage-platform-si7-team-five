@@ -1,6 +1,13 @@
+import os
+import sys
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+# Ensure Backend package imports work regardless of current working directory.
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, backend_dir)
+sys.path.insert(0, os.path.dirname(backend_dir))
+
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from routers.health import health_router
 from routers.users import r as user_router
@@ -15,8 +22,15 @@ from services import course_service
 from services import user_services
 from services import instructor_service
 from services import admin_services
+<<<<<<< HEAD
 from services import business_logic_service
 
+=======
+from services import predictions
+from api_gateway import routers as gateway_routers
+from BD_Logic.main import app as bd_logic_app
+from utils import error_handdler
+>>>>>>> 21c5eb5b19ee300388e8637d0a490c6f68cf9a2c
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,20 +41,34 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+     title="Sign Language Platform",
+   
+    version="3.0.0"
+    
+    
+  )
 
 # Include course service router
-app.include_router(course_service.r, prefix="/courses", tags=["Courses"])
+app.include_router(course_service.r, prefix="/lessons", tags=["Lessons"])
 app.include_router(user_services.r, prefix="/auth", tags=["Authenticate"])
 app.include_router(instructor_service.r, prefix="/instructors", tags=["Instructors"])
 app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
+<<<<<<< HEAD
 app.include_router(business_logic_service.r, prefix="/business", tags=["Business Logic"])
 app.include_router(notification_router, prefix="/notifications", tags=["Notifications"])
+=======
+app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
+app.mount("/bd_logic", bd_logic_app)
+>>>>>>> 21c5eb5b19ee300388e8637d0a490c6f68cf9a2c
 
+error_handdler.init_error_handlers(app)
+for router in gateway_routers:
+    app.include_router(router)
 
 
 # Add CORS middleware
-app.add_middleware(
+    app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",
@@ -61,12 +89,19 @@ async def rate_limit_middleware(request: Request, call_next):
 
 app.include_router(health_router)
 app.include_router(user_router, prefix="/auth", tags=["Authenticate"])
-app.include_router(course_router, prefix="/courses", tags=["Courses"])
+app.include_router(course_router, prefix="/lessons", tags=["Lessons"])
 
+@app.get("/health", tags=["System"])
+def health_check():
+    return {"status": "ok", "message": "Milestone 3 backend running"}
 
 @app.get("/")
 def root():
     return {"message": "Backend skeleton running"}
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return Response(status_code=204)
 
 
 if __name__ == "__main__":

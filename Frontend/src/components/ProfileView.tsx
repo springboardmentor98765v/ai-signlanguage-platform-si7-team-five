@@ -1,17 +1,21 @@
 import React, { useState, useRef } from 'react';
+import { motion } from 'motion/react';
 import {
   User, Shield, GraduationCap, Users, Accessibility, Check,
   Award, Camera, Lock, Eye, EyeOff, AlertCircle, Edit2, X
 } from 'lucide-react';
 import { User as UserType, UserRole } from '../types';
 import { mockAchievements } from '../mockData';
+import { CinematicSection } from './CinematicMotion';
 
 interface ProfileViewProps {
   user: UserType;
   onUpdateProfile: (updates: Partial<UserType>) => void;
 }
 
-type ActiveSection = 'profile' | 'password';
+import AchievementsDashboard from './AchievementsDashboard';
+
+type ActiveSection = 'profile' | 'achievements' | 'password';
 
 export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps) {
   // -- Profile Form State --
@@ -125,7 +129,7 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
           className={`block w-full pl-9 pr-10 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition ${error ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'}`}
           placeholder="••••••••"
         />
-        <button type="button" onClick={toggleShow} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+        <button type="button" onClick={toggleShow} aria-label={show ? 'Hide Password' : 'Show Password'} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:text-blue-500 rounded p-1">
           {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         </button>
       </div>
@@ -138,7 +142,7 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
   );
 
   return (
-    <div id="profile_view" className="space-y-6">
+    <CinematicSection delay={0.05} xOffset={80} yOffset={60} id="profile_view" className="space-y-6">
       {/* Header */}
       <div>
         <h1 id="profile_header_title" className="font-bold text-2xl text-gray-950 tracking-tight">Account Settings</h1>
@@ -146,18 +150,22 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
       </div>
 
       {/* Section Tabs */}
-      <div className="flex border-b border-gray-200 gap-1">
+      <div className="flex border-b border-gray-200 gap-1 overflow-x-auto">
         {([
           { id: 'profile' as ActiveSection, label: 'Profile Information', icon: <User className="h-4 w-4" /> },
+          { id: 'achievements' as ActiveSection, label: 'Achievements Gallery', icon: <Award className="h-4 w-4" /> },
           { id: 'password' as ActiveSection, label: 'Change Password', icon: <Lock className="h-4 w-4" /> },
         ]).map((tab) => (
           <button
             key={tab.id}
             id={`profile_tab_${tab.id}`}
+            role="tab"
+            aria-selected={activeSection === tab.id}
+            aria-label={tab.label}
             onClick={() => setActiveSection(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold transition border-b-2 -mb-px ${
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold transition border-b-2 -mb-px whitespace-nowrap focus:outline-none focus:bg-gray-50 rounded-t-lg ${
               activeSection === tab.id
-                ? 'border-blue-600 text-blue-600'
+                ? 'border-emerald-600 text-emerald-600 font-bold'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -171,9 +179,9 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
 
         {/* ──── PROFILE SECTION ──── */}
         {activeSection === 'profile' && (
-          <>
+          <div className="lg:col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:h-[calc(100vh-240px)] items-start">
             {/* Left: Profile Edit Form */}
-            <div id="profile_edit_card" className="lg:col-span-7 bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
+            <div id="profile_edit_card" className="lg:col-span-7 bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-5 hover:bg-white/85 hover:shadow-premium transition-all duration-300 space-y-5 lg:max-h-full overflow-y-auto custom-scrollbar">
               {/* Avatar Section */}
               <div className="flex items-center space-x-5 pb-5 border-b border-gray-100">
                 <div className="relative group">
@@ -191,8 +199,9 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                   <button
                     type="button"
                     id="avatar_change_btn"
+                    aria-label="Change profile photo hover button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition"
+                    className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition"
                   >
                     <Camera className="h-5 w-5 text-white" />
                   </button>
@@ -211,8 +220,9 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                   </p>
                   <button
                     type="button"
+                    aria-label="Change Photo text link"
                     onClick={() => fileInputRef.current?.click()}
-                    className="mt-2 flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700"
+                    className="mt-2 flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                   >
                     <Edit2 className="h-3 w-3" />
                     Change Photo
@@ -270,10 +280,12 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                         key={r.value}
                         id={`switch_role_${r.value.toLowerCase().replace(' ', '_')}`}
                         type="button"
+                        aria-pressed={role === r.value}
+                        aria-label={`Select role ${r.label}`}
                         onClick={() => setRole(r.value)}
-                        className={`p-4 border rounded-xl flex flex-col items-center justify-center text-center transition ${
+                        className={`p-4 border rounded-xl flex flex-col items-center justify-center text-center focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition ${
                           role === r.value
-                            ? 'border-blue-500 bg-blue-50 text-blue-800 font-semibold shadow-sm'
+                            ? 'border-emerald-500 bg-emerald-50 text-emerald-800 font-semibold shadow-sm'
                             : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
                         }`}
                       >
@@ -289,25 +301,29 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                 </div>
 
                 <div className="pt-2 flex justify-end">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     id="profile_save_btn"
                     type="submit"
                     disabled={profileLoading}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold text-sm rounded-lg transition shadow-sm"
+                    aria-label="Save Profile Changes"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-emerald-50/80 hover:bg-emerald-100 disabled:opacity-60 text-emerald-700 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors shadow-sm"
                   >
                     {profileLoading ? (
-                      <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      <span className="animate-spin h-4 w-4 border-2 border-emerald-700 border-t-transparent rounded-full" />
                     ) : (
                       <Check className="h-4 w-4" />
                     )}
                     {profileLoading ? 'Saving...' : 'Save Profile'}
-                  </button>
+                  </motion.button>
                 </div>
               </form>
             </div>
 
             {/* Right: Achievements */}
-            <div className="lg:col-span-5 space-y-5">
+            <div className="lg:col-span-5 space-y-5 lg:max-h-full overflow-y-auto custom-scrollbar pr-1">
               <div id="achievements_card" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-4">
                 <h3 className="font-bold text-sm text-gray-950 uppercase tracking-wider">Achievements & Badges</h3>
                 <div className="space-y-3">
@@ -349,13 +365,20 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                 ))}
               </div>
             </div>
-          </>
+          </div>
+        )}
+
+        {/* ──── ACHIEVEMENTS SECTION ──── */}
+        {activeSection === 'achievements' && (
+          <div className="lg:col-span-12">
+            <AchievementsDashboard />
+          </div>
         )}
 
         {/* ──── CHANGE PASSWORD SECTION ──── */}
         {activeSection === 'password' && (
           <div className="lg:col-span-7">
-            <div id="change_password_card" className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
+            <div id="change_password_card" className="bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-6 hover:bg-white/85 hover:shadow-premium transition-all duration-300 space-y-6">
               <div>
                 <h3 className="font-bold text-base text-gray-900">Change Password</h3>
                 <p className="text-xs text-gray-500 mt-1">
@@ -426,19 +449,23 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                 )}
 
                 <div className="pt-2 flex justify-end">
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     id="password_save_btn"
                     type="submit"
                     disabled={passwordLoading}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold text-sm rounded-lg transition shadow-sm"
+                    aria-label="Update Password"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-emerald-50/80 hover:bg-emerald-100 disabled:opacity-60 text-emerald-700 font-semibold text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors shadow-sm"
                   >
                     {passwordLoading ? (
-                      <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      <span className="animate-spin h-4 w-4 border-2 border-emerald-700 border-t-transparent rounded-full" />
                     ) : (
                       <Lock className="h-4 w-4" />
                     )}
                     {passwordLoading ? 'Updating...' : 'Update Password'}
-                  </button>
+                  </motion.button>
                 </div>
               </form>
             </div>
@@ -446,6 +473,6 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
         )}
 
       </div>
-    </div>
+    </CinematicSection>
   );
 }

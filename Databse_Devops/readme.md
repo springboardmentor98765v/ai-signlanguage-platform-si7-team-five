@@ -1,20 +1,37 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# SignAI Learn - Database & DevOps
 
-# Run and deploy your AI Studio app
+Database architecture and deployment resources for the AI-powered Sign Language Learning platform.
 
-This contains everything you need to run your app locally.
+## Database
 
-View your app in AI Studio: https://ai.studio/apps/e7028363-ec9b-45e9-b496-671472e69a57
+- PostgreSQL
+- Supabase
+- Schema Design
+- Constraints
+- Indexing
+- Optimization
 
-## Run Locally
+## Security
 
-**Prerequisites:**  Node.js
+- Row Level Security
+- Authentication
+- Policies
 
+## DevOps
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- Backup Strategy
+- Restore Scripts
+- Database Integrity
+- Performance Optimization
+- Deployment Readiness
+- Testing Reports
+
+## Files
+
+- milestone3_schema.sql
+- database_optimization.sql
+- database_integrity.sql
+- database_backup_restore.sql
+- deployment_readiness_checklist.md
+- integration_test_report.md
+- security_test_report.md

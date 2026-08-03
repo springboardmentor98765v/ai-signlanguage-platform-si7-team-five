@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { Search, Filter, BookOpen, Star, Play, CheckCircle, ChevronRight, X, ArrowLeft, Camera } from 'lucide-react';
 import { Lesson, Difficulty, LessonStep } from '../types';
+import { CinematicSection, StaggeredGrid, Premium3DCard } from './CinematicMotion';
 
 interface LessonsViewProps {
   lessons: Lesson[];
@@ -48,16 +50,17 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
   };
 
   return (
-    <div id="lessons_view_container" className="space-y-6">
+    <CinematicSection delay={0.05} xOffset={80} yOffset={80} id="lessons_view_container" className="space-y-6">
       
       {/* If a lesson details modal/drawer is active, render the step details */}
       {activeLessonModal ? (
-        <div id="active_lesson_drawer" className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-6">
+        <div id="active_lesson_drawer" className="bg-white/90 backdrop-blur-2xl rounded-[2rem] border border-white/80 shadow-premium p-6 space-y-6 relative overflow-hidden">
           <div className="flex items-center justify-between border-b border-gray-100 pb-4">
             <button
               id="back_to_lessons"
               onClick={handleCloseLesson}
-              className="flex items-center space-x-2 text-sm font-semibold text-gray-600 hover:text-emerald-600 transition"
+              aria-label="Back to Lessons"
+              className="flex items-center space-x-2 text-sm font-semibold text-gray-600 hover:text-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded transition"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Lessons</span>
@@ -85,7 +88,9 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                     key={step.id}
                     id={`step_tab_${step.id}`}
                     onClick={() => setCurrentStepIndex(idx)}
-                    className={`w-full text-left p-3 rounded-lg border text-sm flex items-center justify-between transition ${
+                    aria-pressed={currentStepIndex === idx}
+                    aria-label={`Step ${idx + 1}: ${step.title}`}
+                    className={`w-full text-left p-3 rounded-lg border text-sm flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-emerald-500 transition ${
                       currentStepIndex === idx
                         ? 'border-emerald-500 bg-emerald-50 text-emerald-800 font-medium'
                         : 'border-gray-100 bg-white text-gray-700 hover:bg-gray-50'
@@ -127,7 +132,7 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
 
                   {/* Demonstration Placeholder Graphic */}
                   <div className="bg-white p-6 rounded-xl border border-gray-100 flex flex-col items-center justify-center space-y-4 min-h-64 shadow-sm">
-                    <div className="h-28 w-28 rounded-full bg-emerald-50 border-2 border-dashed border-emerald-300 flex items-center justify-center text-emerald-700 font-sans font-extrabold text-4xl">
+                    <div className="min-h-[7rem] min-w-[7rem] w-fit px-6 py-4 mx-auto rounded-[3rem] bg-emerald-50 border-2 border-dashed border-emerald-300 flex items-center justify-center text-emerald-700 font-sans font-extrabold text-3xl sm:text-4xl text-center shadow-inner break-words max-w-full">
                       {activeLessonModal.steps[currentStepIndex].signSymbol}
                     </div>
                     <div className="text-center">
@@ -145,7 +150,8 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                     id="prev_step"
                     disabled={currentStepIndex === 0}
                     onClick={() => setCurrentStepIndex(currentStepIndex - 1)}
-                    className="flex-1 sm:flex-none px-4 py-2 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 transition disabled:opacity-50"
+                    aria-label="Previous Step"
+                    className="flex-1 sm:flex-none px-4 py-2 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition disabled:opacity-50"
                   >
                     Previous
                   </button>
@@ -153,7 +159,8 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                     id="next_step"
                     disabled={currentStepIndex === activeLessonModal.steps.length - 1}
                     onClick={() => setCurrentStepIndex(currentStepIndex + 1)}
-                    className="flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 transition disabled:opacity-50"
+                    aria-label="Next Step"
+                    className="flex-1 sm:flex-none px-4 py-2 bg-white border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition disabled:opacity-50"
                   >
                     Next Step
                   </button>
@@ -162,7 +169,8 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                 <button
                   id="start_practice_for_step"
                   onClick={() => handleLaunchPractice(activeLessonModal.steps[currentStepIndex], activeLessonModal.name)}
-                  className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-700 transition flex items-center justify-center space-x-2"
+                  aria-label="Start Live Webcam Assessment"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-emerald-50/70 backdrop-blur-md border border-emerald-200/50 text-emerald-600 text-xs font-bold rounded-lg hover:bg-emerald-100/90 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition flex items-center justify-center space-x-2"
                 >
                   <Camera className="h-4 w-4" />
                   <span>Start Live Webcam Assessment</span>
@@ -182,7 +190,7 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center gap-4">
+          <div className="bg-white/70 backdrop-blur-xl p-4 rounded-[1.5rem] border border-white/60 shadow-glass flex flex-col sm:flex-row items-center gap-4">
             <div className="relative w-full sm:flex-1">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-4 w-4 text-gray-400" />
@@ -207,7 +215,9 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                   key={level}
                   id={`filter_level_${level}`}
                   onClick={() => setDifficultyFilter(level)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition whitespace-nowrap ${
+                  aria-pressed={difficultyFilter === level}
+                  aria-label={`Filter by ${level} difficulty`}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg border focus:outline-none focus:ring-2 focus:ring-emerald-500 transition whitespace-nowrap ${
                     difficultyFilter === level
                       ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
                       : 'border-gray-200 text-gray-600 hover:bg-gray-50'
@@ -220,12 +230,12 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
           </div>
 
           {/* Lessons Cards List */}
-          <div id="lessons_cards_grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggeredGrid id="lessons_cards_grid" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" staggerDelay={0.07}>
             {filteredLessons.map((lesson) => (
-              <div
+              <Premium3DCard
                 key={lesson.id}
                 id={`lesson_card_${lesson.id}`}
-                className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex flex-col justify-between hover:border-emerald-200 hover:shadow-md transition duration-200"
+                className="bg-white/70 backdrop-blur-xl rounded-[1.5rem] border border-white/60 shadow-glass p-5 flex flex-col justify-between hover:bg-white/90 hover:shadow-premium transition duration-300"
               >
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
@@ -259,28 +269,32 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                   {/* Actions */}
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-gray-400">{lesson.steps.length} learning modules</span>
-                    <button
+                    <motion.button
                       id={`continue_btn_${lesson.id}`}
                       onClick={() => handleOpenLesson(lesson)}
-                      className="px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-700 transition shadow-sm"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                      aria-label={lesson.progress === 100 ? 'Review Lesson' : 'Continue Lesson'}
+                      className="px-4 py-2 bg-emerald-50/80 text-emerald-700 font-semibold rounded-lg hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors shadow-sm"
                     >
                       {lesson.progress === 100 ? 'Review Lesson' : 'Continue'}
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
-              </div>
+              </Premium3DCard>
             ))}
+          </StaggeredGrid>
 
-            {filteredLessons.length === 0 && (
-              <div className="col-span-full bg-white p-12 text-center rounded-xl border border-gray-100 space-y-2">
-                <BookOpen className="h-10 w-10 text-gray-300 mx-auto" />
-                <h4 className="font-sans font-bold text-gray-800">No lessons match your search</h4>
-                <p className="text-xs text-gray-500 max-w-md mx-auto">Try refining your filter queries or entering a different keyword above.</p>
-              </div>
-            )}
-          </div>
+          {filteredLessons.length === 0 && (
+            <div className="col-span-full bg-white/70 backdrop-blur-xl p-12 text-center rounded-[1.5rem] border border-white/60 shadow-glass space-y-2">
+              <BookOpen className="h-10 w-10 text-gray-300 mx-auto" />
+              <h4 className="font-sans font-bold text-gray-800">No lessons match your search</h4>
+              <p className="text-xs text-gray-500 max-w-md mx-auto">Try refining your filter queries or entering a different keyword above.</p>
+            </div>
+          )}
         </>
       )}
-    </div>
+    </CinematicSection>
   );
 }

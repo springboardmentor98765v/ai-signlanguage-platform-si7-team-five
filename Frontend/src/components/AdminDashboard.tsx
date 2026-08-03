@@ -27,7 +27,7 @@ export default function AdminDashboard() {
   const [newLessonDifficulty, setNewLessonDifficulty] = useState('Beginner');
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/courses`)
+    fetch(`${apiBaseUrl}/lessons`)
       .then((response) => response.json())
       .then((data) => setLessons(data || []))
       .catch(() => setLessons([]));
@@ -128,13 +128,16 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="font-bold text-2xl text-gray-900 tracking-tight">Admin Dashboard</h1>
+          <h1 className="font-bold text-2xl text-gray-900 tracking-tight flex items-center">
+            Admin Dashboard <img src="/signs/hello_nobg.png" alt="ASL Hello Gesture" className="inline-block h-8 w-8 ml-3 hover:animate-asl-salute transition-transform origin-bottom drop-shadow-[0_2px_8px_rgba(0,0,0,0.15)] pb-1 pointer-events-none select-none" />
+          </h1>
           <p className="text-sm text-gray-500 mt-1">Platform-wide analytics, user management, and system configuration.</p>
         </div>
         <div className="flex gap-2">
           <button
             id="admin_notifications_btn"
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 transition"
+            aria-label="View Alerts"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
             <Bell className="h-4 w-4" />
             Alerts
@@ -142,7 +145,8 @@ export default function AdminDashboard() {
           </button>
           <button
             id="admin_settings_btn"
-            className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 rounded-lg text-xs font-semibold text-white hover:bg-blue-700 transition"
+            aria-label="Settings"
+            className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 rounded-lg text-xs font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
           >
             <Settings className="h-4 w-4" />
             Settings
@@ -160,7 +164,7 @@ export default function AdminDashboard() {
               <p className="text-xs text-amber-700 mt-0.5">Routine maintenance is planned for Sunday 2:00 AM UTC. Expected downtime: 30 minutes.</p>
             </div>
           </div>
-          <button onClick={() => setShowBanner(false)} className="text-amber-500 hover:text-amber-700">
+          <button aria-label="Dismiss Alert" onClick={() => setShowBanner(false)} className="text-amber-500 hover:text-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 rounded p-0.5 transition">
             <X className="h-4 w-4" />
           </button>
         </div>
@@ -172,8 +176,10 @@ export default function AdminDashboard() {
           <button
             key={tab.id}
             id={`admin_tab_${tab.id}`}
+            role="tab"
+            aria-selected={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2.5 text-sm font-semibold transition border-b-2 -mb-px ${
+            className={`px-4 py-2.5 text-sm font-semibold transition border-b-2 -mb-px focus:outline-none focus:bg-gray-50 rounded-t-md ${
               activeTab === tab.id
                 ? 'border-blue-600 text-blue-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
@@ -359,18 +365,21 @@ export default function AdminDashboard() {
                 value={newLessonTitle}
                 onChange={(e) => setNewLessonTitle(e.target.value)}
                 placeholder="Lesson title"
-                className="px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                aria-label="New Lesson Title"
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 value={newLessonCategory}
                 onChange={(e) => setNewLessonCategory(e.target.value)}
                 placeholder="Category"
-                className="px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                aria-label="Lesson Category"
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <select
                 value={newLessonDifficulty}
                 onChange={(e) => setNewLessonDifficulty(e.target.value)}
-                className="px-3 py-2 border border-gray-200 rounded-lg text-sm"
+                aria-label="Lesson Difficulty"
+                className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="Beginner">Beginner</option>
                 <option value="Medium">Medium</option>
@@ -379,7 +388,7 @@ export default function AdminDashboard() {
             </div>
             <button
               onClick={handleCreateLesson}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition w-full sm:w-auto"
             >
               Save Lesson
             </button>
@@ -413,7 +422,7 @@ export default function AdminDashboard() {
           </div>
 
           
-        <div id="admin_users_panel" className="bg-white rounded-xl border border-gray-100 shadow-sm">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
           <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h3 className="font-bold text-base text-gray-900">All Users</h3>
@@ -503,13 +512,13 @@ export default function AdminDashboard() {
                     <td className="px-5 py-4 text-xs text-gray-500">{user.joined}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
-                        <button className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition" title={user.active ? "Deactivate" : "Activate"}>
+                        <button aria-label={user.active ? "Deactivate User" : "Activate User"} className="p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded transition focus:outline-none focus:ring-2 focus:ring-emerald-500" title={user.active ? "Deactivate" : "Activate"}>
                           <CheckCircle className="h-3.5 w-3.5" />
                         </button>
-                        <button className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition" title="Edit">
+                        <button aria-label="Edit User" className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition focus:outline-none focus:ring-2 focus:ring-blue-500" title="Edit">
                           <Edit className="h-3.5 w-3.5" />
                         </button>
-                        <button className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition" title="Delete">
+                        <button aria-label="Delete User" className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition focus:outline-none focus:ring-2 focus:ring-red-500" title="Delete">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -527,7 +536,11 @@ export default function AdminDashboard() {
 
           </div>
         </div>
+<<<<<<< HEAD
         </div>
+=======
+      </div>
+>>>>>>> 21c5eb5b19ee300388e8637d0a490c6f68cf9a2c
       )}
 
       {/* ---- SYSTEM STATUS TAB ---- */}

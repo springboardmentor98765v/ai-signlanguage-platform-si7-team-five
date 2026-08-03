@@ -1,0 +1,74 @@
+# Milestone 3 Day 1 
+
+## Reviewed APIs (Milestone 1 & 2)
+- Auth: login, register, update profile, reset/change password
+- User: update profile, forgot password
+- Instructor: assign student, view students
+- Admin: list users, change role
+- Lessons: CRUD, search, pagination
+
+## New APIs for Milestone 3
+1. **Notification Service**
+   - Create notification
+   - Get user notifications
+   - Mark notification as read
+
+2. **Bulk Admin Operations**
+   - Activate/deactivate multiple users
+   - CSV bulk lesson upload
+
+3. **Security Enhancements**
+   - Stronger input validation
+   - Per-user rate limiting
+
+4. **Automated Testing**
+   - Unit tests for all major endpoints
+   - Integration tests with Docker Compose
+
+## Checkpoints
+- [x] List of new APIs written
+- [x] Old APIs re-tested
+- [x] Plan shared with team
+
+
+## Day 2 - Notification Service
+- [x] Notifications table created (stub in memory for now)
+- [x] Create notification API working
+- [x] Get my notifications API working
+- [x] Mark as read API working
+## Day 3 - Event Hooks for Notifications
+- [x] Event list agreed with Intern 4 (badge earned, certificate ready, new recommendation)
+- [x] Notification-creation hook implemented
+- [x] Tested with at least 2 event types
+- [x] Notifications appear correctly when triggered
+
+## Day 4 - Bulk Admin Operations
+- [x] Bulk activate/deactivate API working with list of user IDs
+- [x] CSV bulk-lesson-upload API working (using Python csv module)
+- [x] Tested with sample CSV file of 5+ lessons
+## Day 5 - Input Validation
+- [x] Input validation reviewed for all major APIs
+- [x] Tested with bad input examples (script tags, SQL-like text)
+- [x] Weak spots fixed using validation utilities
+## Day 6 - Per-User Rate Limiting
+- [x] Per-user rate limiting implemented for sensitive endpoints (login, password reset)
+- [x] Normal user tested (not blocked during regular use)
+- [x] Rapid repeated attempts correctly blocked
+## Day 7 - Automated Unit Tests
+- [x] Pytest installed and configured
+- [x] Unit tests written for at least 10 key endpoints
+- [x] All tests run successfully (green/passing)
+## Day 8 - Integration Tests
+- [x] Docker Compose used to run backend locally
+- [x] Full user journey integration test written (register → login → view lessons → notifications)
+- [x] Admin bulk operations integration test written (bulk activate → CSV upload)
+- [x] Tests run successfully against local stack
+## Day 9 - API Documentation & Joint Testing
+- [x] Swagger documentation updated for all new/changed endpoints
+- [x] Joint testing session done with Intern 1 (Frontend)
+- [x] Joint testing session done with Intern 4 (Business Logic)
+## Day 10 - Final Integration
+- [x] Full automated test suite run and passing
+- [x] APIs frozen for Milestone 3
+- [x] Supported full end-to-end test with the team
+- [x] Any last-minute critical bugs fixed

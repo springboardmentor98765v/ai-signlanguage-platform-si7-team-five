@@ -26,24 +26,24 @@ def list_courses(db: Session = Depends(get_db)):
     return db.query(Course).all()
 
 
-@r.get("/{course_id}", response_model=CourseOut)
-def get_course(course_id: int, db: Session = Depends(get_db)):
-    course = db.query(Course).filter(Course.id == course_id).first()
+@r.get("/{lesson_id}", response_model=CourseOut)
+def get_course(lesson_id: int, db: Session = Depends(get_db)):
+    course = db.query(Course).filter(Course.id == lesson_id).first()
     if not course:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise HTTPException(status_code=404, detail="Lesson not found")
     return course
 
 
-@r.put("/{course_id}", response_model=CourseOut)
+@r.put("/{lesson_id}", response_model=CourseOut)
 def update_course(
-    course_id: int,
+    lesson_id: int,
     course: CourseUpdate,
     db: Session = Depends(get_db),
     user=Depends(role_required("Instructor")),
 ):
-    db_course = db.query(Course).filter(Course.id == course_id).first()
+    db_course = db.query(Course).filter(Course.id == lesson_id).first()
     if not db_course:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise HTTPException(status_code=404, detail="Lesson not found")
     if course.title is not None:
         db_course.title = course.title
     if course.description is not None:
@@ -53,15 +53,15 @@ def update_course(
     return db_course
 
 
-@r.delete("/{course_id}")
+@r.delete("/{lesson_id}")
 def delete_course(
-    course_id: int,
+    lesson_id: int,
     db: Session = Depends(get_db),
     user=Depends(role_required("Admin")),
 ):
-    db_course = db.query(Course).filter(Course.id == course_id).first()
+    db_course = db.query(Course).filter(Course.id == lesson_id).first()
     if not db_course:
-        raise HTTPException(status_code=404, detail="Course not found")
+        raise HTTPException(status_code=404, detail="Lesson not found")
     db.delete(db_course)
     db.commit()
-    return {"message": "Course deleted"}
+    return {"message": "Lesson deleted"}

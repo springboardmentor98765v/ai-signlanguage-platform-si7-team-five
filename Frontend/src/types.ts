@@ -59,3 +59,65 @@ export interface StatCardData {
   changeType?: 'increase' | 'decrease' | 'neutral';
   icon: string;
 }
+
+// =============================================
+// MILESTONE 3 – NOTIFICATIONS, ACHIEVEMENTS, STREAK, LEADERBOARD
+// =============================================
+
+export type NotificationType = 'achievement' | 'streak' | 'system' | 'lesson';
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  type: NotificationType;
+  actionUrl?: string;
+}
+
+export type BadgeCategory = 'Beginner' | 'Mastery' | 'Consistency' | 'Speed' | 'Special';
+
+export interface AchievementBadge {
+  id: string;
+  title: string;
+  description: string;
+  category: BadgeCategory;
+  iconName: string;
+  unlocked: boolean;
+  unlockedAt?: string;
+  progress: number; // 0 - 100
+  totalRequired: number;
+  currentCount: number;
+}
+
+export interface LeaderboardUser {
+  id: string;
+  rank: number;
+  name: string;
+  avatarUrl?: string;
+  role: UserRole;
+  accuracy: number;
+  streak: number;
+  lessonsCompleted: number;
+  badgesCount: number;
+  points: number;
+  isCurrentUser?: boolean;
+}
+
+export interface DailyStreakStatus {
+  dayName: string; // 'Mon', 'Tue', etc.
+  dateStr: string; // '2026-07-31'
+  completed: boolean;
+  isToday: boolean;
+}
+
+export interface StreakDetails {
+  currentStreak: number;
+  longestStreak: number;
+  todayCompleted: boolean;
+  nextMilestoneDays: number;
+  nextMilestoneReward: string;
+  weeklyCalendar: DailyStreakStatus[];
+}
+

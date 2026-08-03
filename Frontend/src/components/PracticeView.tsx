@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion } from 'motion/react';
 import { Camera, CameraOff, Play, Square, RefreshCw, AlertCircle, Sparkles, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
 import { LessonStep } from '../types';
 import { aiApiBaseUrl } from '../utils/api';
+<<<<<<< HEAD
 import { submitPracticeAttempt } from '../utils/businessLogicApi';
+=======
+import { CinematicSection } from './CinematicMotion';
+>>>>>>> 21c5eb5b19ee300388e8637d0a490c6f68cf9a2c
 
 interface PracticeViewProps {
   initialTargetStep?: { step: LessonStep; lessonName: string } | null;
@@ -133,6 +138,15 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     }
   };
 
+  useEffect(() => {
+    if (isPracticing && stream && videoRef.current) {
+      if (videoRef.current.srcObject !== stream) {
+        videoRef.current.srcObject = stream;
+      }
+      videoRef.current.play().catch(e => console.warn('Could not auto-play video:', e));
+    }
+  }, [isPracticing, stream]);
+
   const handleStartPractice = () => {
     setIsPracticing(true);
     startCamera();
@@ -194,7 +208,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
   };
 
   return (
-    <div id="practice_view" className="space-y-6">
+    <CinematicSection delay={0.05} xOffset={80} yOffset={80} id="practice_view" className="space-y-6">
       
       {/* Header banner */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -216,10 +230,10 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
         <div className="lg:col-span-8 space-y-6">
           
           {/* Main Visual Arena */}
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden relative">
+          <div className="bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] overflow-hidden relative transition-all duration-300 hover:shadow-premium">
             
             {/* Aspect Ratio Screen */}
-            <div className="aspect-video bg-gray-950 flex items-center justify-center relative">
+            <div className="aspect-video bg-gray-950 flex items-center justify-center relative shadow-inner">
               
               {/* If camera stream is running, render video element */}
               {isPracticing && !cameraError ? (
@@ -290,23 +304,31 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
             <div className="p-4 bg-white border-t border-gray-100 flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 {!isPracticing ? (
-                  <button
+                  <motion.button
                     id="start_practice_btn"
                     onClick={handleStartPractice}
-                    className="px-5 py-2.5 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition flex items-center space-x-2 shadow-sm"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    aria-label="Start Practice"
+                    className="px-5 py-2.5 bg-emerald-50/80 text-emerald-700 text-sm font-semibold rounded-lg hover:bg-emerald-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors flex items-center space-x-2 shadow-sm"
                   >
                     <Play className="h-4 w-4 fill-current" />
                     <span>Start Practice</span>
-                  </button>
+                  </motion.button>
                 ) : (
-                  <button
+                  <motion.button
                     id="stop_practice_btn"
                     onClick={handleStopPractice}
-                    className="px-5 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition flex items-center space-x-2 shadow-sm"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    aria-label="Stop Practice"
+                    className="px-5 py-2.5 bg-gray-100 text-gray-900 border border-gray-200 text-sm font-semibold rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2 transition-colors flex items-center space-x-2 shadow-sm"
                   >
                     <Square className="h-4 w-4" />
                     <span>Stop Practice</span>
-                  </button>
+                  </motion.button>
                 )}
               </div>
 
@@ -320,7 +342,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
           </div>
 
           {/* Practice Selectors List */}
-          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-4">
+          <div className="bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-5 space-y-4 hover:shadow-premium transition-all duration-300">
             <h3 className="font-sans font-bold text-sm text-gray-900 uppercase tracking-wider">Select a Sign to Practice</h3>
             <div className="flex flex-wrap gap-2">
               {availablePracticeSigns.map((s) => (
@@ -328,7 +350,9 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
                   key={s.symbol}
                   id={`practice_selector_${s.symbol}`}
                   onClick={() => handleSelectSign(s.symbol, s.desc)}
-                  className={`px-3 py-2 border rounded-xl text-xs font-semibold transition ${
+                  aria-label={`Select sign ${s.symbol}`}
+                  aria-pressed={targetSign === s.symbol}
+                  className={`px-3 py-2 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition ${
                     targetSign === s.symbol
                       ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
                       : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
@@ -351,7 +375,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
         <div className="lg:col-span-4 space-y-6">
           
           {/* Diagnostic Metrics Sidebar */}
-          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-5">
+          <div className="bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-5 space-y-5 hover:shadow-premium transition-all duration-300">
             <h3 className="font-sans font-bold text-sm text-gray-950 uppercase tracking-wider border-b border-gray-100 pb-3">
               Diagnostic Feed
             </h3>
@@ -428,7 +452,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
           </div>
 
           {/* Next recommendation card */}
-          <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-4">
+          <div className="bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-5 space-y-4 hover:shadow-premium transition-all duration-300">
             <h3 className="font-sans font-bold text-sm text-gray-950 uppercase tracking-wider">Recommendations</h3>
             <div className="space-y-3">
               <div className="p-3 bg-emerald-50/50 border border-emerald-100 rounded-lg flex items-start space-x-3">
@@ -442,7 +466,8 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
               <button
                 id="view_full_reports"
                 onClick={() => onNavigate('Reports')}
-                className="w-full py-2 bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 transition flex items-center justify-center space-x-1"
+                aria-label="View Full Performance Reports"
+                className="w-full py-2 bg-gray-50 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition flex items-center justify-center space-x-1"
               >
                 <span>View Full Performance Reports</span>
                 <ChevronRight className="h-3 w-3" />
@@ -453,6 +478,6 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
         </div>
 
       </div>
-    </div>
+    </CinematicSection>
   );
 }

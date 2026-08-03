@@ -10,6 +10,7 @@ import LessonsView from './components/LessonsView';
 import PracticeView from './components/PracticeView';
 import ReportsView from './components/ReportsView';
 import ProfileView from './components/ProfileView';
+import LeaderboardView from './components/LeaderboardView';
 import InstructorDashboard from './components/InstructorDashboard';
 import AdminDashboard from './components/AdminDashboard';
 
@@ -46,7 +47,9 @@ export default function App() {
     fetch(`${apiBaseUrl}/courses`)
       .then((response) => response.json())
       .then((data) => {
-        const mappedLessons: Lesson[] = (data || []).map((item: any, index: number) => ({
+        // Exclude backend's basic 'Letter' items if they duplicate the rich mocked alphabet
+        const backendCourses = (data || []).filter((item: any) => !item.title?.startsWith('Letter '));
+        const mappedLessons: Lesson[] = backendCourses.map((item: any, index: number) => ({
           id: `lesson_${item.lesson_id ?? index}`,
           name: item.title || `Lesson ${index + 1}`,
           description: `${item.category || 'General'} lesson for practicing ${item.title || 'signs'}`,
@@ -69,7 +72,7 @@ export default function App() {
             },
           ],
         }));
-        setLessons(mappedLessons);
+        setLessons([...mockLessons, ...mappedLessons]);
       })
       .catch(() => {
         setLessons(mockLessons);
@@ -194,6 +197,8 @@ export default function App() {
         );
       case 'Reports':
         return <ReportsView />;
+      case 'Leaderboard':
+        return <LeaderboardView />;
       case 'Profile':
         return (
           <ProfileView
