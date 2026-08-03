@@ -79,12 +79,16 @@ export default function App() {
       });
   }, []);
 
-  const handleLogin = (email: string, name: string, role: UserRole) => {
+  const handleLogin = (email: string, name: string, role: UserRole, userId?: string) => {
     const loggedInUser: User = {
-      ...mockUser,
+      id: userId || `usr_${email}`,
       email,
       name,
       role,
+      streak: 0,
+      lessonsCompleted: 0,
+      practiceSessions: 0,
+      avgAccuracy: 0,
     };
     setCurrentUser(loggedInUser);
     localStorage.setItem('asl_user_session', JSON.stringify(loggedInUser));
