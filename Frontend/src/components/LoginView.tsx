@@ -11,6 +11,20 @@ interface LoginViewProps {
   onNavigateToRegister: () => void;
 }
 
+function getApiErrorMessage(payload: unknown, fallback: string): string {
+  if (!payload || typeof payload !== 'object') return fallback;
+  const detail = (payload as { detail?: unknown; message?: unknown }).detail
+    ?? (payload as { message?: unknown }).message;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    const messages = detail
+      .map((item) => item && typeof item === 'object' && 'msg' in item ? String(item.msg) : '')
+      .filter(Boolean);
+    return messages.join('. ') || fallback;
+  }
+  return fallback;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    CONSTANTS — orbit config
    ═══════════════════════════════════════════════════════════════ */
@@ -285,7 +299,7 @@ export default function LoginView({ onLogin, onNavigateToRegister }: LoginViewPr
         body: JSON.stringify({ username: email, password }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Login failed');
+      if (!response.ok) throw new Error(getApiErrorMessage(data, 'Login failed. Check your email and password.'));
       localStorage.setItem('asl_access_token', data.access_token);
       onLogin(email, 'Signed In User', data.role || 'Learner');
     } catch (err) {

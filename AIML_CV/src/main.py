@@ -6,6 +6,7 @@ import cv2
 import joblib
 import numpy as np
 from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from mediapipe import Image, ImageFormat
 from mediapipe.tasks import python as mp_tasks
@@ -18,6 +19,21 @@ except ImportError:
     from src.database import initialise_database, log_prediction
 
 app = FastAPI(title="Sign Language AI Prediction Service")
+
+# The browser app runs on port 3000 and calls this AI service on port 8001.
+# Without CORS the browser blocks the prediction response even when AI is ready.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 BASE_DIR = Path(__file__).resolve().parent
 MODELS_DIR = BASE_DIR / "models"
@@ -151,7 +167,12 @@ async def predict(file: UploadFile = File(...), expected_label: str | None = For
     if not result.hand_landmarks:
         return JSONResponse(
             status_code=200,
-            content={"predicted_sign": None, "confidence": 0.0, "message": "No hand detected"},
+            content={
+                "predicted_sign": None,
+                "confidence": 0.0,
+                "hand_detected": False,
+                "message": "No hand detected. Center one hand inside the guide and hold still.",
+            },
         )
 
     features = extract_features(result.hand_landmarks[0])
@@ -162,7 +183,11 @@ async def predict(file: UploadFile = File(...), expected_label: str | None = For
     predicted_sign = str(prediction).upper()
     rounded_confidence = round(confidence, 3)
     log_prediction(expected_label.upper() if expected_label else None, predicted_sign, rounded_confidence)
-    return {"predicted_sign": predicted_sign, "confidence": rounded_confidence}
+    return {
+        "predicted_sign": predicted_sign,
+        "confidence": rounded_confidence,
+        "hand_detected": True,
+    }
 
 
 if __name__ == "__main__":

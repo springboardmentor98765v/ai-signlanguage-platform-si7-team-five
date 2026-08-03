@@ -12,6 +12,20 @@ interface RegisterViewProps {
   onNavigateToLogin: () => void;
 }
 
+function getApiErrorMessage(payload: unknown, fallback: string): string {
+  if (!payload || typeof payload !== 'object') return fallback;
+  const detail = (payload as { detail?: unknown; message?: unknown }).detail
+    ?? (payload as { message?: unknown }).message;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    const messages = detail
+      .map((item) => item && typeof item === 'object' && 'msg' in item ? String(item.msg) : '')
+      .filter(Boolean);
+    return messages.join('. ') || fallback;
+  }
+  return fallback;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    CONSTANTS — orbit config
    ═══════════════════════════════════════════════════════════════ */
@@ -312,7 +326,7 @@ export default function RegisterView({ onRegister, onNavigateToLogin }: Register
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.detail || 'Registration failed');
+        throw new Error(getApiErrorMessage(data, 'Registration failed.'));
       }
 
       localStorage.setItem('asl_access_token', data.access_token);
