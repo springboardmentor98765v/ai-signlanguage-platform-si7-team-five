@@ -11,10 +11,8 @@ def start_practice(data):
 
     session = PracticeSession(
         user_id=data.user_id,
-        course_id=data.course_id,
+        lesson_id=data.lesson_id,
         expected_sign=data.expected_sign
-        
-        
     )
 
     

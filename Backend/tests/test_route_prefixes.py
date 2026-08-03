@@ -4,8 +4,8 @@ from main import app
 client = TestClient(app)
 
 
-def test_lessons_route_is_available_at_courses_prefix():
-    response = client.get("/courses")
+def test_lessons_route_is_available_at_lessons_prefix():
+    response = client.get("/lessons")
     assert response.status_code == 200
 
 

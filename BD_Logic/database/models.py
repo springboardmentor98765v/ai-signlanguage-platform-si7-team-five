@@ -8,7 +8,8 @@ class Assessment(Base):
 
     user_id = Column(Integer)
 
-    course_id = Column(Integer)
+    # Keep DB column name as 'course_id' for compatibility, expose as `lesson_id`
+    lesson_id = Column('course_id', Integer)
 
     expected_sign = Column(String)
 

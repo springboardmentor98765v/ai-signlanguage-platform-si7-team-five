@@ -44,7 +44,7 @@ export default function App() {
       .then((response) => response.json())
       .catch(() => console.warn('Backend health check unavailable'));
 
-    fetch(`${apiBaseUrl}/courses`)
+    fetch(`${apiBaseUrl}/lessons`)
       .then((response) => response.json())
       .then((data) => {
         const mappedLessons: Lesson[] = (data || []).map((item: any, index: number) => ({

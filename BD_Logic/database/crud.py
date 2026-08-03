@@ -6,7 +6,7 @@ class DatabaseService:
         session = SessionLocal()
         assessment = Assessment(
             user_id=data["user_id"],
-            course_id=data["lesson_id"],
+            lesson_id=data["lesson_id"],
             expected_sign=data["expected_sign"],
             predicted_sign=data["predicted_sign"],
             score=data["score"]

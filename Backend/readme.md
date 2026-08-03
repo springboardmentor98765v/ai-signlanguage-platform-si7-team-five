@@ -62,13 +62,13 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 - `GET /auth/me` — Get current user details
   - Requires bearer token in `Authorization: Bearer <token>` header
 
-### Courses
+### Lessons
 
-- `GET /courses` — List all courses
-- `GET /courses/{course_id}` — Get course details
-- `POST /courses` — Create a new course (Instructor only)
-- `PUT /courses/{course_id}` — Update a course (Instructor only)
-- `DELETE /courses/{course_id}` — Delete a course (Admin only)
+- `GET /lessons` — List all lessons
+- `GET /lessons/{lesson_id}` — Get lesson details
+- `POST /lessons` — Create a new lesson (Instructor only)
+- `PUT /lessons/{lesson_id}` — Update a lesson (Instructor only)
+- `DELETE /lessons/{lesson_id}` — Delete a lesson (Admin only)
 
 ## Database
 

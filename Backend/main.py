@@ -21,9 +21,9 @@ from services import user_services
 from services import instructor_service
 from services import admin_services
 from services import predictions
-from docs.api_reference import app
+from api_gateway import routers as gateway_routers
 from BD_Logic.main import app as bd_logic_app
-from utils import error_handler
+from utils import error_handdler
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,15 +43,15 @@ app = FastAPI(
   )
 
 # Include course service router
-app.include_router(course_service.r, prefix="/courses", tags=["Courses"])
+app.include_router(course_service.r, prefix="/lessons", tags=["Lessons"])
 app.include_router(user_services.r, prefix="/auth", tags=["Authenticate"])
 app.include_router(instructor_service.r, prefix="/instructors", tags=["Instructors"])
 app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
 app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
 app.mount("/bd_logic", bd_logic_app)
 
-error_handler.init_error_handlers(app)
-for router in routers:
+error_handdler.init_error_handlers(app)
+for router in gateway_routers:
     app.include_router(router)
 
 
@@ -77,7 +77,7 @@ async def rate_limit_middleware(request: Request, call_next):
 
 app.include_router(health_router)
 app.include_router(user_router, prefix="/auth", tags=["Authenticate"])
-app.include_router(course_router, prefix="/courses", tags=["Courses"])
+app.include_router(course_router, prefix="/lessons", tags=["Lessons"])
 
 @app.get("/health", tags=["System"])
 def health_check():

@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from services import notification_service
+from services import notification_services
 
 router = APIRouter()
 
 @router.post("/notifications")
 def create_notification(user_id: int, message: str):
-    return notification_service.create_notification(user_id, message)
+    return notification_services.create_notification(user_id, message)

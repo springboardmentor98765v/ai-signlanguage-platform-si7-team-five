@@ -3,7 +3,7 @@ from dataclasses import dataclass
 @dataclass
 class PracticeAttempt:
     user_id: str
-    course_id: str
+    lesson_id: str
     expected_sign: str
     predicted_sign: str
     confidence: float

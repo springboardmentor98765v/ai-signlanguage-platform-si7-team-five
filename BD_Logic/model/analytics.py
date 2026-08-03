@@ -5,7 +5,7 @@ class Analytics:
     def __init__(
         self,
         user_id,
-        course_id,
+        lesson_id,
         expected_sign, 
         best_accuracy,
         average_accuracy,
@@ -16,7 +16,7 @@ class Analytics:
         self.analytics_id = str(uuid4())
         
         self.user_id = user_id
-        self.course_id = course_id
+        self.lesson_id = lesson_id
         self.expected_sign = expected_sign
         self.best_accuracy = best_accuracy
         self.average_accuracy = average_accuracy

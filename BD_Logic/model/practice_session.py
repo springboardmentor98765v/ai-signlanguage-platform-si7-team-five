@@ -2,12 +2,12 @@ from datetime import datetime
 from uuid import uuid4
 
 class PracticeSession:
-    def __init__(self, user_id, course_id, expected_sign, score, accuracy, duration_seconds, feedback):
-        
+    def __init__(self, user_id, lesson_id, expected_sign, score, accuracy, duration_seconds, feedback):
+
         self.session_id = str(uuid4())
         self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
         self.learner_id = user_id
-        self.lesson_id = course_id
+        self.lesson_id = lesson_id
         self.expected_sign = expected_sign
         self.score = score
         self.accuracy = accuracy

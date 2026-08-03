@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class StartPracticeRequest(BaseModel):
     user_id: int
-    course_id: int
+    lesson_id: int
     expected_sign: str
     
 class AttemptRequest(BaseModel):

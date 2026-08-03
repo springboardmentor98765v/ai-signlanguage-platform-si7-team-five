@@ -1,4 +1,3 @@
-from utils.db_connection import get_db
 from fastapi import HTTPException
 from utils.validation import validate_string
 # Example schema (SQLite/Postgres)

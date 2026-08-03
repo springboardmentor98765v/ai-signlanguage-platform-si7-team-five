@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 class AnalyticsRequest(BaseModel):
     user_id: int
-    course_id: int | None = None
+    lesson_id: int | None = None
     expected_sign: str | None = None
     scores: list[float] = []
     weak_signs: list[str] = []

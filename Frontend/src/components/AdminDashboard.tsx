@@ -27,7 +27,7 @@ export default function AdminDashboard() {
   const [newLessonDifficulty, setNewLessonDifficulty] = useState('Beginner');
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/courses`)
+    fetch(`${apiBaseUrl}/lessons`)
       .then((response) => response.json())
       .then((data) => setLessons(data || []))
       .catch(() => setLessons([]));

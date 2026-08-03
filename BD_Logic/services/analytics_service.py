@@ -10,7 +10,7 @@ def generate_dashboard(request):
     best = best_scores(request.scores)
     analytics = Analytics(
         user_id=request.user_id,
-        course_id=request.course_id,
+        lesson_id=request.lesson_id,
         expected_sign=request.expected_sign,
         best_accuracy=best,
         average_accuracy=average,
@@ -22,7 +22,7 @@ def generate_dashboard(request):
         
         "analytics_id": analytics.analytics_id,
         "user_id": analytics.user_id,
-        "course_id": analytics.course_id,
+        "lesson_id": analytics.lesson_id,
         "expected_sign": analytics.expected_sign,
         "best_accuracy": analytics.best_accuracy,
         "average_accuracy": analytics.average_accuracy,

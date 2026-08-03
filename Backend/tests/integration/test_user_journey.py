@@ -10,7 +10,7 @@ def test_full_user_journey(client):
     assert "access_token" in tokens
 
     # View lessons
-    response = client.get("/courses")
+    response = client.get("/lessons")
     assert response.status_code == 200
     lessons = response.json()
     assert isinstance(lessons, list)

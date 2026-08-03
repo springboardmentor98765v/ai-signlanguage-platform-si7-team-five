@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from services import admin_service
+from services import admin_services
 
 router = APIRouter()
 
 @router.put("/admin/users/{user_id}/role")
 def change_role(user_id: int, role: str):
-    return admin_service.change_role(user_id, role)
+    return admin_services.update_user_role(user_id, role)
