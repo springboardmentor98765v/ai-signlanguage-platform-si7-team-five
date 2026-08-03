@@ -108,6 +108,11 @@ export const mockLessons: Lesson[] = [
       { id: 'les_3_s3', title: 'Number 3', description: 'Palm faces backward. Raise your thumb, index finger, and middle finger.', signSymbol: '3' },
       { id: 'les_3_s4', title: 'Number 4', description: 'Palm faces backward. Raise index, middle, ring, and pinky fingers, keeping thumb tucked.', signSymbol: '4' },
       { id: 'les_3_s5', title: 'Number 5', description: 'Palm faces backward. Open your entire hand with all fingers and thumb spread out.', signSymbol: '5' },
+      { id: 'les_3_s6', title: 'Number 6', description: 'Touch your thumb and pinky finger together.', signSymbol: '6' },
+      { id: 'les_3_s7', title: 'Number 7', description: 'Touch your thumb and ring finger together.', signSymbol: '7' },
+      { id: 'les_3_s8', title: 'Number 8', description: 'Touch your thumb and middle finger together.', signSymbol: '8' },
+      { id: 'les_3_s9', title: 'Number 9', description: 'Touch your thumb and index finger together.', signSymbol: '9' },
+      { id: 'les_3_s10', title: 'Number 0', description: 'Form an O shape with all fingers curved inward to touch the thumb.', signSymbol: '0' },
     ]
   },
   {
@@ -123,6 +128,7 @@ export const mockLessons: Lesson[] = [
       { id: 'les_2_s2', title: 'Thank You', description: 'Touch the fingertips of your flat dominant hand to your lips, then move your hand down and forward toward the person.', signSymbol: 'THANK YOU' },
       { id: 'les_2_s3', title: 'Please', description: 'Place your flat dominant hand on the center of your chest and rub it in a circular motion clockwise a couple of times.', signSymbol: 'PLEASE' },
       { id: 'les_2_s4', title: 'Goodbye', description: 'Raise your hand to about shoulder height, palm facing forward, and wave your fingers up and down together.', signSymbol: 'GOODBYE' },
+      { id: 'les_2_s5', title: 'Introduction', description: 'Combine signs for Hello, My, Name, and spell out A-M-A-L-A.', signSymbol: 'Hello, my name is Amala' },
     ]
   },
   {

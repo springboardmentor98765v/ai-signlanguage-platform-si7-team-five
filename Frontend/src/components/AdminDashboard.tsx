@@ -137,6 +137,7 @@ export default function AdminDashboard() {
           <button
             id="admin_notifications_btn"
             aria-label="View Alerts"
+            onClick={() => setActiveTab('system')}
             className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
           >
             <Bell className="h-4 w-4" />
@@ -146,6 +147,7 @@ export default function AdminDashboard() {
           <button
             id="admin_settings_btn"
             aria-label="Settings"
+            onClick={() => window.alert('Admin Settings module coming soon!')}
             className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 rounded-lg text-xs font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition"
           >
             <Settings className="h-4 w-4" />

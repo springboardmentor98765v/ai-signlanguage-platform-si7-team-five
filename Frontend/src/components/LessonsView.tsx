@@ -132,9 +132,34 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
 
                   {/* Demonstration Placeholder Graphic */}
                   <div className="bg-white p-6 rounded-xl border border-gray-100 flex flex-col items-center justify-center space-y-4 min-h-64 shadow-sm">
-                    <div className="min-h-[7rem] min-w-[7rem] w-fit px-6 py-4 mx-auto rounded-[3rem] bg-emerald-50 border-2 border-dashed border-emerald-300 flex items-center justify-center text-emerald-700 font-sans font-extrabold text-3xl sm:text-4xl text-center shadow-inner break-words max-w-full">
-                      {activeLessonModal.steps[currentStepIndex].signSymbol}
-                    </div>
+                    <motion.div
+                      key={activeLessonModal.steps[currentStepIndex].signSymbol}
+                      initial={{ opacity: 0, scale: 0.96 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.45, ease: 'easeOut' }}
+                      className="flex items-center justify-center w-full"
+                    >
+                      <motion.img
+                        id={`ref-image-${activeLessonModal.steps[currentStepIndex].signSymbol}`}
+                        src={`/signs/${activeLessonModal.steps[currentStepIndex].signSymbol.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.png`}
+                        alt={`Reference for ${activeLessonModal.steps[currentStepIndex].signSymbol}`}
+                        animate={{ y: [0, -3, 0] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                        className="object-contain w-auto mx-auto max-h-[220px] md:max-h-[260px] bg-transparent"
+                        onError={(e) => {
+                           (e.target as HTMLImageElement).style.display = 'none';
+                           const fallback = document.getElementById(`fallback-${activeLessonModal.steps[currentStepIndex].signSymbol}`);
+                           if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                      <div 
+                        id={`fallback-${activeLessonModal.steps[currentStepIndex].signSymbol}`} 
+                        className="hidden flex-col items-center justify-center text-gray-400 py-10 space-y-3"
+                      >
+                        <Camera className="h-12 w-12 text-gray-300 opacity-80" />
+                        <span className="text-sm font-semibold tracking-wide">No reference image available</span>
+                      </div>
+                    </motion.div>
                     <div className="text-center">
                       <p className="text-xs font-semibold text-gray-500">Visual Model Ref</p>
                       <p className="text-[10px] text-gray-400">American Sign Language Standard</p>
