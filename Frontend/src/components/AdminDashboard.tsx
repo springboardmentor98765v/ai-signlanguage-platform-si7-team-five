@@ -527,6 +527,7 @@ export default function AdminDashboard() {
 
           </div>
         </div>
+        </div>
       )}
 
       {/* ---- SYSTEM STATUS TAB ---- */}

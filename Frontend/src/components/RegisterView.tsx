@@ -48,7 +48,7 @@ export default function RegisterView({ onRegister, onNavigateToLogin }: Register
         throw new Error(data.detail || 'Registration failed');
       }
 
-      localStorage.setItem('asl_access_token', 'demo-token');
+      localStorage.setItem('asl_access_token', data.access_token);
       onRegister(email, name, role);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');

@@ -5,11 +5,12 @@ from pathlib import Path
 import cv2
 import joblib
 import numpy as np
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 from mediapipe import Image, ImageFormat
 from mediapipe.tasks import python as mp_tasks
 from mediapipe.tasks.python import vision
+from src.database import initialise_database, log_prediction
 
 app = FastAPI(title="Sign Language AI Prediction Service")
 
@@ -32,6 +33,7 @@ def ensure_model_assets() -> None:
 
 
 ensure_model_assets()
+initialise_database()
 
 
 def create_detector():
@@ -115,7 +117,7 @@ def health():
 
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
+async def predict(file: UploadFile = File(...), expected_label: str | None = Form(default=None)):
     if detector is None:
         return JSONResponse(
             status_code=503,
@@ -152,7 +154,10 @@ async def predict(file: UploadFile = File(...)):
     probabilities = classifier.predict_proba(features)[0]
     confidence = float(max(probabilities))
 
-    return {"predicted_sign": prediction, "confidence": round(confidence, 3)}
+    predicted_sign = str(prediction).upper()
+    rounded_confidence = round(confidence, 3)
+    log_prediction(expected_label.upper() if expected_label else None, predicted_sign, rounded_confidence)
+    return {"predicted_sign": predicted_sign, "confidence": rounded_confidence}
 
 
 if __name__ == "__main__":

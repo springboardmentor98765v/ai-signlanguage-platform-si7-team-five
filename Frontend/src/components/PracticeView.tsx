@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Camera, CameraOff, Play, Square, RefreshCw, AlertCircle, Sparkles, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
 import { LessonStep } from '../types';
 import { aiApiBaseUrl } from '../utils/api';
+import { submitPracticeAttempt } from '../utils/businessLogicApi';
 
 interface PracticeViewProps {
   initialTargetStep?: { step: LessonStep; lessonName: string } | null;
@@ -31,6 +32,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const recordedAttemptRef = useRef<string | null>(null);
 
   const captureAndPredict = async () => {
     if (!videoRef.current || !isPracticing) return;
@@ -50,6 +52,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
 
     const formData = new FormData();
     formData.append('file', blob, 'frame.jpg');
+    formData.append('expected_label', targetSign);
 
     try {
       const response = await fetch(`${aiApiBaseUrl}/predict`, {
@@ -69,6 +72,19 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
         : 'Keep adjusting your hand shape and position to match the target sign.');
       setIsSignCorrect(predicted === targetSign || predicted === targetSign.toUpperCase());
       setFeedbackHistory(prev => [`[AI] ${predicted} (${Math.round(confidenceValue)}%)`, ...prev.slice(0, 4)]);
+      const token = localStorage.getItem('asl_access_token');
+      const attemptKey = `${targetSign}:${predicted}`;
+      if (token && predicted !== 'unknown' && !recordedAttemptRef.current) {
+        recordedAttemptRef.current = attemptKey;
+        const assessment = await submitPracticeAttempt(token, {
+          expected_label: targetSign,
+          predicted_label: predicted,
+          confidence: Number(data.confidence || 0),
+        });
+        setAccuracyScore(assessment.score);
+        setFeedback(assessment.feedback);
+        setIsSignCorrect(assessment.is_correct);
+      }
     } catch (err) {
       console.warn('AI prediction failed; using fallback feedback.', err);
       setFeedback('AI model unavailable. Continue practicing while the classifier reconnects.');
@@ -127,6 +143,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     setAccuracyScore(0);
     setFeedback('Position your hand within the center framework and hold still...');
     setIsSignCorrect(null);
+    recordedAttemptRef.current = null;
   };
 
   const handleStopPractice = () => {
@@ -137,6 +154,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     setAccuracyScore(0);
     setFeedback('Assessment stopped. Ready for your next session.');
     setIsSignCorrect(null);
+    recordedAttemptRef.current = null;
   };
 
   useEffect(() => {
@@ -170,7 +188,8 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
       setConfidence(0);
       setAccuracyScore(0);
       setFeedback(`Scanning for hand gestures matching "${symbol}"...`);
-      setIsSignCorrect(null);
+    setIsSignCorrect(null);
+    recordedAttemptRef.current = null;
     }
   };
 

@@ -1,2 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+opencv-python
+mediapipe
+numpy
 scikit-learn
 joblib
+sqlalchemy

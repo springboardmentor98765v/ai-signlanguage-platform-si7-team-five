@@ -4,7 +4,10 @@ from time import time
 requests_log = {}
 
 def rate_limiter(request: Request, limit: int = 5, window: int = 60):
-    client_ip = request.client.host
+    """Limit only sensitive auth routes; normal learning activity must not share one IP quota."""
+    if request.url.path not in {"/auth/login", "/auth/user/forgot-password", "/auth/user/reset-password"}:
+        return
+    client_ip = request.headers.get("Authorization") or request.client.host
     current_time = time()
 
     if client_ip not in requests_log:

@@ -5,14 +5,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers.health import health_router
 from routers.users import r as user_router
 from routers.course import r as course_router
+from routers.notifications import r as notification_router
 from services.rate_limit import rate_limiter
 from db import engine, Base
 import models.users  # noqa: F401
 import models.course  # noqa: F401
+import models.business_logic  # noqa: F401 - register Intern 4 tables before create_all
 from services import course_service
 from services import user_services
 from services import instructor_service
 from services import admin_services
+from services import business_logic_service
 
 
 @asynccontextmanager
@@ -31,6 +34,8 @@ app.include_router(course_service.r, prefix="/courses", tags=["Courses"])
 app.include_router(user_services.r, prefix="/auth", tags=["Authenticate"])
 app.include_router(instructor_service.r, prefix="/instructors", tags=["Instructors"])
 app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
+app.include_router(business_logic_service.r, prefix="/business", tags=["Business Logic"])
+app.include_router(notification_router, prefix="/notifications", tags=["Notifications"])
 
 
 
