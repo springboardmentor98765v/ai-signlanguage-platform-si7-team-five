@@ -3,11 +3,8 @@ import { motion } from 'motion/react';
 import { Camera, CameraOff, Play, Square, RefreshCw, AlertCircle, Sparkles, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
 import { LessonStep } from '../types';
 import { aiApiBaseUrl } from '../utils/api';
-<<<<<<< HEAD
 import { submitPracticeAttempt } from '../utils/businessLogicApi';
-=======
 import { CinematicSection } from './CinematicMotion';
->>>>>>> 21c5eb5b19ee300388e8637d0a490c6f68cf9a2c
 
 interface PracticeViewProps {
   initialTargetStep?: { step: LessonStep; lessonName: string } | null;

@@ -536,11 +536,7 @@ export default function AdminDashboard() {
 
           </div>
         </div>
-<<<<<<< HEAD
-        </div>
-=======
       </div>
->>>>>>> 21c5eb5b19ee300388e8637d0a490c6f68cf9a2c
       )}
 
       {/* ---- SYSTEM STATUS TAB ---- */}

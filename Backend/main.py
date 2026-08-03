@@ -22,15 +22,10 @@ from services import course_service
 from services import user_services
 from services import instructor_service
 from services import admin_services
-<<<<<<< HEAD
 from services import business_logic_service
-
-=======
 from services import predictions
 from api_gateway import routers as gateway_routers
-from BD_Logic.main import app as bd_logic_app
 from utils import error_handdler
->>>>>>> 21c5eb5b19ee300388e8637d0a490c6f68cf9a2c
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -42,25 +37,19 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-     title="Sign Language Platform",
-   
-    version="3.0.0"
-    
-    
-  )
+    title="Sign Language Platform",
+    version="3.0.0",
+    lifespan=lifespan,
+)
 
 # Include course service router
 app.include_router(course_service.r, prefix="/lessons", tags=["Lessons"])
 app.include_router(user_services.r, prefix="/auth", tags=["Authenticate"])
 app.include_router(instructor_service.r, prefix="/instructors", tags=["Instructors"])
 app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
-<<<<<<< HEAD
 app.include_router(business_logic_service.r, prefix="/business", tags=["Business Logic"])
 app.include_router(notification_router, prefix="/notifications", tags=["Notifications"])
-=======
 app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
-app.mount("/bd_logic", bd_logic_app)
->>>>>>> 21c5eb5b19ee300388e8637d0a490c6f68cf9a2c
 
 error_handdler.init_error_handlers(app)
 for router in gateway_routers:
@@ -68,7 +57,7 @@ for router in gateway_routers:
 
 
 # Add CORS middleware
-    app.add_middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:3000",

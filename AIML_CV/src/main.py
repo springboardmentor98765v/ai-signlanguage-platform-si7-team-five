@@ -10,7 +10,12 @@ from fastapi.responses import JSONResponse
 from mediapipe import Image, ImageFormat
 from mediapipe.tasks import python as mp_tasks
 from mediapipe.tasks.python import vision
-from src.database import initialise_database, log_prediction
+# Works both when this service is started directly from AIML_CV and when it is
+# imported by the business-logic service from the repository root.
+try:
+    from .database import initialise_database, log_prediction
+except ImportError:
+    from src.database import initialise_database, log_prediction
 
 app = FastAPI(title="Sign Language AI Prediction Service")
 
