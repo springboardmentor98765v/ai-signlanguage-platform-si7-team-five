@@ -26,6 +26,7 @@ from services import business_logic_service
 from services import predictions
 from api_gateway import routers as gateway_routers
 from utils import error_handdler
+from BD_Logic.main import app as bd_logic_app
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -41,6 +42,9 @@ app = FastAPI(
     version="3.0.0",
     lifespan=lifespan,
 )
+
+# Mount the separate BD_Logic FastAPI app under /bd_logic
+app.mount("/bd_logic", bd_logic_app)
 
 # Include course service router
 app.include_router(course_service.r, prefix="/lessons", tags=["Lessons"])
@@ -92,6 +96,13 @@ def root():
 async def favicon():
     return Response(status_code=204)
 
+@app.get("/predict")
+def predict():
+    return {"status": "ok"}
+
+@app.post("/predict")
+def predict():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     import uvicorn
