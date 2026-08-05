@@ -92,6 +92,13 @@ def root():
 async def favicon():
     return Response(status_code=204)
 
+@app.get("/predict")
+def predict():
+    return {"status": "ok"}
+
+@app.post("/predict")
+def predict():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     import uvicorn
