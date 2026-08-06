@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Camera, CameraOff, Play, Square, RefreshCw, AlertCircle, Sparkles, CheckCircle2, ChevronRight, HelpCircle } from 'lucide-react';
 import { LessonStep } from '../types';
 import { aiApiBaseUrl } from '../utils/api';
+import { submitPracticeAttempt } from '../utils/businessLogicApi';
 import { CinematicSection } from './CinematicMotion';
 
 interface PracticeViewProps {
@@ -33,9 +34,11 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const recordedAttemptRef = useRef<string | null>(null);
+  const predictionInFlightRef = useRef(false);
 
   const captureAndPredict = async () => {
-    if (!videoRef.current || !isPracticing) return;
+    if (!videoRef.current || !isPracticing || predictionInFlightRef.current) return;
 
     const video = videoRef.current;
     if (video.readyState < 2) return;
@@ -52,8 +55,10 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
 
     const formData = new FormData();
     formData.append('file', blob, 'frame.jpg');
+    formData.append('expected_label', targetSign);
 
     try {
+      predictionInFlightRef.current = true;
       const response = await fetch(`${aiApiBaseUrl}/predict`, {
         method: 'POST',
         body: formData,
@@ -61,19 +66,44 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Prediction failed');
 
-      const predicted = data.predicted_sign || 'unknown';
+      if (!data.hand_detected && !data.predicted_sign) {
+        setPredictedSign('Searching...');
+        setConfidence(0);
+        setAccuracyScore(0);
+        setFeedback(data.message || 'No hand detected. Center one hand in the guide and hold still.');
+        setIsSignCorrect(null);
+        return;
+      }
+
+      const predicted = String(data.predicted_sign || 'unknown').toUpperCase();
       const confidenceValue = Number(data.confidence || 0) * 100;
+      const matchesTarget = predicted === targetSign.toUpperCase();
       setPredictedSign(predicted);
       setConfidence(confidenceValue);
-      setAccuracyScore(Math.min(100, Math.round(confidenceValue)));
-      setFeedback(predicted === targetSign || predicted === targetSign.toUpperCase()
+      setAccuracyScore(matchesTarget ? Math.min(100, Math.round(confidenceValue)) : 0);
+      setFeedback(matchesTarget
         ? 'Excellent alignment! Form matches the reference standards perfectly.'
         : 'Keep adjusting your hand shape and position to match the target sign.');
-      setIsSignCorrect(predicted === targetSign || predicted === targetSign.toUpperCase());
+      setIsSignCorrect(matchesTarget);
       setFeedbackHistory(prev => [`[AI] ${predicted} (${Math.round(confidenceValue)}%)`, ...prev.slice(0, 4)]);
+      const token = localStorage.getItem('asl_access_token');
+      const attemptKey = `${targetSign}:${predicted}`;
+      if (token && predicted !== 'unknown' && !recordedAttemptRef.current) {
+        recordedAttemptRef.current = attemptKey;
+        const assessment = await submitPracticeAttempt(token, {
+          expected_label: targetSign,
+          predicted_label: predicted,
+          confidence: Number(data.confidence || 0),
+        });
+        setAccuracyScore(assessment.score);
+        setFeedback(assessment.feedback);
+        setIsSignCorrect(assessment.is_correct);
+      }
     } catch (err) {
       console.warn('AI prediction failed; using fallback feedback.', err);
       setFeedback('AI model unavailable. Continue practicing while the classifier reconnects.');
+    } finally {
+      predictionInFlightRef.current = false;
     }
   };
 
@@ -82,14 +112,8 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     { symbol: 'A', desc: 'Fist with thumb flat against the side of the index finger.' },
     { symbol: 'B', desc: 'Flat hand, fingers together, thumb folded across palm.' },
     { symbol: 'C', desc: 'Curve fingers and thumb into a clear C shape.' },
-    { symbol: 'D', desc: 'Index pointing straight up; thumb and other fingers forming a circle.' },
-    { symbol: 'E', desc: 'Fingers curled tightly, resting on thumb folded across palm.' },
-    { symbol: 'HELLO', desc: 'Bring flat hand to forehead, salute outward slightly.' },
-    { symbol: 'THANK YOU', desc: 'Touch lips with fingers, move flat hand forward/down.' },
-    { symbol: 'PLEASE', desc: 'Rub flat dominant hand in a circular motion on chest.' },
-    { symbol: '1', desc: 'Palm facing you. Raise only index finger.' },
-    { symbol: '2', desc: 'Palm facing you. Raise index and middle fingers (V shape).' },
-    { symbol: '3', desc: 'Palm facing you. Raise thumb, index, and middle fingers.' },
+    { symbol: 'L', desc: 'Extend the thumb and index finger to form a clear L shape.' },
+    { symbol: 'Y', desc: 'Extend the thumb and little finger while folding the other fingers.' },
   ];
 
   // Handle stream creation/cleanup
@@ -138,6 +162,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     setAccuracyScore(0);
     setFeedback('Position your hand within the center framework and hold still...');
     setIsSignCorrect(null);
+    recordedAttemptRef.current = null;
   };
 
   const handleStopPractice = () => {
@@ -148,6 +173,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     setAccuracyScore(0);
     setFeedback('Assessment stopped. Ready for your next session.');
     setIsSignCorrect(null);
+    recordedAttemptRef.current = null;
   };
 
   useEffect(() => {
@@ -155,7 +181,7 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
     if (isPracticing) {
       intervalId = window.setInterval(() => {
         void captureAndPredict();
-      }, 3000);
+      }, 1200);
     } else {
       setFeedbackHistory([]);
     }
@@ -181,7 +207,8 @@ export default function PracticeView({ initialTargetStep, onNavigate }: Practice
       setConfidence(0);
       setAccuracyScore(0);
       setFeedback(`Scanning for hand gestures matching "${symbol}"...`);
-      setIsSignCorrect(null);
+    setIsSignCorrect(null);
+    recordedAttemptRef.current = null;
     }
   };
 

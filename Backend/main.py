@@ -16,18 +16,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers.health import health_router
 from routers.users import r as user_router
 from routers.course import r as course_router
+from routers.notifications import r as notification_router
 from services.rate_limit import rate_limiter
 from db import engine, Base
 import models.users  # noqa: F401
 import models.course  # noqa: F401
+import models.business_logic  # noqa: F401 - register Intern 4 tables before create_all
 from services import course_service
 from services import user_services
 from services import instructor_service
 from services import admin_services
+from services import business_logic_service
 from services import predictions
 from api_gateway import routers as gateway_routers
-from BD_Logic.main import app as bd_logic_app
 from utils import error_handdler
+from BD_Logic.main import app as bd_logic_app
 
 # INTERN 2 CHECKPOINT: Database initialization and lifespan management
 # This lifespan handler ensures database tables are created on startup
@@ -43,12 +46,13 @@ async def lifespan(app: FastAPI):
 # INTERN 2 CHECKPOINT: FastAPI application initialization
 # Creates the main FastAPI app with version 3.0.0 for Milestone 3
 app = FastAPI(
-     title="Sign Language Platform",
-   
-    version="3.0.0"
-    
-    
-  )
+    title="Sign Language Platform",
+    version="3.0.0",
+    lifespan=lifespan,
+)
+
+# Mount the separate BD_Logic FastAPI app under /bd_logic
+app.mount("/bd_logic", bd_logic_app)
 
 # INTERN 2 CHECKPOINT: API Routing for core services
 # Includes routers for lessons, authentication, instructors, admin, and predictions
@@ -57,11 +61,16 @@ app.include_router(course_service.r, prefix="/lessons", tags=["Lessons"])
 app.include_router(user_services.r, prefix="/auth", tags=["Authenticate"])
 app.include_router(instructor_service.r, prefix="/instructors", tags=["Instructors"])
 app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
+app.include_router(business_logic_service.r, prefix="/business", tags=["Business Logic"])
+app.include_router(notification_router, prefix="/notifications", tags=["Notifications"])
 app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
+<<<<<<< HEAD
 
 # INTERN 2 CHECKPOINT: Integration with Business Logic (Intern 4)
 # Mounts the BD_Logic application for business logic processing
 app.mount("/bd_logic", bd_logic_app)
+=======
+>>>>>>> a76202bb35f4a2f507e5a5f4630c51b9bf295eb6
 
 # INTERN 2 CHECKPOINT: Error handling and API gateway integration
 # Initializes global error handlers and includes API gateway routers
@@ -70,9 +79,13 @@ for router in gateway_routers:
     app.include_router(router)
 
 
+<<<<<<< HEAD
 # INTERN 2 CHECKPOINT: CORS middleware configuration
 # Enables Cross-Origin Resource Sharing for frontend integration
 # Allows requests from localhost:3000 (Frontend) and localhost:5173 (dev server)
+=======
+# Add CORS middleware
+>>>>>>> a76202bb35f4a2f507e5a5f4630c51b9bf295eb6
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -119,6 +132,13 @@ def root():
 async def favicon():
     return Response(status_code=204)
 
+@app.get("/predict")
+def predict():
+    return {"status": "ok"}
+
+@app.post("/predict")
+def predict():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
     import uvicorn

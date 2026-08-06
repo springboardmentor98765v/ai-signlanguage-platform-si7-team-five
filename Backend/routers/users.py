@@ -9,8 +9,18 @@ from typing import Dict
 r = APIRouter()
 
 @r.get("/me")
-def get_me(user: Dict = Depends(get_current_user)):
-    return user
+def get_me(user: Dict = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Return the authenticated user's real account profile, not only token claims."""
+    username = user.get("sub")
+    db_user = db.query(User).filter(User.username == username).first()
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User account not found")
+    return {
+        "id": db_user.id,
+        "username": db_user.username,
+        "email": db_user.email,
+        "role": db_user.role,
+    }
 @r.post("/register")
 def register_user(user: UserCreate, db: Session = Depends(get_db)):
     existing = (

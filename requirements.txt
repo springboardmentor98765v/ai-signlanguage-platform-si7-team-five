@@ -5,6 +5,8 @@ python-jose[cryptography]
 bcrypt
 python-dotenv
 pydantic
+email-validator
+python-multipart
 psycopg2-binary
 httpx
 scikit-learn

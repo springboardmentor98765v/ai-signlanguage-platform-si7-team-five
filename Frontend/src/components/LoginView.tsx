@@ -7,8 +7,22 @@ import { apiBaseUrl } from '../utils/api';
    TYPES
    ═══════════════════════════════════════════════════════════════ */
 interface LoginViewProps {
-  onLogin: (email: string, name: string, role: 'Learner' | 'Instructor' | 'Accessibility Trainer') => void;
+  onLogin: (email: string, name: string, role: 'Learner' | 'Instructor' | 'Accessibility Trainer', userId?: string) => void;
   onNavigateToRegister: () => void;
+}
+
+function getApiErrorMessage(payload: unknown, fallback: string): string {
+  if (!payload || typeof payload !== 'object') return fallback;
+  const detail = (payload as { detail?: unknown; message?: unknown }).detail
+    ?? (payload as { message?: unknown }).message;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    const messages = detail
+      .map((item) => item && typeof item === 'object' && 'msg' in item ? String(item.msg) : '')
+      .filter(Boolean);
+    return messages.join('. ') || fallback;
+  }
+  return fallback;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -285,9 +299,21 @@ export default function LoginView({ onLogin, onNavigateToRegister }: LoginViewPr
         body: JSON.stringify({ username: email, password }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Login failed');
+      if (!response.ok) throw new Error(getApiErrorMessage(data, 'Login failed. Check your email and password.'));
       localStorage.setItem('asl_access_token', data.access_token);
-      onLogin(email, 'Signed In User', data.role || 'Learner');
+      const profileResponse = await fetch(`${apiBaseUrl}/auth/me`, {
+        headers: { Authorization: `Bearer ${data.access_token}` },
+      });
+      const profile = await profileResponse.json();
+      if (!profileResponse.ok) {
+        throw new Error(getApiErrorMessage(profile, 'Signed in, but could not load your account details.'));
+      }
+      onLogin(
+        profile.email,
+        profile.username,
+        profile.role || 'Learner',
+        String(profile.id),
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
