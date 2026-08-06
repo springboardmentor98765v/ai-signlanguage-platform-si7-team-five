@@ -1,3 +1,7 @@
+// INTERN 4 CHECKPOINT: Leaderboard Service
+// This service manages leaderboard functionality for the sign language platform
+// It handles ranking, filtering, sorting, and pagination of user performance data
+
 import { LeaderboardUser } from '../types';
 import { mockLeaderboardUsers } from '../mockData';
 
@@ -23,6 +27,9 @@ export interface FetchLeaderboardResult {
 class LeaderboardService {
   private users: LeaderboardUser[] = [...mockLeaderboardUsers];
 
+  // INTERN 4 CHECKPOINT: Leaderboard data retrieval with filtering and sorting
+  // Retrieves leaderboard data with support for time range filtering, sorting by metrics,
+  // search functionality, and pagination
   async getLeaderboard(params: FetchLeaderboardParams = {}): Promise<FetchLeaderboardResult> {
     await new Promise((r) => setTimeout(r, 250));
 

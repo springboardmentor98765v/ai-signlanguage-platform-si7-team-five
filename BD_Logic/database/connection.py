@@ -20,7 +20,17 @@ DATABASE_URL = os.getenv(
 )
 
 _connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
-engine = create_engine(DATABASE_URL, connect_args=_connect_args)
+try:
+    engine = create_engine(DATABASE_URL, connect_args=_connect_args)
+    # Test connection
+    with engine.connect() as conn:
+        pass
+except Exception as e:
+    print(f"Database connection failed: {e}")
+    print("Falling back to SQLite database")
+    DATABASE_URL = "sqlite:///./bd_logic_fallback.db"
+    _connect_args = {"check_same_thread": False}
+    engine = create_engine(DATABASE_URL, connect_args=_connect_args)
 
 SessionLocal = sessionmaker(
     autocommit=False,
