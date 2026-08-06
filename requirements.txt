@@ -15,3 +15,7 @@ mediapipe
 opencv-python
 numpy
 pandas
+reportlab
+openpyxl
+xlsxwriter
+websockets

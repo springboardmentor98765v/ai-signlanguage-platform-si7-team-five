@@ -14,6 +14,20 @@ from datetime import datetime, timezone
 
 DEFAULT_DB = Path(__file__).resolve().parents[2] / "Backend" / "app.db"
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_DB.as_posix()}")
+
+# INTERN 2 CHECKPOINT: Database connection testing with fallback
+# Tests database connectivity and falls back to SQLite if connection fails
+# This ensures the application can run in different environments
+if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
+    try:
+        test_engine = create_engine(DATABASE_URL)
+        with test_engine.connect() as conn:
+            pass
+    except Exception as e:
+        print(f"Database connection failed: {e}")
+        print("Falling back to SQLite database")
+        DATABASE_URL = f"sqlite:///{DEFAULT_DB.as_posix()}"
+
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -30,7 +44,10 @@ class AIPredictionLog(Base):
 
 
 def initialise_database() -> None:
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Database initialization skipped: {e}")
 
 
 def log_prediction(expected_label: str | None, predicted_label: str, confidence: float) -> None:

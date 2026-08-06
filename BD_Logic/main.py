@@ -1,6 +1,7 @@
 # INTERN 4 CHECKPOINT: Business Logic Application Entry Point
 # This main.py file serves as the entry point for the Business Logic domain
 # It implements scoring, feedback, analytics, recommendation, and assessment engines
+# Now includes real-time gamification APIs for badges, streaks, and leaderboard
 
 import os
 import sys
@@ -34,6 +35,13 @@ from BD_Logic.api.recommendation_api import router as recommendation_router
 from BD_Logic.api.certificate_api import router as certificate_router
 from BD_Logic.api.export_api import router as export_router
 from BD_Logic.api.report_api import router as report_router
+
+# INTERN 4 CHECKPOINT: Real-time gamification API imports
+# Imports new APIs for badges, streaks, and leaderboard with WebSocket support
+from BD_Logic.api.badge_api import router as badge_router
+from BD_Logic.api.streak_api import router as streak_router
+from BD_Logic.api.leaderboard_api import router as leaderboard_router
+from BD_Logic.api.gamification_api import router as gamification_router
 
 # INTERN 4 CHECKPOINT: Database and middleware imports
 # Imports database connection, exception handling, and health check APIs
@@ -78,6 +86,13 @@ app.include_router(api_router, prefix="/api/v1")
 app.include_router(report_router, prefix="/api/v1")
 app.include_router(certificate_router, prefix="/api/v1")
 app.include_router(health_router, prefix="/api/v1")
+
+# INTERN 4 CHECKPOINT: Real-time gamification router registration
+# Registers new routers for badges, streaks, and leaderboard with WebSocket support
+app.include_router(badge_router, prefix="/api/v1")
+app.include_router(streak_router, prefix="/api/v1")
+app.include_router(leaderboard_router, prefix="/api/v1")
+app.include_router(gamification_router, prefix="/api/v1")
 
 # INTERN 4 CHECKPOINT: Global exception handler
 # Adds global exception handling for consistent error responses

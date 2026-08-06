@@ -64,13 +64,10 @@ app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
 app.include_router(business_logic_service.r, prefix="/business", tags=["Business Logic"])
 app.include_router(notification_router, prefix="/notifications", tags=["Notifications"])
 app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
-<<<<<<< HEAD
 
 # INTERN 2 CHECKPOINT: Integration with Business Logic (Intern 4)
 # Mounts the BD_Logic application for business logic processing
 app.mount("/bd_logic", bd_logic_app)
-=======
->>>>>>> a76202bb35f4a2f507e5a5f4630c51b9bf295eb6
 
 # INTERN 2 CHECKPOINT: Error handling and API gateway integration
 # Initializes global error handlers and includes API gateway routers
@@ -79,13 +76,9 @@ for router in gateway_routers:
     app.include_router(router)
 
 
-<<<<<<< HEAD
 # INTERN 2 CHECKPOINT: CORS middleware configuration
 # Enables Cross-Origin Resource Sharing for frontend integration
 # Allows requests from localhost:3000 (Frontend) and localhost:5173 (dev server)
-=======
-# Add CORS middleware
->>>>>>> a76202bb35f4a2f507e5a5f4630c51b9bf295eb6
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

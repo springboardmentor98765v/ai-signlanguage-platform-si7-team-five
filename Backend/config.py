@@ -14,14 +14,10 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".env"))
 SECRET_KEY = os.getenv("SECRET_KEY", "")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
-<<<<<<< HEAD
 
 # INTERN 2 CHECKPOINT: Database configuration
 # Loads database URL from environment with fallback for local development
-DATABASE_URL = os.getenv("DATABASE_URL", "")
-=======
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
->>>>>>> a76202bb35f4a2f507e5a5f4630c51b9bf295eb6
 
 # INTERN 2 CHECKPOINT: Database driver validation
 # Ensures psycopg2 is available for PostgreSQL connections
