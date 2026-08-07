@@ -1,0 +1,6 @@
+Field,Value
+generated_on,2026-08-07 12:29:58
+student,TestUser
+analytics,"{'average_score': 0, 'total_attempts': 0, 'best_score': 0, 'weak_signs': []}"
+recommendations,[]
+certificate,"{'student_name': 'TestUser', 'average_score': 0, 'eligible': False, 'certificate_id': None}"

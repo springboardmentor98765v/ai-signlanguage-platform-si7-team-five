@@ -36,26 +36,13 @@ manager = ConnectionManager()
 def update_streak(user_id: int):
     """
     Update user's streak based on practice activity
-    
+
     Automatically calculates streak based on practice history
     Awards streak-based badges when milestones are reached
     """
     try:
         streak = streak_service.update_streak(user_id)
-        
-        # Broadcast real-time update (commented out for now - needs async context)
-        # message = {
-        #     "type": "streak_updated",
-        #     "user_id": user_id,
-        #     "streak": {
-        #         "current_streak": streak.current_streak,
-        #         "longest_streak": streak.longest_streak,
-        #         "total_practice_days": streak.total_practice_days,
-        #         "is_active": streak.is_active,
-        #         "last_practice_date": streak.last_practice_date.isoformat() if streak.last_practice_date else None
-        #     }
-        # }
-        
+
         return StreakUpdateResponse(
             current_streak=streak.current_streak,
             longest_streak=streak.longest_streak,
@@ -64,7 +51,9 @@ def update_streak(user_id: int):
             last_practice_date=streak.last_practice_date,
             streak_start_date=streak.streak_start_date
         )
-        
+
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=f"Unprocessable content: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update streak: {str(e)}")
 

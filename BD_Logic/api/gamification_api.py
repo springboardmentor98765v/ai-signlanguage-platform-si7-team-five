@@ -14,13 +14,13 @@ gamification_service = GamificationIntegration()
 def process_practice_complete(request: PracticeCompleteRequest):
     """
     Process a completed practice session and update all gamification systems
-    
+
     This is the main integration endpoint that coordinates:
     - Streak updates
     - Badge eligibility checks and awards
     - Leaderboard updates
     - XP calculations
-    
+
     Returns comprehensive results from all gamification systems
     """
     try:
@@ -32,6 +32,8 @@ def process_practice_complete(request: PracticeCompleteRequest):
             "status": "success",
             "results": results
         }
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=f"Unprocessable content: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process practice: {str(e)}")
 

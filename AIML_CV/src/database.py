@@ -12,23 +12,29 @@ from sqlalchemy import Column, DateTime, Float, Integer, String, create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 from datetime import datetime, timezone
 
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+
+# Load environment variables from .env file
+# First try to load from root directory, then fallback to local directory
+if load_dotenv is not None:
+    root_dir = Path(__file__).resolve().parents[2]
+    dotenv_path = root_dir / ".env"
+    if dotenv_path.exists():
+        load_dotenv(dotenv_path)
+        print(f"Loaded environment variables from: {dotenv_path}")
+    else:
+        print("No root .env file found, using system environment variables")
+
 DEFAULT_DB = Path(__file__).resolve().parents[2] / "Backend" / "app.db"
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DEFAULT_DB.as_posix()}")
 
-# INTERN 2 CHECKPOINT: Database connection testing with fallback
-# Tests database connectivity and falls back to SQLite if connection fails
-# This ensures the application can run in different environments
-if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
-    try:
-        test_engine = create_engine(DATABASE_URL)
-        with test_engine.connect() as conn:
-            pass
-    except Exception as e:
-        print(f"Database connection failed: {e}")
-        print("Falling back to SQLite database")
-        DATABASE_URL = f"sqlite:///{DEFAULT_DB.as_posix()}"
+# Using SQLite database (PostgreSQL not available)
+print(f"Using database: {DATABASE_URL}")
 
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {})
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

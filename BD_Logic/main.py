@@ -49,6 +49,7 @@ from BD_Logic.database.connection import Base
 from BD_Logic.database.connection import engine
 from BD_Logic.api.health_check_api import router as health_router
 from BD_Logic.middleware.exception_handler import exception_handler as global_exception_handler
+from BD_Logic.middleware.auth_middleware import AuthMiddleware
 from BD_Logic.api.version_api import (
     router as version_router
 )
@@ -67,6 +68,10 @@ app = FastAPI(
     version="2.0.0"
 
 )
+
+# INTERN 4 CHECKPOINT: Add authentication middleware
+# Adds authentication middleware for API security using same tokens as Backend
+app.add_middleware(AuthMiddleware)
 
 # INTERN 4 CHECKPOINT: Database table creation
 # Creates all database tables defined in the models

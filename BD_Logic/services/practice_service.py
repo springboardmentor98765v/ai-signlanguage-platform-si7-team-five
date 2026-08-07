@@ -9,23 +9,22 @@ from BD_Logic.repository.assessment_repository import (
 practice_sessions = {}
 
 def start_practice(data):
+    try:
+        session = PracticeSession(
+            user_id=data.user_id,
+            lesson_id=data.lesson_id,
+            expected_sign=data.expected_sign
+        )
 
-    session = PracticeSession(
-        user_id=data.user_id,
-        lesson_id=data.lesson_id,
-        expected_sign=data.expected_sign
-    )
+        save(session)
 
-    
-    save(session)
-    
-    
-    return {
-        
-        "session_id": session.session_id,
-        "status": session.status,
-        "success": True,
-    }
+        return {
+            "session_id": session.session_id,
+            "status": session.status,
+            "success": True,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to start practice session: {str(e)}")
 
 def record_practice(session_id, accuracy):
     session = get(session_id)

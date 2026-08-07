@@ -57,15 +57,24 @@ def get_leaderboard(
 def get_user_rank(user_id: int):
     """
     Get a specific user's leaderboard entry and rank
-    
+
     Returns user's current rank, points, and statistics
     """
     try:
         rank_data = leaderboard_service.get_user_rank(user_id)
-        
+
         if not rank_data:
-            raise HTTPException(status_code=404, detail="User not found on leaderboard")
-        
+            # Return default structure instead of 404
+            return {
+                "user_id": user_id,
+                "current_rank": None,
+                "total_points": 0,
+                "weekly_points": 0,
+                "average_accuracy": 0.0,
+                "total_practices": 0,
+                "message": "User not yet on leaderboard"
+            }
+
         return rank_data
     except HTTPException:
         raise
@@ -76,7 +85,7 @@ def get_user_rank(user_id: int):
 def update_leaderboard(request: LeaderboardUpdateRequest):
     """
     Update leaderboard entry after practice session
-    
+
     Automatically calculates points and updates rank
     Triggers real-time update via WebSocket
     """
@@ -85,20 +94,7 @@ def update_leaderboard(request: LeaderboardUpdateRequest):
             request.user_id,
             request.practice_data
         )
-        
-        # Broadcast real-time update (commented out for now - needs async context)
-        # message = {
-        #     "type": "leaderboard_updated",
-        #     "user_id": request.user_id,
-        #     "entry": {
-        #         "total_points": entry.total_points,
-        #         "weekly_points": entry.weekly_points,
-        #         "average_accuracy": entry.average_accuracy,
-        #         "total_practices": entry.total_practices,
-        #         "current_rank": entry.current_rank
-        #     }
-        # }
-        
+
         return {
             "status": "success",
             "entry": {
@@ -110,7 +106,7 @@ def update_leaderboard(request: LeaderboardUpdateRequest):
             }
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update leaderboard: {str(e)}")
+        raise HTTPException(status_code=422, detail=f"Unprocessable content: {str(e)}")
 
 @router.post("/leaderboard/bonus")
 def add_bonus_points(user_id: int, bonus_type: str, amount: int):

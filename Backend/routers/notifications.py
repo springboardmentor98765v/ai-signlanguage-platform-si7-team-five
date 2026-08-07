@@ -47,10 +47,15 @@ def my_notifications(db: Session = Depends(get_db), token: dict = Depends(get_cu
 
 @r.put("/{notification_id}/read")
 def mark_read(notification_id: int, db: Session = Depends(get_db), token: dict = Depends(get_current_user)):
-    user = _current_db_user(token, db)
-    row = db.query(Notification).filter(Notification.id == notification_id, Notification.user_id == user.id).first()
-    if not row:
-        raise HTTPException(status_code=404, detail="Notification not found")
-    row.is_read = True
-    db.commit()
-    return {"id": row.id, "is_read": True, "updated_at": datetime.now(timezone.utc).isoformat()}
+    try:
+        user = _current_db_user(token, db)
+        row = db.query(Notification).filter(Notification.id == notification_id, Notification.user_id == user.id).first()
+        if not row:
+            raise HTTPException(status_code=404, detail="Notification not found")
+        row.is_read = True
+        db.commit()
+        return {"id": row.id, "is_read": True, "updated_at": datetime.now(timezone.utc).isoformat()}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark notification as read: {str(e)}")

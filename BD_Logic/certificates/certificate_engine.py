@@ -48,67 +48,107 @@ class CertificateEngine:
     def export_pdf(self, certificate_data, filename):
         """Export certificate to PDF format with professional design"""
         output = BytesIO()
-        doc = SimpleDocTemplate(output, pagesize=landscape(letter))
-        
+        doc = SimpleDocTemplate(output, pagesize=landscape(letter),
+                              leftMargin=72, rightMargin=72,
+                              topMargin=72, bottomMargin=72)
+
         elements = []
         styles = getSampleStyleSheet()
-        
+
         # Custom styles
         title_style = styles['Title']
         title_style.alignment = TA_CENTER
-        title_style.fontSize = 36
-        title_style.textColor = colors.HexColor('#2E4053')
-        
+        title_style.fontSize = 40
+        title_style.textColor = colors.HexColor('#1A5276')
+        title_style.fontName = 'Helvetica-Bold'
+
         name_style = styles['Heading1']
         name_style.alignment = TA_CENTER
-        name_style.fontSize = 48
-        name_style.textColor = colors.HexColor('#1A5276')
-        
-        # Certificate border
-        border_style = TableStyle([
-            ('GRID', (0, 0), (-1, -1), 3, colors.HexColor('#1A5276')),
+        name_style.fontSize = 52
+        name_style.textColor = colors.HexColor('#2E4053')
+        name_style.fontName = 'Helvetica-Bold'
+
+        subtitle_style = styles['Heading2']
+        subtitle_style.alignment = TA_CENTER
+        subtitle_style.fontSize = 24
+        subtitle_style.textColor = colors.HexColor('#5D6D7E')
+        subtitle_style.fontName = 'Helvetica'
+
+        # Create decorative border
+        border_data = [
+            ['', '', '', ''],
+            ['', '', '', ''],
+            ['', '', '', ''],
+            ['', '', '', '']
+        ]
+        border_table = Table(border_data, colWidths=[1.5*inch, 5*inch, 5*inch, 1.5*inch],
+                           rowHeights=[0.3*inch, 2.5*inch, 2*inch, 0.3*inch])
+        border_table.setStyle(TableStyle([
+            ('GRID', (0, 0), (-1, -1), 4, colors.HexColor('#1A5276')),
             ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#F8F9F9')),
-        ])
-        
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+
         # Certificate content
-        elements.append(Spacer(1, 0.5*inch))
-        
-        # Title
-        title = Paragraph("Certificate of Achievement", title_style)
+        elements.append(Spacer(1, 0.4*inch))
+
+        # Title with decorative line
+        title = Paragraph("CERTIFICATE OF ACHIEVEMENT", title_style)
         elements.append(title)
-        elements.append(Spacer(1, 0.3*inch))
-        
-        # Student name
-        name = Paragraph(f"This is to certify that", styles['Normal'])
-        name.alignment = TA_CENTER
-        elements.append(name)
-        
+        elements.append(Spacer(1, 0.2*inch))
+
+        # Decorative line
+        line_data = [['']]
+        line_table = Table(line_data, colWidths=[6*inch], rowHeights=[0.1*inch])
+        line_table.setStyle(TableStyle([
+            ('LINEABOVE', (0, 0), (-1, 0), 2, colors.HexColor('#1A5276')),
+            ('LINEBELOW', (0, 0), (-1, 0), 2, colors.HexColor('#1A5276')),
+        ]))
+        elements.append(line_table)
+        elements.append(Spacer(1, 0.4*inch))
+
+        # Student name section
+        present_text = Paragraph("This is to certify that", subtitle_style)
+        present_text.alignment = TA_CENTER
+        elements.append(present_text)
+        elements.append(Spacer(1, 0.1*inch))
+
         student_name = Paragraph(certificate_data['student_name'], name_style)
         elements.append(student_name)
-        elements.append(Spacer(1, 0.2*inch))
-        
-        # Course info
-        course = Paragraph(f"Has successfully completed the course", styles['Normal'])
-        course.alignment = TA_CENTER
-        elements.append(course)
-        
+        elements.append(Spacer(1, 0.3*inch))
+
+        # Course completion text
+        completion_text = Paragraph("Has successfully completed the course", subtitle_style)
+        completion_text.alignment = TA_CENTER
+        elements.append(completion_text)
+        elements.append(Spacer(1, 0.1*inch))
+
         course_name = Paragraph(certificate_data['course_name'], styles['Heading2'])
         course_name.alignment = TA_CENTER
+        course_name.fontSize = 28
+        course_name.textColor = colors.HexColor('#1A5276')
         elements.append(course_name)
-        elements.append(Spacer(1, 0.3*inch))
-        
-        # Certificate details
-        details = Paragraph(
-            f"Certificate ID: {certificate_data['certificate_id']}<br/>"
-            f"Issue Date: {certificate_data['issue_date']}",
-            styles['Normal']
-        )
-        details.alignment = TA_CENTER
-        elements.append(details)
-        
+        elements.append(Spacer(1, 0.5*inch))
+
+        # Certificate details in a table
+        details_data = [
+            [f"<b>Certificate ID:</b> {certificate_data['certificate_id']}",
+             f"<b>Issue Date:</b> {certificate_data['issue_date']}"]
+        ]
+        details_table = Table(details_data, colWidths=[3*inch, 3*inch])
+        details_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 12),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#5D6D7E')),
+        ]))
+        elements.append(details_table)
+
+        # Build PDF
         doc.build(elements)
         output.seek(0)
-        
+
         return StreamingResponse(
             output,
             media_type="application/pdf",

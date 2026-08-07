@@ -1,12 +1,14 @@
 import requests
 import json
 
-BASE_URL = "http://localhost:8003"
+BASE_URL = "http://localhost:8004"
 
 def test_endpoint(url, description):
     try:
         response = requests.get(url)
         print(f"[PASS] {description}: {response.status_code}")
+        if response.status_code >= 400:
+            print(f"  Response: {response.text}")
         return response.status_code
     except Exception as e:
         print(f"[FAIL] {description}: Error - {str(e)}")
@@ -16,6 +18,8 @@ def test_post_endpoint(url, data, description):
     try:
         response = requests.post(url, json=data)
         print(f"[PASS] {description}: {response.status_code}")
+        if response.status_code >= 400:
+            print(f"  Response: {response.text}")
         return response.status_code
     except Exception as e:
         print(f"[FAIL] {description}: Error - {str(e)}")

@@ -1,8 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile, File
 from services import csv_upload_service
 
 router = APIRouter()
 
 @router.post("/admin/lessons/bulk-upload")
-def bulk_upload(file_path: str):
-    return csv_upload_service.bulk_upload_lessons(file_path)
+async def bulk_upload(file: UploadFile = File(...)):
+    """Upload CSV file for bulk lesson creation"""
+    return await csv_upload_service.bulk_upload_lessons(file)

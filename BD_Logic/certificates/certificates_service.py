@@ -39,8 +39,7 @@ class CertificateService:
         certificate_info = self.generate_certificate(user_id, student_name)
 
         if not certificate_info["eligible"] and not bypass_eligibility:
-            from fastapi import HTTPException
-            raise HTTPException(status_code=400, detail="Student not eligible for certificate. Average score must be >= 85%.")
+            return {"error": "Student not eligible for certificate. Average score must be >= 85%."}
         
         # Generate full certificate data
         certificate_data = self.certificates.generate_certificate_data(

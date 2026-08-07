@@ -7,7 +7,17 @@ import importlib
 import os
 
 # Load environment variables from .env file
-load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".env"))
+# First try to load from local directory, then fallback to root directory
+local_env_path = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(local_env_path):
+    load_dotenv(dotenv_path=local_env_path)
+    print(f"Loaded environment variables from: {local_env_path}")
+else:
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    env_path = os.path.join(root_dir, ".env")
+    if os.path.exists(env_path):
+        load_dotenv(dotenv_path=env_path)
+        print(f"Loaded environment variables from: {env_path}")
 
 # INTERN 2 CHECKPOINT: Security configuration
 # JWT secret key and algorithm for token-based authentication
@@ -27,16 +37,5 @@ if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
     except ImportError:
         pass
 
-# INTERN 2 CHECKPOINT: Database connection testing with fallback
-# Tests database connectivity and falls back to SQLite if connection fails
-# This ensures the application can run in different environments
-if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
-    try:
-        from sqlalchemy import create_engine
-        test_engine = create_engine(DATABASE_URL)
-        with test_engine.connect() as conn:
-            pass
-    except Exception as e:
-        print(f"Database connection failed: {e}")
-        print("Falling back to SQLite database")
-        DATABASE_URL = "sqlite:///./backend_fallback.db"
+# Using SQLite database (PostgreSQL not available)
+print(f"Using database: {DATABASE_URL}")

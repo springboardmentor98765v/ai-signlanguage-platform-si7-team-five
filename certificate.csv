@@ -1,0 +1,2 @@
+certificate_id,student_name,user_id,course_name,issue_date,status,average_score,eligible
+a5ad42a2,TestUser,1,Sign Language Mastery,2026-08-07,Issued,0,False

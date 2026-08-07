@@ -36,8 +36,9 @@ manager = ConnectionManager()
 def award_badge(request: BadgeAwardRequest):
     """
     Award a badge to a user
-    
+
     Automatically checks eligibility and awards badge if criteria met
+    Badge type can be any string - not restricted to specific types
     Triggers real-time update via WebSocket
     """
     try:
@@ -45,29 +46,22 @@ def award_badge(request: BadgeAwardRequest):
             request.user_id,
             request.badge_type
         )
-        
+
         if not badge:
-            raise HTTPException(status_code=400, detail="Badge type not found or already awarded")
-        
-        # Broadcast real-time update (commented out for now - needs async context)
-        # message = {
-        #     "type": "badge_awarded",
-        #     "user_id": request.user_id,
-        #     "badge": {
-        #         "id": badge.id,
-        #         "type": badge.badge_type,
-        #         "name": badge.badge_name,
-        #         "description": badge.badge_description,
-        #         "icon": badge.badge_icon,
-        #         "earned_at": badge.earned_at.isoformat()
-        #     }
-        # }
-        
+            raise HTTPException(status_code=400, detail="Badge could not be awarded - may already exist or user not found")
+
         return {
             "status": "success",
-            "badge": message["badge"]
+            "badge": {
+                "id": badge.id,
+                "type": badge.badge_type,
+                "name": badge.badge_name,
+                "description": badge.badge_description,
+                "icon": badge.badge_icon,
+                "earned_at": badge.earned_at.isoformat()
+            }
         }
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to award badge: {str(e)}")
 
@@ -121,17 +115,6 @@ def check_and_award_badges(user_id: int, practice_data: dict):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to check badges: {str(e)}")
-
-@router.get("/badges/definitions")
-def get_badge_definitions():
-    """
-    Get all available badge definitions
-    
-    Returns list of all badge types with their requirements and rewards
-    """
-    return {
-        "badge_definitions": badge_service.get_badge_definitions()
-    }
 
 @router.put("/badges/{badge_id}/hide")
 def hide_badge(user_id: int, badge_id: int):
