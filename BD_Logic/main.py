@@ -65,7 +65,7 @@ initialize_logger()
 app = FastAPI(
     title="AI Sign Language Platform",
     version="2.0.0"
-    
+
 )
 
 # INTERN 4 CHECKPOINT: Database table creation
@@ -85,6 +85,7 @@ app.include_router(recommendation_router, prefix="/api/v1")
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(report_router, prefix="/api/v1")
 app.include_router(certificate_router, prefix="/api/v1")
+app.include_router(export_router, prefix="/api/v1")
 app.include_router(health_router, prefix="/api/v1")
 
 # INTERN 4 CHECKPOINT: Real-time gamification router registration

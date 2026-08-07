@@ -20,7 +20,7 @@ class RecommendationService:
 
         summary=self.engine.generate_summary(history)
 
-        return self.recommendation.generate(
+        return self.recommendation.recommend(
 
             summary["weak_signs"]
 

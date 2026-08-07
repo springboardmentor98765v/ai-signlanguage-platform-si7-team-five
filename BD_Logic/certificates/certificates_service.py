@@ -33,13 +33,14 @@ class CertificateService:
             "certificate_id": certificate_id
         }
     
-    def export_certificate(self, user_id, student_name, export_format, course_name="Sign Language Mastery"):
+    def export_certificate(self, user_id, student_name, export_format, course_name="Sign Language Mastery", bypass_eligibility=False):
         """Export certificate in specified format with file download capability"""
-        # First check eligibility
+        # First check eligibility (can be bypassed for testing)
         certificate_info = self.generate_certificate(user_id, student_name)
-        
-        if not certificate_info["eligible"]:
-            return {"error": "Student not eligible for certificate. Average score must be >= 85%."}
+
+        if not certificate_info["eligible"] and not bypass_eligibility:
+            from fastapi import HTTPException
+            raise HTTPException(status_code=400, detail="Student not eligible for certificate. Average score must be >= 85%.")
         
         # Generate full certificate data
         certificate_data = self.certificates.generate_certificate_data(

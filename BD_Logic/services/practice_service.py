@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from BD_Logic.model.practice_session import PracticeSession
 from BD_Logic.repository.assessment_repository import (
     save,
@@ -29,9 +30,7 @@ def start_practice(data):
 def record_practice(session_id, accuracy):
     session = get(session_id)
     if session is None:
-        return {
-            "success": False,
-        }
+        raise HTTPException(status_code=404, detail="Practice session not found")
         
     session.attempt_count += 1
     session.accuracy = accuracy
@@ -49,9 +48,7 @@ def record_practice(session_id, accuracy):
 def end_practice(session_id):
     session = get(session_id)
     if session is None:
-        return {
-            "success": False,
-        }
+        raise HTTPException(status_code=404, detail="Practice session not found")
     session.finish()
     update(session)
     
