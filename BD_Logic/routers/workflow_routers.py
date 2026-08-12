@@ -10,7 +10,10 @@ def workflow(
     assessment: AssessmentRequest, 
     analytics: AnalyticsRequest
 ):
-    return complete_practice(
-        assessment, 
-        analytics
-    )
+    try:
+        return complete_practice(
+            assessment, 
+            analytics
+        )
+    except Exception as e:
+        return {"status": "failed", "message": str(e), "status_code": 500}

@@ -18,18 +18,24 @@ router = APIRouter(prefix="/practice", tags=["Practice"])
 @router.post("/start")
 
 def start_session(request: StartPracticeRequest):
-
-    return start_practice(request)
+    try:
+        return start_practice(request)
+    except Exception as e:
+        return {"status": "failed", "message": str(e), "status_code": 500}
 
 @router.post("/attempt")
 def attempt(request: AttemptRequest):
-
-    return record_practice(request.session_id, request.accuracy)
+    try:
+        return record_practice(request.session_id, request.accuracy)
+    except Exception as e:
+        return {"status": "failed", "message": str(e), "status_code": 500}
 
 
 
 @router.post("/end")
 
 def end_session(request: EndPracticeResponse):
-
-    return end_practice(request.session_id)
+    try:
+        return end_practice(request.session_id)
+    except Exception as e:
+        return {"status": "failed", "message": str(e), "status_code": 500}

@@ -112,19 +112,19 @@ def update_leaderboard(request: LeaderboardUpdateRequest):
 def add_bonus_points(user_id: int, bonus_type: str, amount: int):
     """
     Add bonus points for achievements
-    
+
     Used for awarding extra points for badges, level-ups, etc.
     """
     try:
         success = leaderboard_service.add_bonus_points(user_id, bonus_type, amount)
         if success:
-            return {"status": "success", "message": f"Added {amount} bonus points"}
+            return {"status": "success", "message": f"Added {amount} bonus points for {bonus_type}"}
         else:
-            raise HTTPException(status_code=404, detail="User not found on leaderboard")
+            return {"status": "failed", "message": "User not found on leaderboard"}
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to add bonus points: {str(e)}")
+        return {"status": "failed", "message": f"Failed to add bonus points: {str(e)}"}
 
 @router.post("/leaderboard/reset-weekly")
 def reset_weekly_points():

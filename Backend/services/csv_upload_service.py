@@ -10,14 +10,27 @@ async def bulk_upload_lessons(file: UploadFile):
         csvfile = io.StringIO(contents.decode('utf-8'))
         reader = csv.DictReader(csvfile)
         for row in reader:
-            title = validate_string(row.get("title"), "Lesson title")
-            category = validate_string(row.get("category"), "Lesson category")
-            difficulty = validate_string(row.get("difficulty"), "Lesson difficulty")
+            # Skip empty rows
+            if not row or not any(row.values()):
+                continue
+                
+            title = row.get("title", "").strip()
+            category = row.get("category", "").strip()
+            difficulty = row.get("difficulty", "").strip()
+            
+            # Validate only if values are provided
+            if title:
+                title = validate_string(title, "Lesson title")
+            if category:
+                category = validate_string(category, "Lesson category")
+            if difficulty:
+                difficulty = validate_string(difficulty, "Lesson difficulty")
+            
             lesson = {
                 "lesson_id": len(LESSONS) + 1,
-                "title": title,
-                "category": category,
-                "difficulty": difficulty
+                "title": title or "Untitled Lesson",
+                "category": category or "General",
+                "difficulty": difficulty or "Beginner"
             }
             LESSONS.append(lesson)
         return {"message": f"{len(LESSONS)} lessons uploaded", "lessons": LESSONS}

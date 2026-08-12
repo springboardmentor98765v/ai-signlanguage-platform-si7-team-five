@@ -485,3 +485,435 @@ with open("certificate.xlsx", "wb") as f:
 - Excel exports include professional formatting
 - PDF exports include proper page layouts
 - CSV exports are compatible with major spreadsheet applications
+
+# Badge System Documentation
+
+## Overview
+The badge system provides gamification rewards for user achievements in the sign language learning platform. Badges are automatically awarded based on user performance and activity patterns.
+
+## Badge Types and Rules
+
+### 1. First Steps
+- **Badge Type**: `first_practice`
+- **Name**: First Steps
+- **Icon**: 🎯
+- **Points**: 10
+- **Description**: Completed your first sign language practice
+- **Award Rule**: Automatically awarded when a user completes their first practice session
+- **Award Trigger**: `total_practices == 1`
+
+### 2. On Fire (3-Day Streak)
+- **Badge Type**: `streak_3`
+- **Name**: On Fire
+- **Icon**: 🔥
+- **Points**: 50
+- **Description**: Maintained a 3-day practice streak
+- **Award Rule**: Automatically awarded when user maintains a 3-day consecutive practice streak
+- **Award Trigger**: Current streak reaches exactly 3 days
+- **Related API**: `POST /api/v1/streaks/update`
+
+### 3. Week Warrior (7-Day Streak)
+- **Badge Type**: `streak_7`
+- **Name**: Week Warrior
+- **Icon**: ⚔️
+- **Points**: 100
+- **Description**: Maintained a 7-day practice streak
+- **Award Rule**: Automatically awarded when user maintains a 7-day consecutive practice streak
+- **Award Trigger**: Current streak reaches exactly 7 days
+- **Related API**: `POST /api/v1/streaks/update`
+
+### 4. Monthly Master (30-Day Streak)
+- **Badge Type**: `streak_30`
+- **Name**: Monthly Master
+- **Icon**: 👑
+- **Points**: 500
+- **Description**: Maintained a 30-day practice streak
+- **Award Rule**: Automatically awarded when user maintains a 30-day consecutive practice streak
+- **Award Trigger**: Current streak reaches exactly 30 days
+- **Related API**: `POST /api/v1/streaks/update`
+
+### 5. Alphabet Master
+- **Badge Type**: `alphabet_master`
+- **Name**: Alphabet Master
+- **Icon**: 🔤
+- **Points**: 200
+- **Description**: Achieved 80%+ accuracy on all alphabet letters
+- **Award Rule**: Awarded when user achieves 80% or higher accuracy across all alphabet sign assessments
+- **Award Trigger**: Average accuracy across alphabet signs >= 80%
+- **Manual Award**: Can be manually awarded via API for testing
+
+### 6. Perfectionist
+- **Badge Type**: `perfect_score`
+- **Name**: Perfectionist
+- **Icon**: 💯
+- **Points**: 150
+- **Description**: Achieved 100% accuracy in a practice session
+- **Award Rule**: Automatically awarded when user achieves perfect accuracy in any practice session
+- **Award Trigger**: Practice session accuracy == 100%
+- **Related API**: `POST /api/v1/badges/check`
+
+### 7. Speed Demon
+- **Badge Type**: `speed_demon`
+- **Name**: Speed Demon
+- **Icon**: ⚡
+- **Points**: 300
+- **Description**: Completed 50 practices in a single day
+- **Award Rule**: Automatically awarded when user completes 50 practice sessions in one day
+- **Award Trigger**: Daily practice count >= 50
+- **Related API**: `POST /api/v1/badges/check`
+
+### 8. Night Owl
+- **Badge Type**: `night_owl`
+- **Name**: Night Owl
+- **Icon**: 🦉
+- **Points**: 75
+- **Description**: Practiced between 10 PM and 6 AM
+- **Award Rule**: Automatically awarded when user practices during nighttime hours (10 PM - 6 AM UTC)
+- **Award Trigger**: Practice session completed between 22:00-06:00 UTC
+- **Related API**: `POST /api/v1/badges/check`
+
+## Badge Management APIs
+
+### Award Badge
+- **Endpoint**: `POST /api/v1/badges/award`
+- **Description**: Manually award a badge to a user (for testing or admin purposes)
+- **Request Body**:
+  ```json
+  {
+    "user_id": 1,
+    "badge_type": "first_practice"
+  }
+  ```
+- **Response**: Badge details if awarded successfully
+
+### Get User Badges
+- **Endpoint**: `GET /api/v1/badges/{user_id}`
+- **Description**: Get all badges for a specific user
+- **Response**: List of badges ordered by most recently earned
+
+### Check and Award Badges
+- **Endpoint**: `POST /api/v1/badges/check`
+- **Description**: Automatically evaluate practice data and award all eligible badges
+- **Request Body**:
+  ```json
+  {
+    "user_id": 1,
+    "practice_data": {
+      "total_practices": 5,
+      "accuracy": 95,
+      "daily_practices": 10
+    }
+  }
+  ```
+- **Response**: List of newly awarded badges
+
+### Hide Badge
+- **Endpoint**: `PUT /api/v1/badges/{badge_id}/hide`
+- **Description**: Hide a badge from user's display profile
+- **Response**: Success status
+
+## Badge Display Rules
+
+1. **Default Display**: All badges are displayed by default when earned
+2. **Hide Functionality**: Users can hide badges they don't want to show
+3. **Display Order**: Badges are ordered by most recently earned
+4. **No Duplicates**: Users can only earn each badge type once
+
+## Testing Badges for Presentation
+
+### Quick Badge Testing
+```bash
+# Award first practice badge
+curl -X POST http://127.0.0.1:8001/api/v1/badges/award \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": 1, "badge_type": "first_practice"}'
+
+# Award perfect score badge
+curl -X POST http://127.0.0.1:8001/api/v1/badges/award \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": 1, "badge_type": "perfect_score"}'
+
+# Get user badges
+curl http://127.0.0.1:8001/api/v1/badges/1
+```
+
+### Streak Badge Testing
+```bash
+# Update streak (awards streak badges automatically)
+curl -X POST http://127.0.0.1:8001/api/v1/streaks/update \
+  -H "Content-Type: application/json" \
+  -d '{"user_id": 1}'
+
+# Reset streak (for testing purposes)
+curl -X PUT http://127.0.0.1:8001/api/v1/streaks/1/reset
+```
+
+## Badge Points System
+
+The badge system integrates with the leaderboard through a points system:
+- **First Steps**: 10 points
+- **Night Owl**: 75 points
+- **On Fire (3-day)**: 50 points
+- **Week Warrior (7-day)**: 100 points
+- **Perfectionist**: 150 points
+- **Alphabet Master**: 200 points
+- **Speed Demon**: 300 points
+- **Monthly Master (30-day)**: 500 points
+
+Points are automatically added to the user's leaderboard score when badges are awarded.
+
+## Badge Data Model
+
+```python
+class Badge:
+    id: int                          # Unique badge ID
+    user_id: int                     # User who earned the badge
+    badge_type: str                  # Badge type identifier
+    badge_name: str                  # Display name
+    badge_description: str           # Detailed description
+    badge_icon: str                  # Emoji or icon URL
+    earned_at: datetime              # When badge was earned
+    is_displayed: bool               # Whether to show on profile
+```
+
+## Integration with Other Systems
+
+### Streak Integration
+- Streak badges are automatically awarded when streaks reach specific milestones
+- Handled by the `StreakService._check_streak_badges()` method
+
+### Leaderboard Integration
+- Badge points contribute to leaderboard rankings
+- Integration handled through the gamification workflow API
+
+### Real-time Updates
+- Badge awards trigger WebSocket notifications
+- Connected clients receive instant badge updates
+
+## Notes for Presentation
+
+1. **Badge Variety**: System includes 8 different badge types covering various achievement categories
+2. **Automatic Awarding**: Most badges are awarded automatically based on user behavior
+3. **Manual Control**: Admins can manually award badges for testing or special recognition
+4. **Display Control**: Users can customize which badges appear on their profile
+5. **Point Values**: Each badge has different point values reflecting achievement difficulty
+6. **Real-time**: Badge awards are immediately reflected in the UI via WebSocket updates
+# Local PostgreSQL Database Setup Guide
+
+## Issue Analysis
+The remote PostgreSQL database (Supabase) has DNS resolution issues:
+- Hostname: `db.ovvvcudvagbnlojfmmnx.supabase.co`
+- DNS resolves to IPv6 but ping fails
+- Connection error: "could not translate host name to address"
+
+## Solution: Local PostgreSQL Setup
+
+### Option 1: Install PostgreSQL Locally (Recommended)
+
+#### Windows Installation:
+1. Download PostgreSQL installer: https://www.postgresql.org/download/windows/
+2. Install with default settings
+3. Set password: `postgres` (or update .env accordingly)
+4. Ensure PostgreSQL service is running
+
+#### Create Database:
+```sql
+-- Open pgAdmin or psql and run:
+CREATE DATABASE sign_language_platform;
+```
+
+#### Run Schema Files:
+Use the schema files from Databse_Devops directory:
+
+```bash
+# Using psql command line
+psql -U postgres -d sign_language_platform -f Databse_Devops/milestone3_schema.sql
+psql -U postgres -d sign_language_platform -f Databse_Devops/database_optimization.sql
+psql -U postgres -d sign_language_platform -f Databse_Devops/database_integrity.sql
+```
+
+### Option 2: Use Docker (Alternative)
+
+#### Docker Compose Setup:
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: sign_language_platform
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./Databse_Devops/milestone3_schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./Databse_Devops/database_optimization.sql:/docker-entrypoint-initdb.d/02-optimization.sql
+      - ./Databse_Devops/database_integrity.sql:/docker-entrypoint-initdb.d/03-integrity.sql
+
+volumes:
+  postgres_data:
+```
+
+#### Run with Docker:
+```bash
+docker-compose up -d
+```
+
+### Option 3: PostgreSQL via WSL (For Windows)
+
+#### Install in WSL:
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+sudo service postgresql start
+sudo -u postgres createuser --superuser $USER
+createdb sign_language_platform
+```
+
+#### Import Schema:
+```bash
+psql -d sign_language_platform -f Databse_Devops/milestone3_schema.sql
+```
+
+## Configuration Updates
+
+### Update .env File:
+Current configuration is set for local PostgreSQL:
+```
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sign_language_platform
+```
+
+### Update Domain-Specific .env Files:
+
+#### BD_Logic/.env:
+```
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sign_language_platform
+```
+
+#### Backend/.env:
+```
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sign_language_platform
+```
+
+#### AIML_CV/.env:
+```
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/sign_language_platform
+```
+
+## Verification Steps
+
+### 1. Test PostgreSQL Connection:
+```bash
+# Using psql
+psql -U postgres -d sign_language_platform -c "SELECT version();"
+
+# Using Python
+python -c "import psycopg2; conn = psycopg2.connect('postgresql://postgres:postgres@localhost:5432/sign_language_platform'); print('Connected'); conn.close()"
+```
+
+### 2. Test Application Connection:
+```bash
+# BD_Logic
+cd BD_Logic
+python -c "from database.connection import engine; print('Database connected')"
+
+# Backend
+cd Backend  
+python -c "from config import DATABASE_URL; from db import engine; print('Database connected')"
+
+# AIML_CV
+cd AIML_CV/src
+python -c "from database import engine; print('Database connected')"
+```
+
+### 3. Verify Schema Installation:
+```bash
+psql -U postgres -d sign_language_platform -c "\dt"
+```
+
+Expected tables:
+- notifications
+- achievement_badges
+- user_badges
+- leaderboard
+- user_streaks
+- And other tables from milestone3_schema.sql
+
+## Troubleshooting
+
+### PostgreSQL Not Running:
+```bash
+# Windows: Check services
+services.msc
+
+# Start PostgreSQL service
+net start postgresql-x64-15  # (version may vary)
+```
+
+### Connection Refused:
+```bash
+# Check PostgreSQL is listening
+netstat -an | findstr 5432
+
+# Check pg_hba.conf allows local connections
+# Location: PostgreSQL\data\pg_hba.conf
+# Add: host    all             all             127.0.0.1/32            md5
+```
+
+### Password Issues:
+```bash
+# Reset PostgreSQL password
+psql -U postgres
+ALTER USER postgres WITH PASSWORD 'postgres';
+```
+
+## Using DevOps Database Files
+
+The Databse_Devops directory contains:
+- `milestone3_schema.sql` - Main database schema
+- `database_optimization.sql` - Performance optimizations
+- `database_integrity.sql` - Data integrity constraints
+- `database_backup_restore.sql` - Backup and restore procedures
+
+### Apply Optimizations:
+```bash
+psql -U postgres -d sign_language_platform -f Databse_Devops/database_optimization.sql
+```
+
+### Apply Integrity Constraints:
+```bash
+psql -U postgres -d sign_language_platform -f Databse_Devops/database_integrity.sql
+```
+
+## Alternative: Remote Database Fix
+
+If you prefer to use the remote Supabase database, you need to:
+
+1. **Check Network Connectivity:**
+   - Ensure your network allows outbound connections
+   - Check firewall settings
+   - Try using VPN if DNS resolution fails
+
+2. **Use IP Address Instead:**
+   ```
+   DATABASE_URL=postgresql://postgres:VinayBellamkonda@<IP_ADDRESS>:5432/postgres
+   ```
+
+3. **Contact Supabase Support:**
+   - Verify database credentials
+   - Check if there are any IP restrictions
+   - Ensure database is active
+
+## Recommendation
+
+For development and model training, **use local PostgreSQL** with the provided schema files. This ensures:
+- No network dependency issues
+- Full control over database configuration
+- Faster performance for local development
+- Access to all devops database features
+- Better debugging capabilities
+
+The local setup with Docker is the most reliable and portable solution.

@@ -177,9 +177,23 @@ class StreakService:
             if streak:
                 streak.current_streak = 0
                 streak.is_active = False
+                streak.last_practice_date = None
                 db.commit()
                 return True
-            return False
+            else:
+                # Create a new streak entry if it doesn't exist
+                streak = Streak(
+                    user_id=user_id,
+                    current_streak=0,
+                    longest_streak=0,
+                    last_practice_date=None,
+                    streak_start_date=None,
+                    total_practice_days=0,
+                    is_active=False
+                )
+                db.add(streak)
+                db.commit()
+                return True
         except Exception as e:
             db.rollback()
             raise e

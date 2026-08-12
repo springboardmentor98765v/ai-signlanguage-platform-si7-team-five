@@ -11,15 +11,7 @@ class AssessmentRequest(BaseModel):
 
     predicted_sign: str
 
-    confidence: float
-
-    hand_shape: float
-
-    finger_position: float
-
-    motion: float
-
-    timing: float
+  
     
 class AssessmentResponse(BaseModel):
     

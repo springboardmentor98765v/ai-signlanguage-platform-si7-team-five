@@ -2,9 +2,10 @@ from datetime import datetime
 from uuid import uuid4
 
 class PracticeSession:
-    def __init__(self, user_id, lesson_id, expected_sign, score, accuracy, duration_seconds, feedback):
+    def __init__(self, user_id, lesson_id, expected_sign, score=0, accuracy=0, duration_seconds=0, feedback=""):
 
         self.session_id = str(uuid4())
+        self.assessment_id = str(uuid4())  # For repository compatibility
         self.date = datetime.now().strftime("%Y-%m-%d %H:%M")
         self.learner_id = user_id
         self.lesson_id = lesson_id
@@ -17,7 +18,7 @@ class PracticeSession:
         self.start_time = datetime.now()
         self.end_time = None
         self.duration = 0
-        self.attemplt_count = 0
+        self.attempt_count = 0
         
     def finish(self):
         self.end_time = datetime.now()

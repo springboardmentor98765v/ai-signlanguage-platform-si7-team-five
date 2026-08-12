@@ -8,10 +8,8 @@ class StartPracticeRequest(BaseModel):
     
 class AttemptRequest(BaseModel):
     session_id: str
+    accuracy: float
     
 class EndPracticeResponse(BaseModel):
     session_id: str
-    accuracy: float
-    success: bool
-    message: str
     
