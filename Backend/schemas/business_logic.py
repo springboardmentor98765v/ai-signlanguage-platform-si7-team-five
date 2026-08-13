@@ -49,4 +49,15 @@ class BadgeOut(BaseModel):
     earned_at: str | None = None
 
 
+class CertificationAnswer(BaseModel):
+    expected_label: str = Field(min_length=1, max_length=32)
+    predicted_label: str = Field(min_length=1, max_length=32)
+    confidence: float = Field(ge=0, le=1)
+
+
+class CertificationExamSubmit(BaseModel):
+    level: Literal["Beginner", "Intermediate", "Advanced", "Professional"]
+    answers: list[CertificationAnswer] = Field(min_length=1)
+
+
 Metric = Literal["accuracy", "streak"]

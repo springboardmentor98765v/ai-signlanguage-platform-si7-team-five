@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import io
+import uuid
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 
@@ -16,11 +17,12 @@ from fastapi.responses import Response, StreamingResponse
 from sqlalchemy.orm import Session
 
 from db import get_db
-from models.business_logic import Badge, PracticeAttempt, UserBadge, UserStreak
+from models.business_logic import Badge, CertificationExamResult, PracticeAttempt, UserBadge, UserStreak
 from models.users import User
 from schemas.business_logic import (
     AssessmentResult,
     BadgeOut,
+    CertificationExamSubmit,
     LeaderboardEntry,
     Metric,
     PracticeAttemptCreate,
@@ -52,6 +54,13 @@ BADGE_RULES = (
         lambda a, _s: _is_alphabet_master(a),
     ),
 )
+
+EXAM_LEVELS = {
+    "Beginner": {"signs": ("A", "B", "C", "D", "E"), "pass_score": 70},
+    "Intermediate": {"signs": ("F", "G", "H", "I", "K", "L", "M", "N"), "pass_score": 75},
+    "Advanced": {"signs": ("O", "P", "Q", "R", "S", "T", "U", "V", "W", "X"), "pass_score": 80},
+    "Professional": {"signs": ("Y", "Z", "HELLO", "THANK YOU", "PLEASE", "GOODBYE"), "pass_score": 85},
+}
 
 
 def _utc_now() -> datetime:
@@ -228,6 +237,64 @@ def recommendations(db: Session = Depends(get_db), token: dict = Depends(get_cur
 def _export_rows(db: Session, user_id: int) -> list[dict[str, object]]:
     attempts = db.query(PracticeAttempt).filter(PracticeAttempt.user_id == user_id).order_by(PracticeAttempt.created_at.desc()).all()
     return [{"date": item.created_at.isoformat(), "expected_label": item.expected_label, "predicted_label": item.predicted_label, "confidence": item.confidence, "correct": item.is_correct, "course_id": item.course_id or ""} for item in attempts]
+
+
+@r.get("/certification/levels")
+def certification_levels():
+    """The fixed, transparent sign sets and thresholds for the four formal exams."""
+    return [{"level": name, "required_signs": details["signs"], "pass_score": details["pass_score"]} for name, details in EXAM_LEVELS.items()]
+
+
+@r.post("/certification/exams", status_code=201)
+def submit_certification_exam(payload: CertificationExamSubmit, db: Session = Depends(get_db), token: dict = Depends(get_current_user)):
+    learner = _learner_from_token(token, db)
+    rules = EXAM_LEVELS[payload.level]
+    expected_set = {item.upper() for item in rules["signs"]}
+    submitted_set = {answer.expected_label.strip().upper() for answer in payload.answers}
+    if submitted_set != expected_set or len(payload.answers) != len(rules["signs"]):
+        raise HTTPException(status_code=422, detail=f"{payload.level} requires exactly these signs: {', '.join(rules['signs'])}")
+    weighted_scores = [100 * answer.confidence if answer.expected_label.strip().upper() == answer.predicted_label.strip().upper() else 0 for answer in payload.answers]
+    score = round(sum(weighted_scores) / len(weighted_scores), 2)
+    passed = score >= rules["pass_score"]
+    certificate_id = f"CERT-{uuid.uuid4().hex[:10].upper()}" if passed else None
+    result = CertificationExamResult(user_id=learner.id, level=payload.level, score=score, passed=passed, certificate_id=certificate_id)
+    db.add(result)
+    if passed:
+        create_notification_record(db, learner.id, "certificate_ready", "Certification exam passed!", f"You passed the {payload.level} exam. Certificate {certificate_id} is ready.")
+    db.commit()
+    return {"exam_id": result.id, "level": result.level, "score": result.score, "pass_score": rules["pass_score"], "passed": result.passed, "certificate_id": result.certificate_id}
+
+
+def _report_data(report_type: str, learner: User, db: Session) -> list[dict[str, object]]:
+    attempts = db.query(PracticeAttempt).filter_by(user_id=learner.id).order_by(PracticeAttempt.created_at).all()
+    total = len(attempts); correct = sum(item.is_correct for item in attempts); accuracy = round(100 * correct / total, 2) if total else 0.0
+    exams = db.query(CertificationExamResult).filter_by(user_id=learner.id).order_by(CertificationExamResult.completed_at.desc()).all()
+    if report_type == "learning": return [{"learner": learner.username, "practice_attempts": total, "unique_signs": len({item.expected_label for item in attempts})}]
+    if report_type == "assessment": return [{"learner": learner.username, "attempts": total, "correct_attempts": correct, "average_score": accuracy}]
+    if report_type == "accuracy": return [{"sign": sign, "accuracy": round(100 * sum(i.is_correct for i in items) / len(items), 2), "attempts": len(items)} for sign, items in sorted(((label, [a for a in attempts if a.expected_label == label]) for label in {a.expected_label for a in attempts}), key=lambda pair: pair[0])]
+    if report_type == "certification": return [{"level": exam.level, "score": exam.score, "passed": exam.passed, "certificate_id": exam.certificate_id or "", "completed_at": exam.completed_at.isoformat()} for exam in exams]
+    return [{"learner": learner.username, "practice_attempts": total, "average_accuracy": accuracy, "recommendations": len(recommendations(db, token={"sub": learner.username})), "certifications_passed": sum(exam.passed for exam in exams)}]
+
+
+@r.get("/reports/me")
+def download_report(report_type: str = Query(..., pattern="^(learning|assessment|accuracy|certification|progress)$"), format: str = Query(..., pattern="^(pdf|xlsx)$"), db: Session = Depends(get_db), token: dict = Depends(get_current_user)):
+    learner = _learner_from_token(token, db)
+    rows = _report_data(report_type, learner, db)
+    if format == "xlsx":
+        from openpyxl import Workbook
+        book = Workbook(); sheet = book.active; sheet.title = report_type.title()
+        headers = list(rows[0].keys()) if rows else ["message"]; sheet.append(headers)
+        for row in rows: sheet.append([row.get(header, "") for header in headers])
+        data = io.BytesIO(); book.save(data); data.seek(0)
+        return StreamingResponse(data, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers={"Content-Disposition": f"attachment; filename={report_type}-report.xlsx"})
+    from reportlab.lib.pagesizes import letter
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+    from reportlab.lib import colors
+    from reportlab.lib.styles import getSampleStyleSheet
+    data = io.BytesIO(); styles = getSampleStyleSheet(); table_rows = [list(rows[0].keys())] + [[str(row.get(key, "")) for key in rows[0].keys()] for row in rows] if rows else [["Message"], ["No data available"]]
+    table = Table(table_rows); table.setStyle(TableStyle([("BACKGROUND", (0,0), (-1,0), colors.HexColor("#1D4ED8")), ("TEXTCOLOR", (0,0), (-1,0), colors.white), ("GRID", (0,0), (-1,-1), .5, colors.grey), ("VALIGN", (0,0), (-1,-1), "TOP")]))
+    SimpleDocTemplate(data, pagesize=letter).build([Paragraph(f"{report_type.title()} Report", styles["Title"]), Spacer(1, 12), table]); data.seek(0)
+    return StreamingResponse(data, media_type="application/pdf", headers={"Content-Disposition": f"attachment; filename={report_type}-report.pdf"})
 
 
 @r.get("/exports/me")

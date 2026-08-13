@@ -254,6 +254,47 @@ The URLs below are the routes registered by the current FastAPI applications.
 | GET | `/accessibility-trainers/me/learners/{learner_id}` | bearer token | Accessibility Trainer; assigned learner only |
 | GET/POST | `/bd_logic/api/v1/certificate*`, `/report`, `/export*` | service-specific JSON or query parameters | Bearer token or internal API key, except public download endpoints |
 
+### Milestone 4 - Certification Exam and reports (Intern 4)
+
+| Method | Path | Access | Purpose |
+| --- | --- | --- | --- |
+| GET | `/business/certification/levels` | Public | Lists fixed sign sets and pass thresholds for all four levels. |
+| POST | `/business/certification/exams` | Learner bearer token | Submits one complete multi-sign exam and returns pass/fail plus a certificate id for passes. |
+| GET | `/business/reports/me?report_type=<type>&format=<format>` | Learner bearer token | Downloads one of five reports as `pdf` or `xlsx`. |
+
+`level` must be one of `Beginner`, `Intermediate`, `Advanced`, or
+`Professional`. A submission must contain every listed sign exactly once. The
+thresholds are 70, 75, 80 and 85 respectively. Each answer's score uses the
+existing model-confidence output only when its predicted sign matches the
+expected sign; a mismatch scores zero.
+
+```json
+{
+  "level": "Beginner",
+  "answers": [
+    {"expected_label": "A", "predicted_label": "A", "confidence": 0.98},
+    {"expected_label": "B", "predicted_label": "B", "confidence": 0.96},
+    {"expected_label": "C", "predicted_label": "C", "confidence": 0.95},
+    {"expected_label": "D", "predicted_label": "D", "confidence": 0.97},
+    {"expected_label": "E", "predicted_label": "E", "confidence": 0.99}
+  ]
+}
+```
+
+```json
+{
+  "exam_id": 14,
+  "level": "Beginner",
+  "score": 97.0,
+  "pass_score": 70,
+  "passed": true,
+  "certificate_id": "CERT-AB12CD34EF"
+}
+```
+
+Valid report types are `learning`, `assessment`, `accuracy`, `certification`,
+and `progress`. Valid formats are `pdf` and `xlsx`.
+
 ---
 
 ## Milestone 4 - Accessibility Trainer APIs

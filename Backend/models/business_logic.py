@@ -71,3 +71,17 @@ class TrainerLearnerAssignment(Base):
     trainer_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     learner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     assigned_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+
+class CertificationExamResult(Base):
+    """Formal multi-sign certification exam result for one of the four levels."""
+
+    __tablename__ = "certification_exam_results"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    level = Column(String(32), nullable=False, index=True)
+    score = Column(Float, nullable=False)
+    passed = Column(Boolean, nullable=False, index=True)
+    certificate_id = Column(String(64), nullable=True, unique=True, index=True)
+    completed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
