@@ -143,7 +143,7 @@ def record_attempt(payload: PracticeAttemptCreate, db: Session = Depends(get_db)
     expected, predicted = payload.expected_label.strip().upper(), payload.predicted_label.strip().upper()
     attempt = PracticeAttempt(
         user_id=learner.id,
-        course_id=payload.course_id,
+        course_id=payload.lesson_id,
         expected_label=expected,
         predicted_label=predicted,
         confidence=payload.confidence,
@@ -186,10 +186,10 @@ def my_streak(db: Session = Depends(get_db), token: dict = Depends(get_current_u
     return {"current_streak": streak.current_streak if streak else 0, "longest_streak": streak.longest_streak if streak else 0}
 
 
-@r.get("/leaderboard/{course_id}", response_model=list[LeaderboardEntry])
-def leaderboard(course_id: int, metric: Metric = Query("accuracy"), db: Session = Depends(get_db)):
+@r.get("/leaderboard/{lesson_id}", response_model=list[LeaderboardEntry])
+def leaderboard(lesson_id: int, metric: Metric = Query("accuracy"), db: Session = Depends(get_db)):
     """DAY 3: Intern 1 uses this to show class ranking by accuracy or streak."""
-    attempts = db.query(PracticeAttempt).filter(PracticeAttempt.course_id == course_id).all()
+    attempts = db.query(PracticeAttempt).filter(PracticeAttempt.course_id == lesson_id).all()
     by_user: dict[int, list[PracticeAttempt]] = defaultdict(list)
     for attempt in attempts:
         by_user[attempt.user_id].append(attempt)
@@ -237,6 +237,46 @@ def recommendations(db: Session = Depends(get_db), token: dict = Depends(get_cur
 def _export_rows(db: Session, user_id: int) -> list[dict[str, object]]:
     attempts = db.query(PracticeAttempt).filter(PracticeAttempt.user_id == user_id).order_by(PracticeAttempt.created_at.desc()).all()
     return [{"date": item.created_at.isoformat(), "expected_label": item.expected_label, "predicted_label": item.predicted_label, "confidence": item.confidence, "correct": item.is_correct, "course_id": item.course_id or ""} for item in attempts]
+
+
+@r.get("/summary/me")
+def my_live_summary(db: Session = Depends(get_db), token: dict = Depends(get_current_user)):
+    """Small real-time summary consumed by the learner dashboard after login."""
+    learner = _learner_from_token(token, db)
+    attempts = db.query(PracticeAttempt).filter_by(user_id=learner.id).all()
+    streak = db.get(UserStreak, learner.id)
+    total = len(attempts)
+    correct = sum(item.is_correct for item in attempts)
+    return {
+        "practice_sessions": total,
+        "average_accuracy": round(100 * correct / total, 2) if total else 0.0,
+        "streak": streak.current_streak if streak else 0,
+        "lessons_completed": len({item.course_id for item in attempts if item.course_id is not None}),
+    }
+
+
+@r.get("/analytics/me")
+def my_live_analytics(db: Session = Depends(get_db), token: dict = Depends(get_current_user)):
+    """Live, JSON-safe attempt data for the frontend analytics screen."""
+    learner = _learner_from_token(token, db)
+    attempts = db.query(PracticeAttempt).filter_by(user_id=learner.id).order_by(PracticeAttempt.created_at.asc()).all()
+    history = [{
+        "id": item.id,
+        "date": item.created_at.date().isoformat(),
+        "lesson_name": item.course_id or "Practice session",
+        "sign_symbol": item.expected_label,
+        "accuracy": round(item.confidence * 100, 2),
+        "is_correct": item.is_correct,
+        "feedback": "Correct sign recognised" if item.is_correct else f"Recognised {item.predicted_label}; practise {item.expected_label}",
+    } for item in attempts]
+    by_sign: dict[str, list[PracticeAttempt]] = defaultdict(list)
+    for item in attempts:
+        by_sign[item.expected_label].append(item)
+    category_accuracy = [{"name": label, "accuracy": round(100 * sum(item.is_correct for item in items) / len(items), 2)} for label, items in sorted(by_sign.items())]
+    by_date: dict[str, int] = defaultdict(int)
+    for item in attempts:
+        by_date[item.created_at.date().isoformat()] += 1
+    return {"history": history, "daily_attempts": [{"date": date, "time": count} for date, count in sorted(by_date.items())], "category_accuracy": category_accuracy}
 
 
 @r.get("/certification/levels")

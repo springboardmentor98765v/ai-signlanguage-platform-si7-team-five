@@ -73,6 +73,18 @@ class TrainerLearnerAssignment(Base):
     assigned_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
 
+class InstructorLearnerAssignment(Base):
+    """Canonical instructor-to-learner relationship (student is a legacy synonym)."""
+
+    __tablename__ = "instructor_learner_assignments"
+    __table_args__ = (UniqueConstraint("instructor_id", "learner_id", name="uq_instructor_learner_assignment"),)
+
+    id = Column(Integer, primary_key=True)
+    instructor_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    learner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    assigned_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+
 class CertificationExamResult(Base):
     """Formal multi-sign certification exam result for one of the four levels."""
 

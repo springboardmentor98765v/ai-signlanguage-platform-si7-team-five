@@ -1,13 +1,20 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class PracticeAttemptCreate(BaseModel):
     expected_label: str = Field(min_length=1, max_length=32)
     predicted_label: str = Field(min_length=1, max_length=32)
     confidence: float = Field(ge=0, le=1)
-    course_id: int | None = Field(default=None, gt=0)
+    lesson_id: int | None = Field(default=None, gt=0)
+
+    @model_validator(mode="before")
+    @classmethod
+    def accept_legacy_course_id(cls, value):
+        if isinstance(value, dict) and "lesson_id" not in value and "course_id" in value:
+            return {**value, "lesson_id": value["course_id"]}
+        return value
 
 
 class AssessmentResult(BaseModel):

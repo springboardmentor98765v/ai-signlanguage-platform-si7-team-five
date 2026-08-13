@@ -61,14 +61,14 @@ def list_lessons(page: int = 1, size: int = 10, category: Optional[str] = Query(
 def search_lessons(query: str = Query(..., description="Search")):
     return [l for l in LESSONS if query.lower() in l.title.lower()]
 
-@r.post("/lessons")
+@r.post("")
 def create_lesson(request: Lesson, role: str = "Instructor"):
     if role not in ["Instructor", "Admin"]:
         raise HTTPException(status_code=403, detail="Access Denied.")
     LESSONS.append(request.model_dump())
     return {"message": "Lesson created successfully."}
   
-@r.put("/lessons/{lesson_id}")
+@r.put("/{lesson_id}")
 def update_lesson(lesson_id: int, request: Lesson, role: str = "Instructor"):
     if role not in ["Instructor", "Admin"]:
         raise HTTPException(status_code=403, detail="Access Denied.")
@@ -78,7 +78,7 @@ def update_lesson(lesson_id: int, request: Lesson, role: str = "Instructor"):
             return {"message": "Lesson updated successfully."}
     raise HTTPException(status_code=404, detail="Lesson not found.")
     
-@r.delete("/lessons/{lesson_id}")
+@r.delete("/{lesson_id}")
 def delete_lesson(lesson_id: int, role: str = "Instructor"):
     if role not in ["Instructor", "Admin"]:
         raise HTTPException(status_code=403, detail="Access Denied.")

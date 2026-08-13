@@ -72,3 +72,15 @@ def test_each_required_report_type_downloads_as_pdf_and_excel():
         excel = client.get(f"/business/reports/me?report_type={report_type}&format=xlsx", headers=headers)
         assert pdf.status_code == 200 and pdf.content.startswith(b"%PDF")
         assert excel.status_code == 200 and excel.content.startswith(b"PK")
+
+
+def test_live_analytics_returns_only_the_signed_in_learners_attempts():
+    client, learner = _client()
+    headers = _headers(learner)
+    client.post("/business/attempts", headers=headers, json={"expected_label": "A", "predicted_label": "A", "confidence": 0.9})
+    response = client.get("/business/analytics/me", headers=headers)
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["history"][0]["sign_symbol"] == "A"
+    assert payload["history"][0]["accuracy"] == 90.0
+    assert payload["daily_attempts"][0]["time"] == 1

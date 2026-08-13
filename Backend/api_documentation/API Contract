@@ -175,8 +175,6 @@ file, Swagger, source code, screenshots, or Git.
 | `SECRET_KEY` | Backend and business logic | Signs and validates JWT bearer tokens | `long-random-value` |
 | `ALGORITHM` | Backend and business logic | JWT signing algorithm | `HS256` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Backend and business logic | Login-token lifetime | `30` |
-| `REFRESH_SECRET_KEY` | Security utility | Reserved for refresh-token support | `different-long-random-value` |
-| `API_KEY` | Business-logic middleware | Internal/service test access through `X-API-Key` | `internal-key-not-a-user-token` |
 | `DATABASE_URL` | Backend, AI/CV and business logic | Database connection string | `sqlite:///./app.db` |
 | `CORS_ORIGINS` | Backend | Comma-separated permitted frontend origins | `https://app.example.com` |
 | `NOTIFICATION_SERVICE_URL` | Notification gateway | Internal notification endpoint base URL | `http://backend:8000/notifications` |
@@ -188,18 +186,29 @@ file, Swagger, source code, screenshots, or Git.
 
 ```http
 Authorization: Bearer <access_token_from_/auth/login>
-X-API-Key: <internal_API_KEY_only_when_needed>
 ```
 
-Use a bearer token for user actions. `X-API-Key` is for trusted internal/test
-service calls only; it must not be embedded in the frontend.
+Use a bearer token for every protected user or service action. No static API
+key is accepted by the active platform routes.
 
 ---
 
 ## Complete endpoint index by milestone
 
-The URLs below are the routes registered by the current FastAPI applications.
-`/bd_logic` is the mounted Business Logic service prefix.
+The URLs below are the routes registered by the single current FastAPI application.
+Business logic is available only under `/business`, so every route uses the same
+configured database and authentication policy.
+
+### Canonical naming and roles
+
+`Learner` is the canonical name for the person who learns and practises;
+`student` is a deprecated synonym. `Lesson` and `lesson_id` are the canonical
+public content terms; `course` and `course_id` are legacy storage aliases.
+New clients must use `/lessons`, `learner_id`, and `lesson_id`. The platform has
+exactly four roles: `Learner`, `Instructor`, `Accessibility Trainer`, and
+`Admin`. Instructors see their assigned learners; Accessibility Trainers see
+only their separately assigned learners' analytics; Admins manage users,
+lessons, and assignments.
 
 ### Milestone 1 - foundation
 
@@ -225,8 +234,9 @@ The URLs below are the routes registered by the current FastAPI applications.
 | PUT | `/auth/user/update-profile` | profile JSON | Signed-in user integration flow |
 | POST | `/auth/user/forgot-password` | `email` | Public, rate limited |
 | POST | `/auth/user/reset-password` | reset fields | Public, rate limited |
-| POST | `/instructors/assign-student` | `student_id`, `instructor_id` | Instructor workflow |
-| GET | `/instructors/students` | `instructor_id` | Instructor workflow |
+| POST | `/instructors/assignments` | `learner_id` + bearer token | Signed-in Instructor |
+| GET | `/instructors/learners` | bearer token | Signed-in Instructor |
+| POST/GET | `/instructors/assign-student`, `/instructors/students` | legacy `student_id` naming | Deprecated compatibility only |
 | GET | `/admin/users` | none | Admin workflow |
 | PUT | `/admin/users/{id}/role` | `new_role` | Admin workflow |
 | PUT | `/admin/users/{id}/status` | `active` | Admin workflow |
@@ -241,7 +251,7 @@ The URLs below are the routes registered by the current FastAPI applications.
 | PUT | `/admin/users/bulk-status` | `user_ids`, `active` | Admin workflow |
 | POST | `/admin/lessons/bulk-upload` | CSV multipart file | Admin workflow |
 | GET | `/business/badges/me`, `/business/streak/me` | bearer token | Learner |
-| GET | `/business/leaderboard/{course_id}` | optional `metric` | Public |
+| GET | `/business/leaderboard/{lesson_id}` | optional `metric` | Public |
 | GET | `/business/recommendations/me` | bearer token | Learner |
 | GET | `/business/exports/me` | `format=csv|xlsx` + bearer token | Learner |
 
@@ -252,7 +262,6 @@ The URLs below are the routes registered by the current FastAPI applications.
 | POST | `/accessibility-trainers/assignments` | `trainer_id`, `learner_id` + bearer token | Admin |
 | GET | `/accessibility-trainers/me/learners` | bearer token | Accessibility Trainer |
 | GET | `/accessibility-trainers/me/learners/{learner_id}` | bearer token | Accessibility Trainer; assigned learner only |
-| GET/POST | `/bd_logic/api/v1/certificate*`, `/report`, `/export*` | service-specific JSON or query parameters | Bearer token or internal API key, except public download endpoints |
 
 ### Milestone 4 - Certification Exam and reports (Intern 4)
 
@@ -261,6 +270,8 @@ The URLs below are the routes registered by the current FastAPI applications.
 | GET | `/business/certification/levels` | Public | Lists fixed sign sets and pass thresholds for all four levels. |
 | POST | `/business/certification/exams` | Learner bearer token | Submits one complete multi-sign exam and returns pass/fail plus a certificate id for passes. |
 | GET | `/business/reports/me?report_type=<type>&format=<format>` | Learner bearer token | Downloads one of five reports as `pdf` or `xlsx`. |
+| GET | `/business/summary/me` | Learner bearer token | Live totals for the learner dashboard. |
+| GET | `/business/analytics/me` | Learner bearer token | Live JSON attempt history and chart data for the frontend reports view. |
 
 `level` must be one of `Beginner`, `Intermediate`, `Advanced`, or
 `Professional`. A submission must contain every listed sign exactly once. The

@@ -12,10 +12,11 @@ sys.path.insert(0, backend_dir)
 sys.path.insert(0, os.path.dirname(backend_dir))
 
 from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse
+from sqlalchemy import text
 from fastapi.middleware.cors import CORSMiddleware
 from routers.health import health_router
 from routers.users import r as user_router
-from routers.course import r as course_router
 from routers.notifications import r as notification_router
 from services.rate_limit import rate_limiter
 from db import engine, Base
@@ -31,7 +32,6 @@ from services import predictions
 from services import accessibility_trainer_service
 from api_gateway import routers as gateway_routers
 from utils import error_handdler
-from BD_Logic.main import app as bd_logic_app
 
 # INTERN 2 CHECKPOINT: Database initialization and lifespan management
 # This lifespan handler ensures database tables are created on startup
@@ -51,9 +51,6 @@ app = FastAPI(
     version="3.0.0",
     lifespan=lifespan,
 )
-
-# Mount the separate BD_Logic FastAPI app under /bd_logic
-app.mount("/bd_logic", bd_logic_app)
 
 # INTERN 2 CHECKPOINT: API Routing for core services
 # Includes routers for lessons, authentication, instructors, admin, and predictions
@@ -99,13 +96,20 @@ async def rate_limit_middleware(request: Request, call_next):
 # Includes health check, user authentication, and course routers
 app.include_router(health_router)
 app.include_router(user_router, prefix="/auth", tags=["Authenticate"])
-app.include_router(course_router, prefix="/lessons", tags=["Lessons"])
 
 # INTERN 2 CHECKPOINT: Health check endpoint
 # Provides system health status for monitoring and load balancers
 @app.get("/health", tags=["System"])
 def health_check():
-    return {"status": "ok", "message": "Milestone 4 backend running"}
+    try:
+        # Force a fresh connection so a stale pooled connection cannot hide a
+        # lost/unreachable production database.
+        engine.dispose()
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        return {"status": "ok", "database": "connected", "message": "Milestone 4 backend running"}
+    except Exception:
+        return JSONResponse(status_code=503, content={"status": "degraded", "database": "unavailable", "message": "Backend is running but the configured database is unreachable"})
 
 # INTERN 2 CHECKPOINT: Root endpoint
 # Basic endpoint to verify backend is running

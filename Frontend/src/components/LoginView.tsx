@@ -2,12 +2,13 @@ import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { Mail, Lock, CheckSquare, Eye, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
 import { motion, useMotionValue, useSpring, useTransform, useAnimationFrame, AnimatePresence } from 'motion/react';
 import { apiBaseUrl } from '../utils/api';
+import { UserRole } from '../types';
 
 /* ═══════════════════════════════════════════════════════════════
    TYPES
    ═══════════════════════════════════════════════════════════════ */
 interface LoginViewProps {
-  onLogin: (email: string, name: string, role: 'Learner' | 'Instructor' | 'Accessibility Trainer', userId?: string) => void;
+  onLogin: (email: string, name: string, role: UserRole, userId?: string) => void;
   onNavigateToRegister: () => void;
 }
 

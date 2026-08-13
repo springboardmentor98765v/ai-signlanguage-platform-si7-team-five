@@ -13,7 +13,8 @@ export interface PracticeAttemptPayload {
   expected_label: string;
   predicted_label: string;
   confidence: number;
-  course_id?: number;
+  /** Canonical content identifier. `course_id` remains accepted by the API for legacy callers. */
+  lesson_id?: number;
 }
 
 export interface PracticeAttemptResult {
@@ -86,9 +87,9 @@ export async function getMyBadges(token: string): Promise<Badge[]> {
   return readJson<Badge[]>(await fetch(`${apiBaseUrl}/business/badges/me`, { headers: headers(token) }), 'Could not load badges');
 }
 
-export async function getLeaderboard(courseId: number, metric: LeaderboardMetric): Promise<LeaderboardEntry[]> {
+export async function getLeaderboard(lessonId: number, metric: LeaderboardMetric): Promise<LeaderboardEntry[]> {
   return readJson<LeaderboardEntry[]>(
-    await fetch(`${apiBaseUrl}/business/leaderboard/${courseId}?metric=${metric}`),
+    await fetch(`${apiBaseUrl}/business/leaderboard/${lessonId}?metric=${metric}`),
     'Could not load leaderboard',
   );
 }

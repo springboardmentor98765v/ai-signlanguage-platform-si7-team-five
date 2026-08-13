@@ -13,6 +13,7 @@ import ProfileView from './components/ProfileView';
 import LeaderboardView from './components/LeaderboardView';
 import InstructorDashboard from './components/InstructorDashboard';
 import AdminDashboard from './components/AdminDashboard';
+import AccessibilityTrainerDashboard from './components/AccessibilityTrainerDashboard';
 
 export default function App() {
   // Authentication states
@@ -44,7 +45,7 @@ export default function App() {
       .then((response) => response.json())
       .catch(() => console.warn('Backend health check unavailable'));
 
-    fetch(`${apiBaseUrl}/courses`)
+    fetch(`${apiBaseUrl}/lessons`)
       .then((response) => response.json())
       .then((data) => {
         // Exclude backend's basic 'Letter' items if they duplicate the rich mocked alphabet
@@ -95,9 +96,26 @@ export default function App() {
     setActiveTab('Dashboard');
   };
 
-  const handleRegister = (email: string, name: string, role: UserRole) => {
+  useEffect(() => {
+    const token = localStorage.getItem('asl_access_token');
+    if (!currentUser || !token || currentUser.role !== 'Learner') return;
+    fetch(`${apiBaseUrl}/business/summary/me`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('Could not load live learner summary')))
+      .then(summary => {
+        setCurrentUser(user => user ? {
+          ...user,
+          streak: summary.streak,
+          lessonsCompleted: summary.lessons_completed,
+          practiceSessions: summary.practice_sessions,
+          avgAccuracy: summary.average_accuracy,
+        } : user);
+      })
+      .catch(() => undefined);
+  }, [currentUser?.id]);
+
+  const handleRegister = (email: string, name: string, role: UserRole, userId?: string) => {
     const newUser: User = {
-      id: `usr_${Date.now()}`,
+      id: userId || `usr_${Date.now()}`,
       name,
       email,
       role,
@@ -172,6 +190,9 @@ export default function App() {
         // Role-based dashboard routing
         if (currentUser.role === 'Instructor') {
           return <InstructorDashboard />;
+        }
+        if (currentUser.role === 'Accessibility Trainer') {
+          return <AccessibilityTrainerDashboard />;
         }
         return (
           <DashboardView

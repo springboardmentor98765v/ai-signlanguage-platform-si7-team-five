@@ -50,11 +50,6 @@ class AuthMiddleware(BaseHTTPMiddleware):
                     content={"detail": "Invalid or expired token"}
                 )
 
-        # Check for API key in headers (for development/testing)
-        api_key = request.headers.get("X-API-Key")
-        if api_key and api_key == os.getenv("API_KEY", "dev-api-key"):
-            return await call_next(request)
-
         return JSONResponse(status_code=401, content={"detail": "Invalid or missing authorization token"})
 
 async def verify_token(credentials: HTTPAuthorizationCredentials = security):

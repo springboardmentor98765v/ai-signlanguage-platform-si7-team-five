@@ -75,7 +75,6 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
     { name: 'Leaderboard', icon: Trophy },
     { name: 'Reports', icon: Award },
     { name: 'Profile', icon: User },
-    { name: 'Admin', icon: ShieldAlert },
   ];
 
   const navItems = user.role === 'Instructor'
@@ -92,7 +91,7 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
   const getPageTitle = () => {
     switch (activeTab) {
       case 'Dashboard':
-        return user.role === 'Instructor' ? 'Instructor Dashboard' : 'Learner Dashboard';
+        return user.role === 'Instructor' ? 'Instructor Dashboard' : user.role === 'Accessibility Trainer' ? 'Accessibility Trainer Dashboard' : 'Learner Dashboard';
       case 'Instructor':
         return 'Instructor Dashboard';
       case 'Admin':

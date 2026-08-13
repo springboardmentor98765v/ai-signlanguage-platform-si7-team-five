@@ -43,9 +43,17 @@ Date: 2026-08-13
 | `ALGORITHM` and `ACCESS_TOKEN_EXPIRE_MINUTES` | Used while creating/validating the container JWT flow | Pass |
 | `DATABASE_URL` | Backend creates and reads users, practice attempts, assignments, and exams in container SQLite | Pass |
 | `CORS_ORIGINS` | Present in production template and loaded by backend | Configured; browser-origin testing needs a running frontend origin |
-| `API_KEY` | Present in production template for internal mounted-service access | Configured; no real secret value is stored or printed |
 | `NOTIFICATION_SERVICE_URL` | Present in production template | Configured; external/live notification-host testing needs deployed service URL |
 | `VITE_BACKEND_URL`, `VITE_AI_API_URL` | Referenced by frontend build configuration | Not live-tested because frontend has not been deployed in this workspace |
+
+## Current database connectivity note
+
+The supplied Supabase hostname could not be resolved from the Docker network on
+2026-08-13, so a direct PostgreSQL `SELECT 1` could not be completed. The
+backend health endpoint now correctly returns HTTP 503 and `database:
+unavailable` in this condition rather than claiming a healthy real-time
+database connection. A corrected/reachable Supabase connection string is
+required before marking live database integration complete.
 
 ## Honest scope note
 

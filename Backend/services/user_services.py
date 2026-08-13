@@ -33,8 +33,8 @@ class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
-@r.post("/auth/login")
-def login(request: LoginRequest):
+@r.post("/auth/login", include_in_schema=False, deprecated=True)
+def legacy_login(request: LoginRequest):
     # Apply per-user rate limiting
     check_rate_limit(user_id=request.email, endpoint="login", limit=5, window=60)
     if request.password != "password123":  # Dummy check

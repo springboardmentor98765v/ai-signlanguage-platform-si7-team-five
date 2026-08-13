@@ -1,9 +1,9 @@
 # Intern 2 API and Swagger Guide - Milestones 1 to 4
 
 This is the simple test guide for Intern 2's backend/API work. Start the
-backend, open `http://127.0.0.1:8000/docs`, then use FastAPI's Swagger page to
-send requests. Business Logic endpoints are at
-`http://127.0.0.1:8000/bd_logic/docs`.
+backend, open `http://127.0.0.1:8002/docs` when using Docker, then use
+FastAPI's Swagger page to send requests. Business Logic endpoints are included
+in that same Swagger page under the **Business Logic** tag.
 
 ## Before testing
 
@@ -16,7 +16,7 @@ send requests. Business Logic endpoints are at
 4. Log in through `POST /auth/login`. Copy the `access_token` from the response.
 5. In Swagger select **Authorize** and enter `Bearer <access_token>`.
 
-Never enter a real `SECRET_KEY`, `API_KEY`, database password, or production
+Never enter a real `SECRET_KEY`, database password, or production
 token into a JSON example. The required configuration-key names are documented
 in the API Contract.
 
@@ -72,15 +72,15 @@ prediction -> practice attempt. This proves the original learner journey works.
 | `POST /accessibility-trainers/assignments` | Admin | links one valid trainer and learner; duplicate is safe |
 | `GET /accessibility-trainers/me/learners` | Accessibility Trainer | shows only that trainer's learners and all required dashboard metrics |
 | `GET /accessibility-trainers/me/learners/{learner_id}` | Accessibility Trainer | detailed analytics without cross-trainer data leakage |
+| `GET /business/summary/me`, `/business/analytics/me` | Learner | live frontend dashboard and reports data |
 | `GET /health` | Public monitor | deployment health probe |
 
-## Authentication and API keys
+## Authentication and configuration
 
-- **User API key:** use `Authorization: Bearer <access_token>` after login.
-- **Internal API key:** `X-API-Key: <API_KEY>` is only for protected internal
-  business-logic calls. Do not expose it to browser code.
-- **Configuration keys:** `SECRET_KEY`, `REFRESH_SECRET_KEY`, `API_KEY`,
-  `DATABASE_URL`, `CORS_ORIGINS`, `NOTIFICATION_SERVICE_URL`, `ENV`,
+- **User access:** use `Authorization: Bearer <access_token>` after login.
+- **Configuration keys:** `SECRET_KEY`, `ALGORITHM`,
+  `ACCESS_TOKEN_EXPIRE_MINUTES`, `DATABASE_URL`, `CORS_ORIGINS`,
+  `NOTIFICATION_SERVICE_URL`, `ENV`,
   `VITE_BACKEND_URL`, and `VITE_AI_API_URL`. See the API Contract for what
   each one does.
 

@@ -8,7 +8,7 @@ import { apiBaseUrl } from '../utils/api';
    TYPES
    ═══════════════════════════════════════════════════════════════ */
 interface RegisterViewProps {
-  onRegister: (email: string, name: string, role: UserRole) => void;
+  onRegister: (email: string, name: string, role: UserRole, userId?: string) => void;
   onNavigateToLogin: () => void;
 }
 
@@ -330,7 +330,14 @@ export default function RegisterView({ onRegister, onNavigateToLogin }: Register
       }
 
       localStorage.setItem('asl_access_token', data.access_token);
-      onRegister(email, name, role);
+      const profileResponse = await fetch(`${apiBaseUrl}/auth/me`, {
+        headers: { Authorization: `Bearer ${data.access_token}` },
+      });
+      const profile = await profileResponse.json();
+      if (!profileResponse.ok) {
+        throw new Error(getApiErrorMessage(profile, 'Registered, but could not load your account details.'));
+      }
+      onRegister(profile.email, profile.username, profile.role, String(profile.id));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {

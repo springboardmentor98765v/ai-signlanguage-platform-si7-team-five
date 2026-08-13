@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { BarChart3, LineChart, Activity, Award, Clock, ArrowUpRight, ArrowDownRight, Target, BrainCircuit, AlertCircle, PlayCircle, Search, Filter, Download, Calendar, FileSpreadsheet, FileText, Check, Camera, Zap, CheckCircle2, Star, Trophy, ShieldCheck, Printer } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { mockPracticeHistory, accuracyProgressData, categoryBreakdownData } from '../mockData';
-import { exportService } from '../services/exportService';
+import { apiBaseUrl } from '../utils/api';
 import { CinematicSection } from './CinematicMotion';
 
 export default function ReportsView() {
@@ -11,41 +10,61 @@ export default function ReportsView() {
   const [minScoreFilter, setMinScoreFilter] = useState<number | 'All'>('All');
   const [exportingFormat, setExportingFormat] = useState<'csv' | 'excel' | 'pdf' | null>(null);
   const [exportSuccess, setExportSuccess] = useState<string | null>(null);
+  const [summary, setSummary] = useState({ practice_sessions: 0, average_accuracy: 0, streak: 0, lessons_completed: 0 });
+  const [history, setHistory] = useState<Array<{ id: number; date: string; lesson_name: string; sign_symbol: string; accuracy: number; is_correct: boolean; feedback: string }>>([]);
+  const [dailyAttempts, setDailyAttempts] = useState<Array<{ date: string; time: number }>>([]);
+  const [categoryAccuracy, setCategoryAccuracy] = useState<Array<{ name: string; accuracy: number }>>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('asl_access_token');
+    if (!token) { setLoadError('Please sign in to view your live analytics.'); return; }
+    const headers = { Authorization: `Bearer ${token}` };
+    Promise.all([fetch(`${apiBaseUrl}/business/summary/me`, { headers }), fetch(`${apiBaseUrl}/business/analytics/me`, { headers })])
+      .then(async ([summaryResponse, analyticsResponse]) => {
+        if (!summaryResponse.ok || !analyticsResponse.ok) throw new Error('Live analytics are unavailable right now.');
+        const [nextSummary, analytics] = await Promise.all([summaryResponse.json(), analyticsResponse.json()]);
+        setSummary(nextSummary); setHistory(analytics.history); setDailyAttempts(analytics.daily_attempts); setCategoryAccuracy(analytics.category_accuracy);
+      })
+      .catch(problem => setLoadError(problem instanceof Error ? problem.message : 'Live analytics are unavailable right now.'));
+  }, []);
 
   // Export Trigger Handler
   const handleExport = async (format: 'csv' | 'excel' | 'pdf') => {
     setExportingFormat(format);
-    const result = await exportService.exportReport(mockPracticeHistory, {
-      format,
-      includePracticeHistory: true,
-      includeAccuracyMetrics: true,
-      dateRange: 'Last 30 Days',
-    });
-
-    // Create invisible anchor and trigger browser download
-    const link = document.createElement('a');
-    link.href = result.blobUrl;
-    link.download = result.filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setExportingFormat(null);
-    setExportSuccess(`Exported report as ${format.toUpperCase()}`);
-    setTimeout(() => setExportSuccess(null), 3000);
+    try {
+      const token = localStorage.getItem('asl_access_token');
+      if (!token) throw new Error('Please sign in before exporting a report.');
+      const requestUrl = format === 'csv'
+        ? `${apiBaseUrl}/business/exports/me?format=csv`
+        : `${apiBaseUrl}/business/reports/me?report_type=progress&format=${format === 'excel' ? 'xlsx' : 'pdf'}`;
+      const response = await fetch(requestUrl, { headers: { Authorization: `Bearer ${token}` } });
+      if (!response.ok) throw new Error('The server could not generate this report.');
+      const blob = await response.blob();
+      const extension = format === 'excel' ? 'xlsx' : format;
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `progress-report.${extension}`;
+      document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(link.href);
+      setExportSuccess(`Exported real-time progress report as ${format.toUpperCase()}`);
+    } catch (error) {
+      setExportSuccess(error instanceof Error ? error.message : 'Report export failed.');
+    } finally {
+      setExportingFormat(null);
+      setTimeout(() => setExportSuccess(null), 3000);
+    }
   };
 
   // Stats calculation
-  const totalSessions = mockPracticeHistory.length + 36; // combined with historical baseline
-  const avgScore = 87;
-  const avgAccuracy = 88;
-  const practiceTimeMinutes = 230; // ~ 3.8 hours
+  const totalSessions = summary.practice_sessions;
+  const avgScore = summary.average_accuracy;
+  const avgAccuracy = summary.average_accuracy;
 
   // Filter history
-  const filteredHistory = mockPracticeHistory.filter((session) => {
-    const matchesSearch = session.lessonName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          session.signSymbol.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesScore = minScoreFilter === 'All' || session.score >= minScoreFilter;
+  const filteredHistory = history.filter((session) => {
+    const matchesSearch = session.lesson_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          session.sign_symbol.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesScore = minScoreFilter === 'All' || session.accuracy >= minScoreFilter;
     return matchesSearch && matchesScore;
   });
 
@@ -112,6 +131,7 @@ export default function ReportsView() {
           <span>{exportSuccess}</span>
         </div>
       )}
+      {loadError && <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl text-xs font-bold text-amber-800">{loadError}</div>}
 
       {/* Reports Metrics Cards */}
       <div id="reports_stats_grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -119,7 +139,7 @@ export default function ReportsView() {
           <div className="space-y-1">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Sessions</p>
             <h3 className="text-2xl font-bold text-gray-900 font-sans">{totalSessions}</h3>
-            <span className="text-xs font-semibold text-emerald-600">+12% vs last month</span>
+            <span className="text-xs font-semibold text-emerald-600">Live platform data</span>
           </div>
           <div className="p-3 rounded-lg bg-emerald-50 text-emerald-600">
             <Camera className="h-6 w-6" />
@@ -130,7 +150,7 @@ export default function ReportsView() {
           <div className="space-y-1">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Average Score</p>
             <h3 className="text-2xl font-bold text-gray-900 font-sans">{avgScore}%</h3>
-            <span className="text-xs font-semibold text-emerald-600">Grade A- Standard</span>
+            <span className="text-xs font-semibold text-emerald-600">Based on recognised attempts</span>
           </div>
           <div className="p-3 rounded-lg bg-indigo-50 text-indigo-600">
             <Award className="h-6 w-6" />
@@ -141,7 +161,7 @@ export default function ReportsView() {
           <div className="space-y-1">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Sign Accuracy</p>
             <h3 className="text-2xl font-bold text-gray-900 font-sans">{avgAccuracy}%</h3>
-            <span className="text-xs font-semibold text-emerald-600">+1.5% improvement</span>
+            <span className="text-xs font-semibold text-emerald-600">Current recorded accuracy</span>
           </div>
           <div className="p-3 rounded-lg bg-blue-50 text-blue-600">
             <Zap className="h-6 w-6" />
@@ -150,9 +170,9 @@ export default function ReportsView() {
 
         <div className="bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-5 hover:bg-white/85 hover:shadow-premium transition-all duration-300 flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Practice Time</p>
-            <h3 className="text-2xl font-bold text-gray-900 font-sans">{Math.round(practiceTimeMinutes / 60)} hrs {practiceTimeMinutes % 60} mins</h3>
-            <span className="text-xs font-semibold text-emerald-600">Active today</span>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Practice Streak</p>
+            <h3 className="text-2xl font-bold text-gray-900 font-sans">{summary.streak} days</h3>
+            <span className="text-xs font-semibold text-emerald-600">Live current streak</span>
           </div>
           <div className="p-3 rounded-lg bg-amber-50 text-amber-600">
             <Clock className="h-6 w-6" />
@@ -171,7 +191,7 @@ export default function ReportsView() {
           </div>
           <div className="h-72 w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={accuracyProgressData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={dailyAttempts} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
                 <XAxis dataKey="date" stroke="#9CA3AF" fontSize={11} tickLine={false} axisLine={false} />
                 <YAxis stroke="#9CA3AF" fontSize={11} tickLine={false} axisLine={false} />
@@ -192,7 +212,7 @@ export default function ReportsView() {
           </div>
           <div className="h-72 w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={categoryBreakdownData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={categoryAccuracy} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorAccuracyCategory" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.15}/>
@@ -334,10 +354,10 @@ export default function ReportsView() {
               {filteredHistory.map((row) => (
                 <tr key={row.id} className="hover:bg-gray-50/50 transition">
                   <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-400">{row.date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{row.lessonName}</td>
+                  <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{row.lesson_name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="font-sans font-extrabold text-sm text-gray-900 bg-gray-100 px-2 py-0.5 rounded">
-                      {row.signSymbol}
+                      {row.sign_symbol}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

@@ -40,6 +40,6 @@ assignment, practice scoring, badges, and streak regression behaviour.
 
 No actual keys or tokens are recorded in this handoff. The backend and mounted
 business-logic service use `SECRET_KEY`, `ALGORITHM`,
-`ACCESS_TOKEN_EXPIRE_MINUTES`, `API_KEY`, `DATABASE_URL`, `CORS_ORIGINS`, and
+`ACCESS_TOKEN_EXPIRE_MINUTES`, `DATABASE_URL`, `CORS_ORIGINS`, and
 `NOTIFICATION_SERVICE_URL`; their names and safe placeholders are in the API
 Contract and `.env.production.example`.
