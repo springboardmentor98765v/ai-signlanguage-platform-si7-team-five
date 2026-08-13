@@ -31,7 +31,7 @@ function getApiErrorMessage(payload: unknown, fallback: string): string {
    ═══════════════════════════════════════════════════════════════ */
 const SIGNS = [
   { img: '/signs/i_love_you.png', label: 'I Love You',    phase: 0,   speed: 1.0 },
-  { img: '/signs/hello.png',      label: 'Stop / Hello',  phase: 72,  speed: 1.0 },
+  { img: '/signs/hello_nobg.png', label: 'Stop / Hello',  phase: 72,  speed: 1.0 },
   { img: '/signs/thumbs_up.png',  label: 'Thumbs Up',     phase: 144, speed: 1.0 },
   { img: '/signs/peace.png',      label: 'Peace / Victory', phase: 216, speed: 1.0 },
   { img: '/signs/ok.png',         label: 'OK',            phase: 288, speed: 1.0 },

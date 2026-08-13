@@ -130,22 +130,14 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                     </p>
                   </div>
 
-                  {/* Demonstration Placeholder Graphic */}
-                  <div className="bg-white p-6 rounded-xl border border-gray-100 flex flex-col items-center justify-center space-y-4 min-h-64 shadow-sm">
-                    <motion.div
-                      key={activeLessonModal.steps[currentStepIndex].signSymbol}
-                      initial={{ opacity: 0, scale: 0.96 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.45, ease: 'easeOut' }}
-                      className="flex items-center justify-center w-full"
-                    >
-                      <motion.img
+                  {/* Demonstration Graphic */}
+                  <div className="bg-white p-0 flex flex-col items-center justify-center min-h-64">
+                    <div className="flex items-center justify-center w-full bg-white">
+                      <img
                         id={`ref-image-${activeLessonModal.steps[currentStepIndex].signSymbol}`}
                         src={`/signs/${activeLessonModal.steps[currentStepIndex].signSymbol.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}.png`}
                         alt={`Reference for ${activeLessonModal.steps[currentStepIndex].signSymbol}`}
-                        animate={{ y: [0, -3, 0] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                        className="object-contain w-auto mx-auto max-h-[220px] md:max-h-[260px] bg-transparent"
+                        className="object-contain w-auto mx-auto max-h-[220px] md:max-h-[260px] bg-white mix-blend-multiply"
                         onError={(e) => {
                            (e.target as HTMLImageElement).style.display = 'none';
                            const fallback = document.getElementById(`fallback-${activeLessonModal.steps[currentStepIndex].signSymbol}`);
@@ -159,10 +151,6 @@ export default function LessonsView({ lessons, onNavigate, selectedLessonFromNav
                         <Camera className="h-12 w-12 text-gray-300 opacity-80" />
                         <span className="text-sm font-semibold tracking-wide">No reference image available</span>
                       </div>
-                    </motion.div>
-                    <div className="text-center">
-                      <p className="text-xs font-semibold text-gray-500">Visual Model Ref</p>
-                      <p className="text-[10px] text-gray-400">American Sign Language Standard</p>
                     </div>
                   </div>
                 </div>
