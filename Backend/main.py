@@ -28,6 +28,7 @@ from services import instructor_service
 from services import admin_services
 from services import business_logic_service
 from services import predictions
+from services import accessibility_trainer_service
 from api_gateway import routers as gateway_routers
 from utils import error_handdler
 from BD_Logic.main import app as bd_logic_app
@@ -64,11 +65,9 @@ app.include_router(admin_services.r, prefix="/admin", tags=["Admin"])
 app.include_router(business_logic_service.r, prefix="/business", tags=["Business Logic"])
 app.include_router(notification_router, prefix="/notifications", tags=["Notifications"])
 app.include_router(predictions.r, prefix="/predictions", tags=["Predictions"])
+app.include_router(accessibility_trainer_service.r, prefix="/accessibility-trainers", tags=["Accessibility Trainer"])
 
 # INTERN 2 CHECKPOINT: Integration with Business Logic (Intern 4)
-# Mounts the BD_Logic application for business logic processing
-app.mount("/bd_logic", bd_logic_app)
-
 # INTERN 2 CHECKPOINT: Error handling and API gateway integration
 # Initializes global error handlers and includes API gateway routers
 error_handdler.init_error_handlers(app)
@@ -81,12 +80,7 @@ for router in gateway_routers:
 # Allows requests from localhost:3000 (Frontend) and localhost:5173 (dev server)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=[origin.strip() for origin in os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173").split(",") if origin.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -111,7 +105,7 @@ app.include_router(course_router, prefix="/lessons", tags=["Lessons"])
 # Provides system health status for monitoring and load balancers
 @app.get("/health", tags=["System"])
 def health_check():
-    return {"status": "ok", "message": "Milestone 3 backend running"}
+    return {"status": "ok", "message": "Milestone 4 backend running"}
 
 # INTERN 2 CHECKPOINT: Root endpoint
 # Basic endpoint to verify backend is running

@@ -11,6 +11,7 @@ This backend is a FastAPI application for the Sign Language Learning and Assessm
 - Course CRUD operations
 - Role-based access control for instructor/admin actions
 - Auto-generated Swagger UI at `/docs`
+- Protected Accessibility Trainer analytics at `/accessibility-trainers/me/learners`
 
 ## Requirements
 
@@ -39,7 +40,9 @@ ENV=development
 DEBUG=True
 ```
 
-A template file is available at `Backend/.env.example`.
+A template file is available at `Backend/.env.example`. For deployment, copy
+`Backend/.env.production.example` to `Backend/.env.production`, replace every
+placeholder, and keep that secret file out of version control.
 
 ## Run the application
 

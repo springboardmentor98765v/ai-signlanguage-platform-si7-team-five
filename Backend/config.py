@@ -8,16 +8,18 @@ import os
 
 # Load environment variables from .env file
 # First try to load from local directory, then fallback to root directory
-local_env_path = os.path.join(os.path.dirname(__file__), ".env")
+environment_name = os.getenv("ENV", "development")
+local_env_path = os.path.join(os.path.dirname(__file__), f".env.{environment_name}")
+fallback_env_path = os.path.join(os.path.dirname(__file__), ".env")
 if os.path.exists(local_env_path):
     load_dotenv(dotenv_path=local_env_path)
-    print(f"Loaded environment variables from: {local_env_path}")
+elif os.path.exists(fallback_env_path):
+    load_dotenv(dotenv_path=fallback_env_path)
 else:
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     env_path = os.path.join(root_dir, ".env")
     if os.path.exists(env_path):
         load_dotenv(dotenv_path=env_path)
-        print(f"Loaded environment variables from: {env_path}")
 
 # INTERN 2 CHECKPOINT: Security configuration
 # JWT secret key and algorithm for token-based authentication
@@ -36,6 +38,3 @@ if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
         importlib.import_module("psycopg2")
     except ImportError:
         pass
-
-# Using SQLite database (PostgreSQL not available)
-print(f"Using database: {DATABASE_URL}")

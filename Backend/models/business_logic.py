@@ -59,3 +59,15 @@ class Notification(Base):
     message = Column(String(500), nullable=False)
     is_read = Column(Boolean, nullable=False, default=False, index=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False, index=True)
+
+
+class TrainerLearnerAssignment(Base):
+    """A trainer may only view learners explicitly assigned to them."""
+
+    __tablename__ = "trainer_learner_assignments"
+    __table_args__ = (UniqueConstraint("trainer_id", "learner_id", name="uq_trainer_learner_assignment"),)
+
+    id = Column(Integer, primary_key=True)
+    trainer_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    learner_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    assigned_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
