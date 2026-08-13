@@ -1,0 +1,25 @@
+{
+  "info": {
+    "name": "AI Sign Language Platform - Intern 2 - Milestones 1 to 4",
+    "description": "Import into Postman. Run Register roles, Login, and Get My Account first. Put the copied access tokens into the collection variables before testing protected requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://127.0.0.1:8000"},
+    {"key": "adminToken", "value": "<paste_admin_access_token>"},
+    {"key": "trainerToken", "value": "<paste_trainer_access_token>"},
+    {"key": "learnerToken", "value": "<paste_learner_access_token>"},
+    {"key": "trainerId", "value": "<trainer_id_from_auth_me>"},
+    {"key": "learnerId", "value": "<learner_id_from_auth_me>"}
+  ],
+  "item": [
+    {"name": "Milestone 1 - Health", "request": {"method": "GET", "url": "{{baseUrl}}/health"}},
+    {"name": "Milestone 1 - Register Learner", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"username\": \"learner_demo\",\n  \"email\": \"learner@example.test\",\n  \"password\": \"LearnerPass123!\",\n  \"role\": \"Learner\"\n}"}, "url": "{{baseUrl}}/auth/register"}},
+    {"name": "Milestone 1 - Login", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"username\": \"learner_demo\",\n  \"password\": \"LearnerPass123!\"\n}"}, "url": "{{baseUrl}}/auth/login"}},
+    {"name": "Milestone 1 - My Account", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{learnerToken}}"}], "url": "{{baseUrl}}/auth/me"}},
+    {"name": "Milestone 1 - Practice Attempt", "request": {"method": "POST", "header": [{"key": "Authorization", "value": "Bearer {{learnerToken}}"}, {"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"expected_label\": \"A\",\n  \"predicted_label\": \"A\",\n  \"confidence\": 0.96\n}"}, "url": "{{baseUrl}}/business/attempts"}},
+    {"name": "Milestone 3 - My Notifications", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{learnerToken}}"}], "url": "{{baseUrl}}/notifications/me"}},
+    {"name": "Milestone 4 - Assign Learner to Trainer", "request": {"method": "POST", "header": [{"key": "Authorization", "value": "Bearer {{adminToken}}"}, {"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"trainer_id\": {{trainerId}},\n  \"learner_id\": {{learnerId}}\n}"}, "url": "{{baseUrl}}/accessibility-trainers/assignments"}},
+    {"name": "Milestone 4 - Trainer Dashboard", "request": {"method": "GET", "header": [{"key": "Authorization", "value": "Bearer {{trainerToken}}"}], "url": "{{baseUrl}}/accessibility-trainers/me/learners"}}
+  ]
+}

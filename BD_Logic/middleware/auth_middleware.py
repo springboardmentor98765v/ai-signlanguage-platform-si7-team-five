@@ -3,11 +3,11 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import JSONResponse
 import os
-import jwt
+from jose import JWTError, jwt
 from datetime import datetime, timedelta
 
 # Use same configuration as Backend
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here-change-in-production")
+SECRET_KEY = os.getenv("SECRET_KEY", "")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
@@ -17,7 +17,7 @@ def decode_token(token: str):
     """Decode JWT token using same logic as Backend"""
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    except jwt.JWTError:
+    except JWTError:
         return None
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -55,11 +55,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         if api_key and api_key == os.getenv("API_KEY", "dev-api-key"):
             return await call_next(request)
 
-        # For development/testing, allow requests without auth
-        # In production, uncomment the following line to enforce authentication
-        # return JSONResponse(status_code=401, content={"detail": "Unauthorized"})
-
-        return await call_next(request)
+        return JSONResponse(status_code=401, content={"detail": "Invalid or missing authorization token"})
 
 async def verify_token(credentials: HTTPAuthorizationCredentials = security):
     """Verify Bearer token using same logic as Backend"""

@@ -1,0 +1,23 @@
+{
+  "authentication_header": {"Authorization": "Bearer <access_token>"},
+  "internal_service_header": {"X-API-Key": "<API_KEY_from_environment>"},
+  "milestone_1": {
+    "register": {"method": "POST", "path": "/auth/register", "body": {"username": "learner_demo", "email": "learner@example.test", "password": "LearnerPass123!", "role": "Learner"}, "response": {"access_token": "<jwt>", "token_type": "bearer", "username": "learner_demo", "role": "Learner"}},
+    "login": {"method": "POST", "path": "/auth/login", "body": {"username": "learner_demo", "password": "LearnerPass123!"}, "response": {"access_token": "<jwt>", "token_type": "bearer"}},
+    "practice_attempt": {"method": "POST", "path": "/business/attempts", "headers": {"Authorization": "Bearer <learner_token>"}, "body": {"expected_label": "A", "predicted_label": "A", "confidence": 0.96, "course_id": 1}, "response": {"is_correct": true, "score": 100, "feedback": "Great work - you signed A correctly.", "streak": 1, "new_badges": ["First Sign"]}}
+  },
+  "milestone_2": {
+    "profile_update": {"method": "PUT", "path": "/auth/user/update-profile", "body": {"name": "Learner Demo", "email": "learner@example.test", "password": "NewPass123!"}, "response": {"message": "Profile updated for learner@example.test"}},
+    "instructor_assignment": {"method": "POST", "path": "/instructors/assign-student", "body": {"student_id": 27, "instructor_id": 12}, "response": {"message": "Student 27 assigned to Instructor 12"}}
+  },
+  "milestone_3": {
+    "notification": {"method": "POST", "path": "/notifications/", "body": {"user_id": 27, "event_type": "badge_earned", "title": "Badge unlocked!", "message": "You earned the First Sign badge."}, "response": {"id": 7, "message": "Notification created"}},
+    "bulk_status": {"method": "PUT", "path": "/admin/users/bulk-status", "body": {"user_ids": [27, 28], "active": true}},
+    "progress_export": {"method": "GET", "path": "/business/exports/me?format=xlsx", "headers": {"Authorization": "Bearer <learner_token>"}}
+  },
+  "milestone_4": {
+    "assign_trainer_learner": {"method": "POST", "path": "/accessibility-trainers/assignments", "headers": {"Authorization": "Bearer <admin_token>"}, "body": {"trainer_id": 12, "learner_id": 27}, "response": {"assignment_id": 4, "trainer_id": 12, "learner_id": 27, "created": true}},
+    "trainer_dashboard": {"method": "GET", "path": "/accessibility-trainers/me/learners", "headers": {"Authorization": "Bearer <trainer_token>"}, "response": [{"learner_id": 27, "username": "learner_demo", "engagement": {"total_practice_attempts": 18, "practice_attempts_last_7_days": 6}, "skill_development": {"accuracy_change": 12.5, "current_accuracy": 88.89}, "assessment_analytics": {"average_score": 88.89, "attempts": 18, "correct_attempts": 16}, "certification_status": {"eligible": true, "minimum_average_score": 85}}]},
+    "unassigned_learner_error": {"status": 404, "response": {"detail": "Learner is not assigned to this trainer"}}
+  }
+}

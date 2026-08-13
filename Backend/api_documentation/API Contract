@@ -163,3 +163,165 @@
 - `/auth/me`, `/courses`, and course modification routes require bearer auth
 - Role checks are enforced by `services.rbac.role_required`
 
+---
+
+## Security and configuration keys (all milestones)
+
+These are environment-variable names, not values. Never put real values in this
+file, Swagger, source code, screenshots, or Git.
+
+| Key | Used by | Purpose | Safe example |
+| --- | --- | --- | --- |
+| `SECRET_KEY` | Backend and business logic | Signs and validates JWT bearer tokens | `long-random-value` |
+| `ALGORITHM` | Backend and business logic | JWT signing algorithm | `HS256` |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Backend and business logic | Login-token lifetime | `30` |
+| `REFRESH_SECRET_KEY` | Security utility | Reserved for refresh-token support | `different-long-random-value` |
+| `API_KEY` | Business-logic middleware | Internal/service test access through `X-API-Key` | `internal-key-not-a-user-token` |
+| `DATABASE_URL` | Backend, AI/CV and business logic | Database connection string | `sqlite:///./app.db` |
+| `CORS_ORIGINS` | Backend | Comma-separated permitted frontend origins | `https://app.example.com` |
+| `NOTIFICATION_SERVICE_URL` | Notification gateway | Internal notification endpoint base URL | `http://backend:8000/notifications` |
+| `ENV` | Backend | Selects `.env.<ENV>` configuration file | `production` |
+| `VITE_BACKEND_URL` | Frontend build | Public backend base URL | `https://api.example.com` |
+| `VITE_AI_API_URL` | Frontend build | Public AI-service base URL | `https://ai.example.com` |
+
+**Authentication headers**
+
+```http
+Authorization: Bearer <access_token_from_/auth/login>
+X-API-Key: <internal_API_KEY_only_when_needed>
+```
+
+Use a bearer token for user actions. `X-API-Key` is for trusted internal/test
+service calls only; it must not be embedded in the frontend.
+
+---
+
+## Complete endpoint index by milestone
+
+The URLs below are the routes registered by the current FastAPI applications.
+`/bd_logic` is the mounted Business Logic service prefix.
+
+### Milestone 1 - foundation
+
+| Method | Path | Key/request | Access |
+| --- | --- | --- | --- |
+| GET | `/health` | none | Public |
+| POST | `/auth/register` | `username`, `email`, `password`, `role` | Public |
+| POST | `/auth/login` | `username`, `password` | Public, rate limited |
+| GET | `/auth/me` | Bearer token | Signed-in user |
+| GET | `/lessons` | `page`, `size`, optional category/difficulty | Public |
+| GET | `/lessons/search` | `query` | Public |
+| POST | `/courses` | Course JSON + bearer token | Instructor |
+| GET | `/courses`, `/courses/{id}` | none | Public |
+| PUT | `/courses/{id}` | Course JSON + bearer token | Instructor |
+| DELETE | `/courses/{id}` | bearer token | Admin |
+| POST | `/predictions/predict` | `[[numeric_features]]` | Integration service |
+| POST | `/business/attempts` | expected/predicted label, confidence + bearer token | Learner |
+
+### Milestone 2 - account, instructor, admin and lesson expansion
+
+| Method | Path | Key/request | Access |
+| --- | --- | --- | --- |
+| PUT | `/auth/user/update-profile` | profile JSON | Signed-in user integration flow |
+| POST | `/auth/user/forgot-password` | `email` | Public, rate limited |
+| POST | `/auth/user/reset-password` | reset fields | Public, rate limited |
+| POST | `/instructors/assign-student` | `student_id`, `instructor_id` | Instructor workflow |
+| GET | `/instructors/students` | `instructor_id` | Instructor workflow |
+| GET | `/admin/users` | none | Admin workflow |
+| PUT | `/admin/users/{id}/role` | `new_role` | Admin workflow |
+| PUT | `/admin/users/{id}/status` | `active` | Admin workflow |
+
+### Milestone 3 - notifications, bulk administration and learner progress
+
+| Method | Path | Key/request | Access |
+| --- | --- | --- | --- |
+| POST | `/notifications/` | notification JSON | Internal business-logic service |
+| GET | `/notifications/me` | bearer token | Signed-in user |
+| PUT | `/notifications/{id}/read` | bearer token | Owning user |
+| PUT | `/admin/users/bulk-status` | `user_ids`, `active` | Admin workflow |
+| POST | `/admin/lessons/bulk-upload` | CSV multipart file | Admin workflow |
+| GET | `/business/badges/me`, `/business/streak/me` | bearer token | Learner |
+| GET | `/business/leaderboard/{course_id}` | optional `metric` | Public |
+| GET | `/business/recommendations/me` | bearer token | Learner |
+| GET | `/business/exports/me` | `format=csv|xlsx` + bearer token | Learner |
+
+### Milestone 4 - Accessibility Trainer integration
+
+| Method | Path | Key/request | Access |
+| --- | --- | --- | --- |
+| POST | `/accessibility-trainers/assignments` | `trainer_id`, `learner_id` + bearer token | Admin |
+| GET | `/accessibility-trainers/me/learners` | bearer token | Accessibility Trainer |
+| GET | `/accessibility-trainers/me/learners/{learner_id}` | bearer token | Accessibility Trainer; assigned learner only |
+| GET/POST | `/bd_logic/api/v1/certificate*`, `/report`, `/export*` | service-specific JSON or query parameters | Bearer token or internal API key, except public download endpoints |
+
+---
+
+## Milestone 4 - Accessibility Trainer APIs
+
+All endpoints below require a bearer token. The API uses the account in that
+token, never an id supplied by the browser, to protect learner information.
+
+### POST /accessibility-trainers/assignments
+- **Purpose:** Assign a learner to an Accessibility Trainer.
+- **Authorization:** Admin only.
+- **Headers:** `Authorization: Bearer <admin_token>`
+- **Request body:**
+```json
+{
+  "trainer_id": 12,
+  "learner_id": 27
+}
+```
+- **Response (201):**
+```json
+{
+  "assignment_id": 4,
+  "trainer_id": 12,
+  "learner_id": 27,
+  "created": true
+}
+```
+- **Notes:** Repeating the same assignment is safe; it returns `created: false`.
+  The API returns `422` if the trainer or learner id has the wrong role.
+
+### GET /accessibility-trainers/me/learners
+- **Purpose:** List the signed-in Accessibility Trainer's assigned learners and
+  their dashboard metrics.
+- **Authorization:** Accessibility Trainer only.
+- **Headers:** `Authorization: Bearer <trainer_token>`
+- **Response (200):**
+```json
+[
+  {
+    "learner_id": 27,
+    "username": "learner_demo",
+    "engagement": {
+      "total_practice_attempts": 18,
+      "practice_attempts_last_7_days": 6
+    },
+    "skill_development": {
+      "accuracy_change": 12.5,
+      "current_accuracy": 88.89
+    },
+    "assessment_analytics": {
+      "average_score": 88.89,
+      "attempts": 18,
+      "correct_attempts": 16
+    },
+    "certification_status": {
+      "eligible": true,
+      "minimum_average_score": 85
+    }
+  }
+]
+```
+
+### GET /accessibility-trainers/me/learners/{learner_id}
+- **Purpose:** Retrieve metrics for one learner assigned to the signed-in
+  Accessibility Trainer.
+- **Authorization:** Accessibility Trainer only.
+- **Headers:** `Authorization: Bearer <trainer_token>`
+- **Response:** Same learner object as the previous endpoint.
+- **Security behaviour:** Returns `404` when the learner is not assigned to the
+  trainer, so learner information is not leaked.
+

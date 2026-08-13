@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from db import Base, get_db
 import models.business_logic  # noqa: F401
@@ -18,13 +19,18 @@ from services.auth import create_access_token
 
 
 def _client():
-    engine = create_engine("sqlite://", connect_args={"check_same_thread": False})
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
     Base.metadata.create_all(engine)
-    session = sessionmaker(bind=engine)()
+    session = sessionmaker(bind=engine, expire_on_commit=False)()
     trainer = User(username="trainer", email="trainer@test.local", hashed_password="x", role="Accessibility Trainer")
     learner = User(username="learner", email="learner@test.local", hashed_password="x", role="Learner")
     other = User(username="other", email="other@test.local", hashed_password="x", role="Learner")
-    session.add_all([trainer, learner, other]); session.flush()
+    admin = User(username="admin", email="admin@test.local", hashed_password="x", role="Admin")
+    session.add_all([trainer, learner, other, admin]); session.flush()
     session.add(TrainerLearnerAssignment(trainer_id=trainer.id, learner_id=learner.id))
     session.add(PracticeAttempt(user_id=learner.id, expected_label="A", predicted_label="A", confidence=.99, is_correct=True))
     session.commit()
@@ -32,7 +38,7 @@ def _client():
     def override_db():
         yield session
     app.dependency_overrides[get_db] = override_db
-    return TestClient(app), trainer, learner, other
+    return TestClient(app), trainer, learner, other, admin
 
 
 def _headers(username, role):
@@ -40,7 +46,7 @@ def _headers(username, role):
 
 
 def test_trainer_sees_only_assigned_learners_and_real_metrics():
-    client, trainer, learner, _ = _client()
+    client, trainer, learner, _, _ = _client()
     response = client.get("/accessibility-trainers/me/learners", headers=_headers(trainer.username, trainer.role))
     assert response.status_code == 200
     assert response.json()[0]["learner_id"] == learner.id
@@ -48,8 +54,26 @@ def test_trainer_sees_only_assigned_learners_and_real_metrics():
 
 
 def test_trainer_cannot_read_unassigned_learner_and_other_roles_are_forbidden():
-    client, trainer, _learner, other = _client()
+    client, trainer, _learner, other, _admin = _client()
     response = client.get(f"/accessibility-trainers/me/learners/{other.id}", headers=_headers(trainer.username, trainer.role))
     assert response.status_code == 404
     response = client.get("/accessibility-trainers/me/learners", headers=_headers(other.username, other.role))
     assert response.status_code == 403
+
+
+def test_admin_can_assign_a_learner_once():
+    client, trainer, _learner, other, admin = _client()
+    response = client.post(
+        "/accessibility-trainers/assignments",
+        headers=_headers(admin.username, admin.role),
+        json={"trainer_id": trainer.id, "learner_id": other.id},
+    )
+    assert response.status_code == 201
+    assert response.json()["created"] is True
+    duplicate = client.post(
+        "/accessibility-trainers/assignments",
+        headers=_headers(admin.username, admin.role),
+        json={"trainer_id": trainer.id, "learner_id": other.id},
+    )
+    assert duplicate.status_code == 201
+    assert duplicate.json()["created"] is False

@@ -10,6 +10,8 @@ python-multipart==0.0.20
 psycopg2-binary==2.9.10
 httpx==0.28.1
 numpy==2.2.2
+opencv-python-headless==4.10.0.84
+mediapipe==0.10.14
 joblib==1.4.2
 pandas==2.2.3
 reportlab==4.2.5

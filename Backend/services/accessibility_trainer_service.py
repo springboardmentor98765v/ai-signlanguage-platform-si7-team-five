@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from db import get_db
@@ -21,12 +22,26 @@ r = APIRouter()
 TRAINER_ROLE = "Accessibility Trainer"
 
 
+class TrainerLearnerAssignmentCreate(BaseModel):
+    trainer_id: int
+    learner_id: int
+
+
 def _trainer(token: dict, db: Session) -> User:
     user = db.query(User).filter(User.username == token.get("sub")).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authenticated user no longer exists")
     if user.role != TRAINER_ROLE:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Accessibility Trainer access is required")
+    return user
+
+
+def _admin(token: dict, db: Session) -> User:
+    user = db.query(User).filter(User.username == token.get("sub")).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authenticated user no longer exists")
+    if user.role != "Admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access is required to assign learners")
     return user
 
 
@@ -58,6 +73,30 @@ def _assigned_learner(trainer: User, learner_id: int, db: Session) -> User:
     if not learner:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Learner not found")
     return learner
+
+
+@r.post("/assignments", status_code=status.HTTP_201_CREATED)
+def assign_learner(
+    payload: TrainerLearnerAssignmentCreate,
+    db: Session = Depends(get_db),
+    token: dict = Depends(get_current_user),
+):
+    """Assign a learner to an Accessibility Trainer. Administrators only."""
+    _admin(token, db)
+    trainer = db.get(User, payload.trainer_id)
+    learner = db.get(User, payload.learner_id)
+    if not trainer or trainer.role != TRAINER_ROLE:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="trainer_id must belong to an Accessibility Trainer")
+    if not learner or learner.role != "Learner":
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="learner_id must belong to a Learner")
+    assignment = db.query(TrainerLearnerAssignment).filter_by(trainer_id=trainer.id, learner_id=learner.id).first()
+    if assignment:
+        return {"assignment_id": assignment.id, "trainer_id": trainer.id, "learner_id": learner.id, "created": False}
+    assignment = TrainerLearnerAssignment(trainer_id=trainer.id, learner_id=learner.id)
+    db.add(assignment)
+    db.commit()
+    db.refresh(assignment)
+    return {"assignment_id": assignment.id, "trainer_id": trainer.id, "learner_id": learner.id, "created": True}
 
 
 @r.get("/me/learners")
