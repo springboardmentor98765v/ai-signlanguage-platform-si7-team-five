@@ -6,7 +6,11 @@ if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL is not set. Add it to Backend/.env or your environment.")
 
 _connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
-engine = create_engine(DATABASE_URL, connect_args=_connect_args)
+engine = create_engine(
+    DATABASE_URL,
+    connect_args=_connect_args,
+    pool_pre_ping=not DATABASE_URL.startswith("sqlite"),
+)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

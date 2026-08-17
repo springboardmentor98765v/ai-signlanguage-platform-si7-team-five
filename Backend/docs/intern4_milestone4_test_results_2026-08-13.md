@@ -62,3 +62,17 @@ frontend, monitoring, and full multi-domain acceptance. Those require the
 team's chosen hosting accounts, production database URL, and frontend
 deployment; they cannot be truthfully marked complete from this local workspace.
 The local Docker integration and all Intern 4 deliverables above are verified.
+
+## 2026-08-17 follow-up: Supabase pooler readiness
+
+- The production-only local environment file was updated to use the supplied
+  Supabase pooler endpoint with `sslmode=require`; it remains Git-ignored.
+- The running backend returned `503` with `database: unavailable`, while the
+  AI health endpoint returned `200` with all models ready.
+- This Codex desktop sandbox blocked both Docker process startup and outbound
+  TCP access to the pooler host. Therefore a PostgreSQL login or `SELECT 1`
+  was not asserted from this session. It must be rechecked from Docker Desktop
+  or the selected deployment host before production sign-off.
+- Docker compose now contains frontend (`3000`), backend (`8000`), and AI
+  (`8001`) services with backend/AI health checks. The frontend waits for the
+  API services to become healthy.

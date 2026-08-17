@@ -701,10 +701,11 @@ class Badge:
 # Local PostgreSQL Database Setup Guide
 
 ## Issue Analysis
-The remote PostgreSQL database (Supabase) has DNS resolution issues:
-- Hostname: `db.ovvvcudvagbnlojfmmnx.supabase.co`
-- DNS resolves to IPv6 but ping fails
-- Connection error: "could not translate host name to address"
+
+The direct Supabase database hostname can resolve to IPv6. On an IPv4-only
+network this results in a `Network is unreachable` connection error. The active
+application uses the unified Backend `/business` APIs; this legacy folder must
+not configure a separate database connection.
 
 ## Solution: Local PostgreSQL Setup
 
@@ -897,10 +898,10 @@ If you prefer to use the remote Supabase database, you need to:
    - Check firewall settings
    - Try using VPN if DNS resolution fails
 
-2. **Use IP Address Instead:**
-   ```
-   DATABASE_URL=postgresql://postgres:VinayBellamkonda@<IP_ADDRESS>:5432/postgres
-   ```
+2. **Use the Supabase Session pooler:**
+   Copy the pooler URI from Supabase Dashboard → Connect. Set it only in the
+   deployment secret store or an ignored `.env.production` file. Use SSL and
+   never use a raw IP address or place credentials in documentation.
 
 3. **Contact Supabase Support:**
    - Verify database credentials

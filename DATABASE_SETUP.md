@@ -20,12 +20,9 @@ DATABASE_URL=sqlite:///./ai_sign_language_platform.db
 - Added informative connection status messages
 
 **Before:**
-```python
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres:VinayBellamkonda@db.ovvvcudvagbnlojfmmnx.supabase.co:5432/postgres"
-)
-```
+
+The deprecated implementation embedded a direct PostgreSQL connection string
+in source code. Credentials and direct-host URLs must not be embedded in code.
 
 **After:**
 ```python

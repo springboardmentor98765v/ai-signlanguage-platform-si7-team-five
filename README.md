@@ -6,13 +6,13 @@ An AI-assisted web platform for learning sign language, practising signs through
 
 | Component | Local address | Purpose |
 | --- | --- | --- |
-| Frontend | `http://127.0.0.1:5173` | React user interface |
+| Frontend | `http://127.0.0.1:3000` | React user interface |
 | Backend Swagger | `http://127.0.0.1:8000/docs` | Authentication, lessons, business logic, trainer and admin APIs |
 | Backend health | `http://127.0.0.1:8000/health` | Backend and database reachability |
 | AI/ML Swagger | `http://127.0.0.1:8001/docs` | Sign prediction API |
 | AI/ML health | `http://127.0.0.1:8001/health` | AI model readiness |
 
-Docker maps the backend container to port `8000` and the AI service to port `8001`. The frontend defaults to those ports. A `503` response from backend health means the configured database is unavailable; it is not treated as a healthy system.
+Docker maps the frontend to port `3000`, backend to port `8000`, and AI service to port `8001`. The frontend defaults to the backend and AI ports. A `503` response from backend health means the configured database is unavailable; it is not treated as a healthy system.
 
 ## Canonical vocabulary
 
@@ -73,13 +73,9 @@ Every protected endpoint requires `Authorization: Bearer <access_token>`. The pl
 ## Run locally
 
 ```powershell
-# Backend and AI services (Docker)
+# Frontend, backend and AI services (Docker)
 cd Backend
 docker compose up --build
-
-# Frontend (separate terminal)
-cd Frontend
-pnpm dev
 ```
 
 Copy `Backend/.env.production.example` to `Backend/.env.production` and `Frontend/.env.example` to `Frontend/.env` before deployment. Never commit a real database password, JWT secret, or bearer token.
