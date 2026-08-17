@@ -342,17 +342,7 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
           </div>
 
           <div id="top_navbar_right_controls" className="flex items-center space-x-4">
-            {/* Demo Mode Badge */}
-            <motion.div 
-              whileHover={{ y: -2, scale: 1.05 }}
-              className="hidden sm:flex items-center space-x-2 bg-[#f4efff]/90 backdrop-blur-md border border-white px-3.5 py-2 rounded-full text-indigo-500 shadow-[0_4px_12px_rgba(99,102,241,0.08)] cursor-default"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-              </span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-500">Demo Mode</span>
-            </motion.div>
+
 
             {/* Streak Tracker Badge */}
             <motion.div 

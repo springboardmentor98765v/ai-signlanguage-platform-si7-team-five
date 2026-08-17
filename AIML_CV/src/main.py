@@ -32,8 +32,8 @@ MODELS_DIR = BASE_DIR / "models"
 MODEL_PATH = MODELS_DIR / "hand_landmarker.task"
 # M2: use the augmented-dataset classifier (real train/test split) instead of
 # the Milestone 1 single-sample classifier.
-CLASSIFIER_PATH = MODELS_DIR / "knn_classifier_m2.joblib"
-STATS_PATH = MODELS_DIR / "class_feature_stats.joblib"
+CLASSIFIER_PATH = MODELS_DIR / "knn_classifier_m3.joblib"
+STATS_PATH = MODELS_DIR / "class_feature_stats_m3.joblib"
 HAND_LANDMARKER_URL = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
 
 WRIST = 0
