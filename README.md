@@ -7,12 +7,12 @@ An AI-assisted web platform for learning sign language, practising signs through
 | Component | Local address | Purpose |
 | --- | --- | --- |
 | Frontend | `http://127.0.0.1:5173` | React user interface |
-| Backend Swagger | `http://127.0.0.1:8002/docs` | Authentication, lessons, business logic, trainer and admin APIs |
-| Backend health | `http://127.0.0.1:8002/health` | Backend and database reachability |
+| Backend Swagger | `http://127.0.0.1:8000/docs` | Authentication, lessons, business logic, trainer and admin APIs |
+| Backend health | `http://127.0.0.1:8000/health` | Backend and database reachability |
 | AI/ML Swagger | `http://127.0.0.1:8001/docs` | Sign prediction API |
 | AI/ML health | `http://127.0.0.1:8001/health` | AI model readiness |
 
-Docker maps the backend container to port `8002` and the AI service to port `8001`. The frontend defaults to those ports. A `503` response from backend health means the configured database is unavailable; it is not treated as a healthy system.
+Docker maps the backend container to port `8000` and the AI service to port `8001`. The frontend defaults to those ports. A `503` response from backend health means the configured database is unavailable; it is not treated as a healthy system.
 
 ## Canonical vocabulary
 
@@ -50,7 +50,7 @@ This table documents the shared public objects and configuration variables used 
 | `Notification` | `id`, `user_id`, `event_type`, `title`, `message`, `is_read`, `created_at` | In-app notifications |
 | `Badge` / `UserBadge` | `code`, `name`, `description`, `earned_at` | Gamification |
 | `UserStreak` | `current_streak`, `longest_streak`, `last_practice_date` | Learner dashboard |
-| `VITE_BACKEND_URL` | Frontend backend base URL; local default `http://127.0.0.1:8002` | Frontend |
+| `VITE_BACKEND_URL` | Frontend backend base URL; local default `http://127.0.0.1:8000` | Frontend |
 | `VITE_AI_API_URL` | Frontend AI base URL; local default `http://127.0.0.1:8001` | Frontend |
 | `DATABASE_URL` | SQLAlchemy PostgreSQL connection string | Backend and AI persistence |
 | `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES` | JWT signing configuration | Backend authentication |

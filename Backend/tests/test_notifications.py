@@ -8,9 +8,8 @@ def test_list_notifications(client):
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
-def test_mark_as_read(client):
-    # First create a notification
-    client.post("/notifications", params={"user_id": 1, "message": "Mark me"})
+def test_mark_as_read_requires_an_authenticated_owner(client):
+    # The active notification read endpoint is protected; an anonymous request
+    # must not be able to alter another learner's notification.
     response = client.put("/notifications/1/read")
-    assert response.status_code == 200
-    assert "Notification marked as read" in response.json()["message"]
+    assert response.status_code == 401

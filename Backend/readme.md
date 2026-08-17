@@ -35,7 +35,7 @@ Example `.env` values:
 SECRET_KEY=your_jwt_secret
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
-DATABASE_URL=postgresql://postgres:VinayBellamkonda@db.ovvvcudvagbnlojfmmnx.supabase.co:5432/postgres
+DATABASE_URL=postgresql://user:password@host:5432/signlanguage
 ENV=development
 DEBUG=True
 ```

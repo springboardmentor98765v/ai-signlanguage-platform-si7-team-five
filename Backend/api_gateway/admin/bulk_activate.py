@@ -6,7 +6,7 @@ from fastapi import APIRouter, Body
 from services import bulk_admin_service
 from pydantic import BaseModel
 
-router = APIRouter()
+router = APIRouter(include_in_schema=False)
 
 class BulkStatusRequest(BaseModel):
     user_ids: list[int]

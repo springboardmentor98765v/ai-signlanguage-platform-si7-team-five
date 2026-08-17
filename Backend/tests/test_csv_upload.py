@@ -8,6 +8,9 @@ def test_bulk_upload_lessons(client, tmp_path):
         f.write("Letter A,Alphabet,Easy\n")
         f.write("Word HELLO,Words,Medium\n")
 
-    response = client.post("/admin/lessons/bulk-upload", params={"file_path": str(csv_file)})
+    response = client.post(
+        "/admin/lessons/bulk-upload",
+        files={"file": ("lessons.csv", csv_file.read_bytes(), "text/csv")},
+    )
     assert response.status_code == 200
     assert len(response.json()["lessons"]) >= 2

@@ -15,6 +15,9 @@ def test_admin_bulk_operations(client, tmp_path):
         f.write("Letter B,Alphabet,Easy\n")
         f.write("Word THANKS,Words,Medium\n")
 
-    response = client.post("/admin/lessons/bulk-upload", params={"file_path": str(csv_file)})
+    response = client.post(
+        "/admin/lessons/bulk-upload",
+        files={"file": ("lessons.csv", csv_file.read_bytes(), "text/csv")},
+    )
     assert response.status_code == 200
     assert len(response.json()["lessons"]) >= 2
