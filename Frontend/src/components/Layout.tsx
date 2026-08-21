@@ -56,6 +56,7 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
     { name: 'Lessons', icon: BookOpen },
     { name: 'Practice', icon: Camera },
     { name: 'Leaderboard', icon: Trophy },
+    { name: 'Certification', icon: ShieldCheck },
     { name: 'Reports', icon: Award },
     { name: 'Profile', icon: User },
   ];
@@ -100,6 +101,8 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
         return 'ASL Syllabus';
       case 'Practice':
         return 'Practice Arena';
+      case 'Certification':
+        return 'Certification Exams';
       case 'Reports':
         return 'Performance Reports';
       case 'Leaderboard':

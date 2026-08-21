@@ -14,6 +14,7 @@ import LeaderboardView from './components/LeaderboardView';
 import InstructorDashboard from './components/InstructorDashboard';
 import AdminDashboard from './components/AdminDashboard';
 import AccessibilityTrainerDashboard from './components/AccessibilityTrainerDashboard';
+import CertificationView from './components/CertificationView';
 
 export default function App() {
   // Authentication states
@@ -222,6 +223,8 @@ export default function App() {
         );
       case 'Reports':
         return <ReportsView />;
+      case 'Certification':
+        return <CertificationView />;
       case 'Leaderboard':
         return <LeaderboardView />;
       case 'Profile':
