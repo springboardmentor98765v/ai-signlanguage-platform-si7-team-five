@@ -1,18 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Users, BookOpen, TrendingUp, Award, Search, ChevronRight,
-  BarChart3, CheckCircle, Clock, AlertCircle, Filter, Download
+  Users, BookOpen, TrendingUp, Search, ChevronRight,
+  CheckCircle, AlertCircle, Filter, Download
 } from 'lucide-react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, LineChart, Line, Legend
-} from 'recharts';
-import {
-  mockInstructorStudents,
-  mockInstructorClassPerformance,
-  mockInstructorWeeklyActivity
-} from '../mockData';
-import StudentProfileModal from './StudentProfileModal';
+import { apiBaseUrl } from '../utils/api';
+
+interface LearnerSummary {
+  learner_id: number;
+  username: string;
+  practice_attempts: number;
+  average_accuracy: number;
+}
 
 export default function InstructorDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,12 +18,38 @@ export default function InstructorDashboard() {
   const [sortBy, setSortBy] = useState<'name' | 'progress'>('name');
   const [selectedStudentName, setSelectedStudentName] = useState<string | null>(null);
 
+  const [learners, setLearners] = useState<LearnerSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLearners = async () => {
+      try {
+        const token = localStorage.getItem('asl_access_token');
+        const res = await fetch(`${apiBaseUrl}/business/instructors/learners`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setLearners(data);
+        }
+      } catch (e) {
+        console.error('Failed to load learners:', e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchLearners();
+  }, []);
+
+  const totalAttempts = learners.reduce((sum, l) => sum + l.practice_attempts, 0);
+  const avgAccuracyTotal = learners.length > 0 ? (learners.reduce((sum, l) => sum + l.average_accuracy, 0) / learners.length).toFixed(1) : '0';
+
   const stats = [
     {
       id: 'instr_stat_students',
-      label: 'Total Students',
-      value: '34',
-      change: '+3 this month',
+      label: 'Assigned Learners',
+      value: learners.length.toString(),
+      change: 'Real-time API metrics',
       changePositive: true,
       icon: Users,
       bg: 'bg-blue-50',
@@ -33,9 +57,9 @@ export default function InstructorDashboard() {
     },
     {
       id: 'instr_stat_accuracy',
-      label: 'Average Accuracy',
-      value: '81%',
-      change: '+2.4% this week',
+      label: 'Average Class Accuracy',
+      value: `${avgAccuracyTotal}%`,
+      change: 'Calculated organically',
       changePositive: true,
       icon: TrendingUp,
       bg: 'bg-violet-50',
@@ -43,42 +67,28 @@ export default function InstructorDashboard() {
     },
     {
       id: 'instr_stat_active',
-      label: 'Active Students',
-      value: '28',
-      change: 'practiced this week',
+      label: 'Total Practice Attempts',
+      value: totalAttempts.toString(),
+      change: 'Active submissions recorded',
       changePositive: true,
       icon: CheckCircle,
       bg: 'bg-emerald-50',
       color: 'text-emerald-600',
-    },
-    {
-      id: 'instr_stat_completed',
-      label: 'Lessons Completed Today',
-      value: '14',
-      change: '+4 vs yesterday',
-      changePositive: true,
-      icon: BookOpen,
-      bg: 'bg-amber-50',
-      color: 'text-amber-500',
-    },
+    }
   ];
 
-  const filteredStudents = mockInstructorStudents
+  const filteredStudents = learners
     .filter((s) => {
-      const matchesSearch =
-        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.email.toLowerCase().includes(searchQuery.toLowerCase());
-      if (activeFilter === 'at-risk') return matchesSearch && s.accuracy < 70;
-      if (activeFilter === 'top') return matchesSearch && s.accuracy >= 90;
+      const matchesSearch = s.username.toLowerCase().includes(searchQuery.toLowerCase());
+      if (activeFilter === 'at-risk') return matchesSearch && s.average_accuracy < 70;
+      if (activeFilter === 'top') return matchesSearch && s.average_accuracy >= 90;
       return matchesSearch;
     })
     .sort((a, b) => {
       if (sortBy === 'progress') {
-        const progressA = (a.lessonsCompleted / 30) * 100;
-        const progressB = (b.lessonsCompleted / 30) * 100;
-        return progressB - progressA; 
+        return b.practice_attempts - a.practice_attempts; 
       }
-      return a.name.localeCompare(b.name);
+      return a.username.localeCompare(b.username);
     });
 
   const getStatusBadge = (accuracy: number) => {
@@ -120,51 +130,7 @@ export default function InstructorDashboard() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Class Performance Bar Chart */}
-        <div id="instr_class_performance_chart" className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <div className="mb-4">
-            <h3 className="font-bold text-base text-gray-900">Class Performance by Lesson</h3>
-            <p className="text-xs text-gray-500">Average accuracy per lesson topic</p>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={mockInstructorClassPerformance} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
-                <XAxis dataKey="lesson" stroke="#9CA3AF" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis domain={[0, 100]} stroke="#9CA3AF" fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip
-                  cursor={{ fill: 'rgba(0, 0, 0, 0.04)', rx: 8, ry: 8 }}
-                  contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', borderRadius: '12px', border: '1px solid rgba(0, 0, 0, 0.08)', fontSize: '12px', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)' }}
-                  formatter={(v: number) => [`${v}%`, 'Avg Accuracy']}
-                />
-                <Bar dataKey="avgAccuracy" fill="#2563EB" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Weekly Activity Line Chart */}
-        <div id="instr_weekly_activity_chart" className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-          <div className="mb-4">
-            <h3 className="font-bold text-base text-gray-900">Weekly Student Activity</h3>
-            <p className="text-xs text-gray-500">Sessions and completions over the past week</p>
-          </div>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={mockInstructorWeeklyActivity} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
-                <XAxis dataKey="day" stroke="#9CA3AF" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#9CA3AF" fontSize={10} tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #E5E7EB', fontSize: '12px' }} />
-                <Legend wrapperStyle={{ fontSize: '11px' }} />
-                <Line type="monotone" dataKey="sessions" stroke="#2563EB" strokeWidth={2} dot={false} name="Sessions" />
-                <Line type="monotone" dataKey="completions" stroke="#10B981" strokeWidth={2} dot={false} name="Completions" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
+      {/* Charts Row completely removed per api logic mock teardown constraints */}
 
       {/* Student Roster */}
       <div id="instr_student_roster" className="bg-white rounded-xl border border-gray-100 shadow-sm">
@@ -213,69 +179,56 @@ export default function InstructorDashboard() {
 
         {/* Table */}
         <div className="overflow-x-auto">
+          {isLoading ? (
+            <div className="p-8 text-center text-gray-500 font-semibold animate-pulse">Loading learners from backend...</div>
+          ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
-                <th className="px-5 py-3 text-left font-semibold">Student</th>
-                <th className="px-5 py-3 text-left font-semibold">Lessons Done</th>
-                <th className="px-5 py-3 text-left font-semibold">Progress %</th>
+                <th className="px-5 py-3 text-left font-semibold">Student Username</th>
+                <th className="px-5 py-3 text-left font-semibold">Practice Attempts</th>
                 <th className="px-5 py-3 text-left font-semibold">Avg Accuracy</th>
-                <th className="px-5 py-3 text-left font-semibold">Streak</th>
                 <th className="px-5 py-3 text-left font-semibold">Status</th>
-                <th className="px-5 py-3 text-left font-semibold">Last Active</th>
-                <th className="px-5 py-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
               {filteredStudents.length > 0 ? filteredStudents.map((student) => {
-                const badge = getStatusBadge(student.accuracy);
+                const badge = getStatusBadge(student.average_accuracy);
                 return (
-                  <tr key={student.id} className="hover:bg-gray-50 transition">
+                  <tr key={student.learner_id} className="hover:bg-gray-50 transition">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-full bg-blue-50 border border-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs uppercase shrink-0">
-                          {student.name.substring(0, 2)}
+                          {student.username.substring(0, 2)}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900">{student.name}</p>
-                          <p className="text-xs text-gray-400">{student.email}</p>
+                          <p className="font-semibold text-gray-900">{student.username}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-gray-700 font-medium">{student.lessonsCompleted}</td>
-                    <td className="px-5 py-4 text-gray-700 font-medium">{Math.round((student.lessonsCompleted / 30) * 100)}%</td>
+                    <td className="px-5 py-4 text-gray-700 font-medium">{student.practice_attempts}</td>
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <div className="flex-1 max-w-20 bg-gray-100 rounded-full h-1.5">
                           <div
                             className="h-full rounded-full"
                             style={{
-                              width: `${student.accuracy}%`,
-                              backgroundColor: student.accuracy >= 75 ? '#10B981' : student.accuracy >= 60 ? '#F59E0B' : '#EF4444'
+                              width: `${student.average_accuracy}%`,
+                              backgroundColor: student.average_accuracy >= 75 ? '#10B981' : student.average_accuracy >= 60 ? '#F59E0B' : '#EF4444'
                             }}
                           />
                         </div>
-                        <span className="text-xs font-semibold text-gray-700">{student.accuracy}%</span>
+                        <span className="text-xs font-semibold text-gray-700">{student.average_accuracy}%</span>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-gray-700 font-medium">{student.streak}d 🔥</td>
                     <td className="px-5 py-4">
                       <span className={`px-2 py-1 rounded-full text-xs font-bold ${badge.cls}`}>{badge.label}</span>
-                    </td>
-                    <td className="px-5 py-4 text-xs text-gray-500">{student.lastActive}</td>
-                    <td className="px-5 py-4">
-                      <button 
-                        onClick={() => setSelectedStudentName(student.name)}
-                        className="text-blue-600 hover:text-blue-800 transition flex items-center gap-1 text-xs font-semibold"
-                      >
-                        View Progress <ChevronRight className="h-4 w-4" />
-                      </button>
                     </td>
                   </tr>
                 );
               }) : (
                 <tr>
-                  <td colSpan={7} className="px-5 py-12 text-center">
+                  <td colSpan={4} className="px-5 py-12 text-center">
                     <div className="flex flex-col items-center gap-2 text-gray-400">
                       <AlertCircle className="h-8 w-8" />
                       <p className="text-sm font-medium">No students match your criteria</p>
@@ -285,6 +238,7 @@ export default function InstructorDashboard() {
               )}
             </tbody>
           </table>
+          )}
         </div>
 
         {/* Footer */}
@@ -298,14 +252,6 @@ export default function InstructorDashboard() {
           </button>
         </div>
       </div>
-
-      {/* Modal */}
-      {selectedStudentName && (
-        <StudentProfileModal 
-          studentName={selectedStudentName} 
-          onClose={() => setSelectedStudentName(null)} 
-        />
-      )}
     </div>
   );
 }
