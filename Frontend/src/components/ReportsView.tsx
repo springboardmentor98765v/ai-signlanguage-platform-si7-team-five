@@ -29,24 +29,24 @@ export default function ReportsView() {
       .catch(problem => setLoadError(problem instanceof Error ? problem.message : 'Live analytics are unavailable right now.'));
   }, []);
 
+  const [exportReportType, setExportReportType] = useState<string>('progress');
+
   // Export Trigger Handler
-  const handleExport = async (format: 'csv' | 'excel' | 'pdf') => {
+  const handleExport = async (format: 'excel' | 'pdf') => {
     setExportingFormat(format);
     try {
       const token = localStorage.getItem('asl_access_token');
       if (!token) throw new Error('Please sign in before exporting a report.');
-      const requestUrl = format === 'csv'
-        ? `${apiBaseUrl}/business/exports/me?format=csv`
-        : `${apiBaseUrl}/business/reports/me?report_type=progress&format=${format === 'excel' ? 'xlsx' : 'pdf'}`;
+      const requestUrl = `${apiBaseUrl}/business/reports/me?report_type=${exportReportType}&format=${format === 'excel' ? 'xlsx' : 'pdf'}`;
       const response = await fetch(requestUrl, { headers: { Authorization: `Bearer ${token}` } });
       if (!response.ok) throw new Error('The server could not generate this report.');
       const blob = await response.blob();
       const extension = format === 'excel' ? 'xlsx' : format;
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `progress-report.${extension}`;
+      link.download = `${exportReportType}-report.${extension}`;
       document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(link.href);
-      setExportSuccess(`Exported real-time progress report as ${format.toUpperCase()}`);
+      setExportSuccess(`Exported real-time ${exportReportType} report as ${format.toUpperCase()}`);
     } catch (error) {
       setExportSuccess(error instanceof Error ? error.message : 'Report export failed.');
     } finally {
@@ -83,19 +83,19 @@ export default function ReportsView() {
         </div>
 
         {/* Export Toolbar */}
-        <div className="flex items-center space-x-2 shrink-0">
-          <motion.button
-            onClick={() => handleExport('csv')}
-            disabled={exportingFormat !== null}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            aria-label="Export as CSV"
-            className="flex items-center space-x-1.5 px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+        <div className="flex items-center space-x-3 shrink-0 bg-white/70 backdrop-blur-xl border border-gray-200 shadow-sm p-1.5 rounded-2xl">
+          <select 
+            value={exportReportType} 
+            onChange={e => setExportReportType(e.target.value)}
+            className="bg-transparent text-sm font-semibold text-gray-700 outline-none border-none py-1.5 pl-2 cursor-pointer focus:ring-0"
           >
-            <FileText className="h-4 w-4 text-emerald-600" />
-            <span>{exportingFormat === 'csv' ? 'Exporting...' : 'Export CSV'}</span>
-          </motion.button>
+            <option value="learning">Learning Report</option>
+            <option value="assessment">Assessment Report</option>
+            <option value="accuracy">Accuracy Report</option>
+            <option value="certification">Certification Report</option>
+            <option value="progress">Progress Report</option>
+          </select>
+          <div className="w-px h-6 bg-gray-200"></div>
 
           <motion.button
             onClick={() => handleExport('excel')}
@@ -104,10 +104,10 @@ export default function ReportsView() {
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
             aria-label="Export as Excel"
-            className="flex items-center space-x-1.5 px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold rounded-xl shadow-sm transition-colors"
           >
             <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-            <span>{exportingFormat === 'excel' ? 'Exporting...' : 'Export Excel'}</span>
+            <span>{exportingFormat === 'excel' ? '...' : 'Excel'}</span>
           </motion.button>
 
           <motion.button
@@ -117,10 +117,10 @@ export default function ReportsView() {
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
             aria-label="Export as PDF"
-            className="flex items-center space-x-1.5 px-3.5 py-2 bg-emerald-50/80 hover:bg-emerald-100 text-emerald-700 text-xs font-bold rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors"
+            className="flex items-center space-x-1.5 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-500/20 transition-colors"
           >
             <Download className="h-4 w-4" />
-            <span>{exportingFormat === 'pdf' ? 'Exporting...' : 'Download PDF'}</span>
+            <span>{exportingFormat === 'pdf' ? '...' : 'PDF'}</span>
           </motion.button>
         </div>
       </div>
