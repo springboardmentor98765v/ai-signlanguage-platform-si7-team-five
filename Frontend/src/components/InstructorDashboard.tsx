@@ -25,7 +25,7 @@ export default function InstructorDashboard() {
     const fetchLearners = async () => {
       try {
         const token = localStorage.getItem('asl_access_token');
-        const res = await fetch(`${apiBaseUrl}/business/instructors/learners`, {
+        const res = await fetch(`${apiBaseUrl}/instructors/learners`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
@@ -40,6 +40,19 @@ export default function InstructorDashboard() {
     };
     fetchLearners();
   }, []);
+
+  const handleExportCSV = () => {
+    const headers = ['Learner ID,Username,Practice Attempts,Average Accuracy'];
+    const rows = filteredStudents.map(s => `${s.learner_id},${s.username},${s.practice_attempts},${s.average_accuracy}%`);
+    const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "instructor_report.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const totalAttempts = learners.reduce((sum, l) => sum + l.practice_attempts, 0);
   const avgAccuracyTotal = learners.length > 0 ? (learners.reduce((sum, l) => sum + l.average_accuracy, 0) / learners.length).toFixed(1) : '0';
@@ -245,6 +258,7 @@ export default function InstructorDashboard() {
         <div className="px-5 py-3 border-t border-gray-100 flex justify-end">
           <button
             id="instr_export_btn"
+            onClick={handleExportCSV}
             className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-blue-600 transition"
           >
             <Download className="h-3.5 w-3.5" />

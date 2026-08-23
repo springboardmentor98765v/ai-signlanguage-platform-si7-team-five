@@ -11,14 +11,9 @@ import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Legend
 } from 'recharts';
-import { Lesson, User } from '../types';
-import {
-  accuracyProgressData,
-  lessonsCompletedBarData,
-  mockWeakLetters,
-  mockRecentActivity,
-  mockAchievements
-} from '../mockData';
+import { Lesson, User, AchievementBadge } from '../types';
+import { achievementService } from '../services/achievementService';
+import { apiBaseUrl } from '../utils/api';
 import StreakWidget from './StreakWidget';
 import { CinematicSection, StaggeredGrid, Premium3DCard, MagneticButton } from './CinematicMotion';
 
@@ -167,6 +162,29 @@ const PremiumHeroBanner = ({ user, onNavigate }: { user: User; onNavigate: (tab:
 };
 
 export default function DashboardView({ user, lessons, onNavigate }: DashboardViewProps) {
+  const [achievements, setAchievements] = useState<AchievementBadge[]>([]);
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [accuracyProgressData, setAccuracyProgressData] = useState<any[]>([]);
+  const [lessonsCompletedBarData, setLessonsCompletedBarData] = useState<any[]>([]);
+  const [weakLetters, setWeakLetters] = useState<any[]>([]);
+
+  useEffect(() => {
+    achievementService.getBadges('All').then(setAchievements);
+    
+    // For analytics, fetch real data from /business/analytics/me if needed, otherwise fallback to empty real state
+    const token = localStorage.getItem('asl_access_token');
+    const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+    fetch(`${apiBaseUrl}/business/analytics/me`, { headers })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.history) {
+          setRecentActivity(data.history.slice(0, 5).map((h: any) => ({
+            id: h.id, type: 'practice', label: h.lesson_name, time: h.date, score: h.accuracy
+          })));
+        }
+      }).catch(() => {});
+  }, []);
+
   const recentLessons = lessons
     .filter(l => l.progress > 0 && l.progress < 100)
     .concat(lessons.filter(l => l.progress === 0))
@@ -353,7 +371,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
             </div>
             <p className="text-xs text-gray-500 -mt-2">Signs with lowest accuracy — focus here!</p>
             <div className="space-y-3">
-              {mockWeakLetters.map((letter) => (
+              {weakLetters.map((letter) => (
                 <div key={letter.letter} className="space-y-1">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -372,6 +390,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
                   </div>
                 </div>
               ))}
+              {weakLetters.length === 0 && <p className="text-xs text-gray-500">No weak signs identified yet.</p>}
             </div>
             <motion.button
               id="practice_weak_signs_btn"
@@ -392,7 +411,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
               <h3 className="font-bold text-sm text-gray-900 uppercase tracking-wider">Recent Activity</h3>
             </div>
             <div className="space-y-3">
-              {mockRecentActivity.map((act) => (
+              {recentActivity.map((act) => (
                 <div key={act.id} className="flex items-start gap-3">
                   <span className={`h-7 w-7 flex items-center justify-center rounded-lg shrink-0 ${
                     act.type === 'practice' ? 'bg-emerald-50 text-emerald-600' : 'bg-teal-50 text-teal-600'
@@ -400,14 +419,15 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
                     {act.type === 'practice' ? <Camera className="h-3.5 w-3.5" /> : <BookOpen className="h-3.5 w-3.5" />}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-800 truncate">{act.label}</p>
+                     <p className="text-xs font-semibold text-gray-800 truncate">{act.label}</p>
                     <p className="text-[10px] text-gray-400">{act.time}</p>
                   </div>
-                  {act.score !== null && (
+                  {act.score !== null && act.score !== undefined && (
                     <span className="text-xs font-bold text-emerald-600 shrink-0">{act.score}%</span>
                   )}
                 </div>
               ))}
+              {recentActivity.length === 0 && <p className="text-xs text-gray-500">No recent activity.</p>}
             </div>
           </div>
 
@@ -418,15 +438,15 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
               <h3 className="font-bold text-sm text-gray-900 uppercase tracking-wider">Achievements</h3>
             </div>
             <div className="space-y-2.5">
-              {mockAchievements.slice(0, 4).map((a) => (
+              {achievements.slice(0, 4).map((a) => (
                 <div
                   key={a.id}
                   className={`flex items-center gap-3 p-2 rounded-lg ${a.unlocked ? 'bg-white' : 'opacity-50'}`}
                 >
-                  <span className="text-xl">{a.emoji}</span>
+                  <span className="text-xl">{a.iconName || '🏆'}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold text-gray-900 truncate">{a.title}</p>
-                    <p className="text-[10px] text-gray-400 truncate">{a.desc}</p>
+                    <p className="text-[10px] text-gray-400 truncate">{a.description}</p>
                   </div>
                   {a.unlocked ? (
                     <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
@@ -435,6 +455,7 @@ export default function DashboardView({ user, lessons, onNavigate }: DashboardVi
                   )}
                 </div>
               ))}
+              {achievements.length === 0 && <p className="text-xs text-gray-500">Keep practicing to earn badges!</p>}
             </div>
             <motion.button
               id="view_all_achievements_btn"

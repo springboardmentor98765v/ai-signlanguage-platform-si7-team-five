@@ -1,35 +1,56 @@
 import { NotificationItem } from '../types';
-import { mockNotifications } from '../mockData';
+import { apiBaseUrl } from '../utils/api';
 
 class NotificationService {
-  private notifications: NotificationItem[] = [...mockNotifications];
+  private getHeaders() {
+    const token = localStorage.getItem('asl_access_token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  }
 
   async getNotifications(): Promise<NotificationItem[]> {
-    // Simulates API delay for realistic loading skeleton states
-    await new Promise((r) => setTimeout(r, 200));
-    return [...this.notifications];
+    try {
+      const resp = await fetch(`${apiBaseUrl}/notifications/me`, { headers: this.getHeaders() });
+      if (!resp.ok) return [];
+      const data = await resp.json();
+      return data.map((n: any) => ({
+        id: String(n.id),
+        title: n.title,
+        message: n.message,
+        type: n.event_type === 'badge_earned' ? 'achievement' : 'system',
+        read: n.is_read,
+        time: new Date(n.created_at + 'Z').toLocaleString(),
+      }));
+    } catch {
+      return [];
+    }
   }
 
   async markAsRead(id: string): Promise<NotificationItem[]> {
-    this.notifications = this.notifications.map((item) =>
-      item.id === id ? { ...item, read: true } : item
-    );
-    return [...this.notifications];
+    try {
+      await fetch(`${apiBaseUrl}/notifications/${id}/read`, { 
+        method: 'PUT',
+        headers: this.getHeaders()
+      });
+      return this.getNotifications();
+    } catch {
+      return this.getNotifications();
+    }
   }
 
   async markAllAsRead(): Promise<NotificationItem[]> {
-    this.notifications = this.notifications.map((item) => ({ ...item, read: true }));
-    return [...this.notifications];
+    // Current backend doesn't have a mark all as read API, fallback to individual or reload
+    return this.getNotifications();
   }
 
   async clearAll(): Promise<NotificationItem[]> {
-    this.notifications = [];
     return [];
   }
 
   async deleteNotification(id: string): Promise<NotificationItem[]> {
-    this.notifications = this.notifications.filter((item) => item.id !== id);
-    return [...this.notifications];
+    return this.getNotifications();
   }
 }
 

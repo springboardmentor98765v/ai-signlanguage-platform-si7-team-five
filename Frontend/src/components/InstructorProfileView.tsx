@@ -1,11 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   User, Shield, GraduationCap, Users, Accessibility, Check,
-  Award, Camera, Lock, Eye, EyeOff, AlertCircle, Edit2, X
+  Award, Camera, Lock, Eye, EyeOff, AlertCircle, Edit2, X, Target, Briefcase, Activity, CheckCircle2, ShieldCheck,
+  TrendingUp, BookOpen
 } from 'lucide-react';
-import { User as UserType, UserRole } from '../types';
-import { mockAchievements } from '../mockData';
+import { User as UserType } from '../types';
+import { apiBaseUrl } from '../utils/api';
 import { CinematicSection } from './CinematicMotion';
 
 interface ProfileViewProps {
@@ -13,15 +14,20 @@ interface ProfileViewProps {
   onUpdateProfile: (updates: Partial<UserType>) => void;
 }
 
-import AchievementsDashboard from './AchievementsDashboard';
+type ActiveSection = 'profile' | 'teaching' | 'password';
 
-type ActiveSection = 'profile' | 'achievements' | 'password';
+interface AssignedLearner {
+  learner_id: number;
+  username: string;
+  practice_attempts: number;
+  average_accuracy: number;
+  lessons_completed?: number;
+}
 
-export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps) {
+export default function InstructorProfileView({ user, onUpdateProfile }: ProfileViewProps) {
   // -- Profile Form State --
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
-  const [role, setRole] = useState<UserRole>(user.role);
   const [avatarUrl, setAvatarUrl] = useState(user.avatarUrl || '');
   const [profileSaved, setProfileSaved] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
@@ -43,6 +49,37 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
   // -- Active section tabs --
   const [activeSection, setActiveSection] = useState<ActiveSection>('profile');
 
+  // -- Instructor Data State --
+  const [learners, setLearners] = useState<AssignedLearner[]>([]);
+  const [loadingLearners, setLoadingLearners] = useState(true);
+
+  useEffect(() => {
+    const fetchClassroom = async () => {
+      setLoadingLearners(true);
+      try {
+        const token = localStorage.getItem('asl_access_token');
+        const res = await fetch(`${apiBaseUrl}/instructors/learners`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setLearners(data);
+        }
+      } catch (e) {
+        console.error("Failed to load learners for instructor profile");
+      } finally {
+        setLoadingLearners(false);
+      }
+    };
+    fetchClassroom();
+  }, []);
+
+  const totalAssigned = learners.length;
+  const activeLearners = Math.max(0, learners.filter(l => l.practice_attempts > 0).length);
+  const avgAccuracy = learners.length > 0 
+    ? Math.round(learners.reduce((sum, l) => sum + (l.average_accuracy || 0), 0) / learners.length) 
+    : 0;
+
   // ─── Handlers ────────────────────────────────────────────────
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +95,7 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setProfileLoading(true);
-    onUpdateProfile({ name, email, role, avatarUrl: avatarUrl || undefined });
+    onUpdateProfile({ name, email, avatarUrl: avatarUrl || undefined });
     setProfileLoading(false);
     setProfileSaved(true);
     setTimeout(() => setProfileSaved(false), 3500);
@@ -87,23 +124,6 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
     setConfirmPassword('');
     setTimeout(() => setPasswordSaved(false), 3500);
   };
-
-  const getRoleDescription = (r: UserRole) => {
-    switch (r) {
-      case 'Learner':
-        return 'Standard education mode. Unlocks interactive lesson lists, personal streak rewards, computer vision practice canvas, and performance scoring.';
-      case 'Instructor':
-        return 'Academic management mode. Tracks classroom analytics, manages custom handshape curriculum structures, and downloads cohort performance files.';
-      case 'Accessibility Trainer':
-        return 'Specialized coordinator mode. Customizes joints coordinate sensitivity thresholds, triggers high-contrast overlays, and configures screen-reader audio guides.';
-    }
-  };
-
-  const roles: { value: UserRole; label: string; icon: React.ReactNode }[] = [
-    { value: 'Learner', label: 'Learner', icon: <GraduationCap className="h-5 w-5 mb-1 text-emerald-600" /> },
-    { value: 'Instructor', label: 'Instructor', icon: <Users className="h-5 w-5 mb-1 text-emerald-600" /> },
-    { value: 'Accessibility Trainer', label: 'Accessibility Trainer', icon: <Accessibility className="h-5 w-5 mb-1 text-emerald-600" /> },
-  ];
 
   const PasswordField = ({
     id, label, value, onChange, show, toggleShow, error
@@ -153,7 +173,7 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
       <div className="flex border-b border-gray-200 gap-1 overflow-x-auto">
         {([
           { id: 'profile' as ActiveSection, label: 'Profile Information', icon: <User className="h-4 w-4" /> },
-          { id: 'achievements' as ActiveSection, label: 'Achievements Gallery', icon: <Award className="h-4 w-4" /> },
+          { id: 'teaching' as ActiveSection, label: 'Teaching Overview', icon: <Briefcase className="h-4 w-4" /> },
           { id: 'password' as ActiveSection, label: 'Change Password', icon: <Lock className="h-4 w-4" /> },
         ]).map((tab) => (
           <button
@@ -216,7 +236,7 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                 <div>
                   <h3 className="font-bold text-lg text-gray-900">{name}</h3>
                   <p className="text-xs text-gray-400 mt-0.5">
-                    Current Role: <span className="font-semibold text-emerald-700">{role}</span>
+                    Current Role: <span className="font-semibold text-emerald-700">Instructor</span>
                   </p>
                   <button
                     type="button"
@@ -225,7 +245,6 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                     className="mt-2 flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                   >
                     <Edit2 className="h-3 w-3" />
-                    Change Photo
                   </button>
                 </div>
               </div>
@@ -278,11 +297,11 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
                   <div className="p-4 border border-emerald-200 bg-emerald-50 rounded-xl flex items-center justify-between shadow-sm">
                      <div className="flex items-center gap-3">
                          <div className="p-2 bg-emerald-100 rounded-lg text-emerald-700">
-                             <GraduationCap className="h-5 w-5" />
+                             <Users className="h-5 w-5" />
                          </div>
                          <div>
                              <span className="text-gray-500 text-xs font-semibold uppercase tracking-wider block">Assigned Role</span>
-                             <span className="text-gray-900 font-bold flex items-center gap-2">Learner <Lock className="h-3 w-3 text-emerald-600" /></span>
+                             <span className="text-gray-900 font-bold flex items-center gap-2">Instructor <Lock className="h-3 w-3 text-emerald-600" /></span>
                          </div>
                      </div>
                   </div>
@@ -314,56 +333,100 @@ export default function ProfileView({ user, onUpdateProfile }: ProfileViewProps)
               </form>
             </div>
 
-            {/* Right: Achievements */}
+            {/* Right: Instructor Overview */}
             <div className="lg:col-span-5 space-y-5 lg:max-h-full overflow-y-auto custom-scrollbar pr-1">
               <div id="achievements_card" className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-4">
-                <h3 className="font-bold text-sm text-gray-950 uppercase tracking-wider">Achievements & Badges</h3>
-                <div className="space-y-3">
-                  {mockAchievements.map((a) => (
-                    <div
-                      key={a.id}
-                      className={`p-3 border rounded-lg flex items-start space-x-3 ${
-                        a.unlocked ? 'border-gray-100 bg-white' : 'border-dashed border-gray-200 bg-gray-50/50 opacity-55'
-                      }`}
-                    >
-                      <span className="text-2xl">{a.emoji}</span>
-                      <div>
-                        <h4 className="text-xs font-semibold text-gray-900 flex items-center gap-1.5">
-                          <span>{a.title}</span>
-                          {a.unlocked && (
-                            <span className="text-[10px] bg-emerald-50 text-emerald-700 px-1.5 rounded font-bold uppercase">Active</span>
-                          )}
-                        </h4>
-                        <p className="text-[11px] text-gray-500 mt-0.5 leading-tight">{a.desc}</p>
-                      </div>
-                    </div>
-                  ))}
+                <div>
+                   <h3 className="font-bold text-sm text-gray-950 uppercase tracking-wider">Instructor Overview</h3>
+                   <span className="text-xs text-gray-400">Your teaching activity and classroom performance.</span>
                 </div>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm space-y-3">
-                <h4 className="font-bold text-sm text-gray-900 uppercase tracking-wider">Learning Stats</h4>
-                {[
-                  { label: 'Lessons Completed', value: user.lessonsCompleted },
-                  { label: 'Practice Sessions', value: user.practiceSessions },
-                  { label: 'Average Accuracy', value: `${user.avgAccuracy}%` },
-                  { label: 'Current Streak', value: `${user.streak} days` },
-                ].map((stat, i) => (
-                  <div key={i} className="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-                    <span className="text-xs text-gray-500">{stat.label}</span>
-                    <span className="text-xs font-bold text-gray-900">{stat.value}</span>
+                
+                {loadingLearners ? (
+                   <div className="text-center p-8">
+                     <span className="animate-spin h-6 w-6 border-2 border-emerald-700 border-t-transparent rounded-full mx-auto block mb-2" />
+                     <p className="text-xs text-gray-500">Loading metrics...</p>
+                   </div>
+                ) : learners.length === 0 ? (
+                  <div className="text-center p-8 bg-gray-50 border border-gray-100 rounded-xl">
+                      <Users className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                      <h4 className="font-bold text-gray-900 text-sm">No instructor activity yet</h4>
+                      <p className="text-xs text-gray-500 mt-1">Assigned learner activity and classroom analytics will appear here.</p>
                   </div>
-                ))}
+                ) : (
+                  <div className="space-y-0">
+                    {[
+                      { label: 'Assigned Learners', value: totalAssigned, color: 'text-amber-600', bg: 'bg-amber-50' },
+                      { label: 'Active Learners', value: activeLearners, color: 'text-green-600', bg: 'bg-green-50' },
+                      { label: 'Lessons Managed', value: 0, color: 'text-blue-600', bg: 'bg-blue-50' },
+                      { label: 'Assessments Reviewed', value: 0, color: 'text-purple-600', bg: 'bg-purple-50' },
+                      { label: 'Average Class Accuracy', value: `${avgAccuracy}%`, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                      { label: 'Certifications Monitored', value: 0, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+                    ].map((stat, i) => (
+                      <div key={i} className="flex justify-between items-center py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50/50 px-2 rounded-lg transition-colors">
+                        <span className="text-xs font-semibold text-gray-600">{stat.label}</span>
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${stat.bg} ${stat.color}`}>{stat.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* ──── ACHIEVEMENTS SECTION ──── */}
-        {activeSection === 'achievements' && (
+        {/* ──── TEACHING OVERVIEW SECTION ──── */}
+        {activeSection === 'teaching' && (
           <div className="lg:col-span-12">
-            <AchievementsDashboard />
+            <div className="bg-white/70 backdrop-blur-xl border border-white/60 shadow-glass rounded-[1.5rem] p-6 hover:bg-white/85 hover:shadow-premium transition-all duration-300">
+               <div className="mb-6">
+                 <h3 className="font-bold text-xl text-gray-950">Teaching Overview</h3>
+                 <p className="text-sm text-gray-500">Monitor engagement and class performance thresholds across your cohort.</p>
+               </div>
+
+               {loadingLearners ? (
+                   <div className="text-center p-16">
+                     <span className="animate-spin h-8 w-8 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto block mb-4" />
+                     <p className="text-sm text-gray-500">Processing classroom analytics...</p>
+                   </div>
+               ) : learners.length === 0 ? (
+                 <div className="text-center p-16 bg-gray-50 border border-gray-100 rounded-xl">
+                      <Briefcase className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                      <h4 className="font-bold text-gray-900 text-lg">No instructor activity yet</h4>
+                      <p className="text-sm text-gray-500 mt-1 max-w-md mx-auto">Assigned learner activity and classroom analytics will appear here.</p>
+                 </div>
+               ) : (
+                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 p-5 rounded-2xl flex flex-col justify-between h-32">
+                        <Activity className="h-6 w-6 text-indigo-500 mb-2" />
+                        <div>
+                           <p className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-400">Learner Engagement</p>
+                           <h4 className="text-xl font-bold text-indigo-900">{activeLearners} Active</h4>
+                        </div>
+                     </div>
+                     <div className="bg-gradient-to-br from-purple-50 to-fuchsia-50 border border-purple-100 p-5 rounded-2xl flex flex-col justify-between h-32">
+                        <Target className="h-6 w-6 text-purple-500 mb-2" />
+                        <div>
+                           <p className="text-[10px] font-extrabold uppercase tracking-widest text-purple-400">Assessment Activity</p>
+                           <h4 className="text-xl font-bold text-purple-900">0 Reviewed</h4>
+                        </div>
+                     </div>
+                     <div className="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-100 p-5 rounded-2xl flex flex-col justify-between h-32">
+                        <TrendingUp className="h-6 w-6 text-emerald-500 mb-2" />
+                        <div>
+                           <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400">Class Performance</p>
+                           <h4 className="text-xl font-bold text-emerald-900">{avgAccuracy}% Median</h4>
+                        </div>
+                     </div>
+                     <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 p-5 rounded-2xl flex flex-col justify-between h-32">
+                        <ShieldCheck className="h-6 w-6 text-amber-500 mb-2" />
+                        <div>
+                           <p className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400">Certification</p>
+                           <h4 className="text-xl font-bold text-amber-900">0 Monitored</h4>
+                        </div>
+                     </div>
+                 </div>
+               )}
+            </div>
           </div>
         )}
 
