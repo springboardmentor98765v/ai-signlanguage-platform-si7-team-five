@@ -71,18 +71,26 @@ export default function Layout({ activeTab, onTabChange, user, onLogout, childre
 
   const getTrainerNav = () => [
     { name: 'Dashboard', icon: LayoutDashboard },
-    { name: 'Lessons', icon: BookOpen },
     { name: 'Practice', icon: Camera },
-    { name: 'Leaderboard', icon: Trophy },
     { name: 'Reports', icon: Award },
     { name: 'Profile', icon: User },
   ];
 
-  const navItems = user.role === 'Instructor'
-    ? getInstructorNav()
-    : user.role === 'Accessibility Trainer'
-      ? getTrainerNav()
-      : getLearnerNav();
+  const getAdminNav = () => [
+    { name: 'Dashboard', icon: LayoutDashboard },
+    { name: 'Users', icon: Users },
+    { name: 'Lessons', icon: BookOpen },
+    { name: 'Reports', icon: Award },
+    { name: 'Profile', icon: User },
+  ];
+
+  const navItems = user.role === 'Admin'
+    ? getAdminNav()
+    : user.role === 'Instructor'
+      ? getInstructorNav()
+      : user.role === 'Accessibility Trainer'
+        ? getTrainerNav()
+        : getLearnerNav();
 
   const handleNavClick = (tabName: string) => {
     onTabChange(tabName);

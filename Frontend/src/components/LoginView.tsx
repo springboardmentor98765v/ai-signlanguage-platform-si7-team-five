@@ -322,13 +322,51 @@ export default function LoginView({ onLogin, onNavigateToRegister }: LoginViewPr
     }
   }, [email, password, onLogin]);
 
-  const handleDemoLogin = useCallback((role: 'Learner' | 'Instructor' | 'Accessibility Trainer') => {
+  const handleDemoLogin = useCallback(async (role: 'Learner' | 'Instructor' | 'Accessibility Trainer' | 'Admin') => {
     const map = {
       'Learner': { email: 'learner@aslsignai.edu', name: 'Jane Doe' },
       'Instructor': { email: 'instructor@aslsignai.edu', name: 'Marcus Sterling' },
       'Accessibility Trainer': { email: 'trainer@aslsignai.edu', name: 'Sarah Jenkins' },
+      'Admin': { email: 'admin@aslsignai.edu', name: 'System Admin' },
     };
-    onLogin(map[role].email, map[role].name, role);
+    
+    setIsSubmitting(true);
+    setError('');
+    
+    try {
+      // 1. Attempt standard login for demo user
+      let response = await fetch(`${apiBaseUrl}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: map[role].email, password: 'password123' }),
+      });
+      
+      let data = await response.json();
+      
+      // 2. If it fails, Auto-Register the Demo User safely
+      if (!response.ok) {
+        const regResponse = await fetch(`${apiBaseUrl}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            username: map[role].name.replace(' ', '') + '_' + role.replace(' ', ''), 
+            email: map[role].email, 
+            password: 'password123', 
+            role: role 
+          }),
+        });
+        if (!regResponse.ok) throw new Error('Demo initialization failed. Ensure backend is running.');
+        data = await regResponse.json();
+      }
+
+      localStorage.setItem('asl_access_token', data.access_token);
+      onLogin(map[role].email, map[role].name, role, String(data.user_id || `demo_${role}`));
+      
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Demo Login failed');
+    } finally {
+      setIsSubmitting(false);
+    }
   }, [onLogin]);
 
   return (
@@ -490,6 +528,7 @@ export default function LoginView({ onLogin, onNavigateToRegister }: LoginViewPr
                 { role: 'Learner' as const, label: 'Learner Profile' },
                 { role: 'Instructor' as const, label: 'Instructor Profile' },
                 { role: 'Accessibility Trainer' as const, label: 'Accessibility Trainer' },
+                { role: 'Admin' as const, label: 'Admin Profile' },
               ]).map((demo) => (
                 <motion.button
                   whileHover={{ y: -2, scale: 1.01 }}

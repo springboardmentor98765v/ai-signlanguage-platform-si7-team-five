@@ -12,8 +12,19 @@ import ReportsView from './components/ReportsView';
 import ProfileView from './components/ProfileView';
 import LeaderboardView from './components/LeaderboardView';
 import InstructorDashboard from './components/InstructorDashboard';
+import InstructorLeaderboardView from './components/InstructorLeaderboardView';
+import InstructorReportsView from './components/InstructorReportsView';
+import InstructorProfileView from './components/InstructorProfileView';
+import InstructorLessonsView from './components/InstructorLessonsView';
 import AdminDashboard from './components/AdminDashboard';
+import AdminUsersView from './components/AdminUsersView';
+import AdminLessonsView from './components/AdminLessonsView';
+import AdminReportsView from './components/AdminReportsView';
+import AdminProfileView from './components/AdminProfileView';
 import AccessibilityTrainerDashboard from './components/AccessibilityTrainerDashboard';
+import AccessibilityTrainerPracticeView from './components/AccessibilityTrainerPracticeView';
+import AccessibilityTrainerReportsView from './components/AccessibilityTrainerReportsView';
+import AccessibilityTrainerProfileView from './components/AccessibilityTrainerProfileView';
 import CertificationView from './components/CertificationView';
 
 export default function App() {
@@ -189,51 +200,48 @@ export default function App() {
     switch (activeTab) {
       case 'Dashboard':
         // Role-based dashboard routing
-        if (currentUser.role === 'Instructor') {
-          return <InstructorDashboard />;
-        }
-        if (currentUser.role === 'Accessibility Trainer') {
-          return <AccessibilityTrainerDashboard />;
-        }
-        return (
-          <DashboardView
-            user={currentUser}
-            lessons={lessons}
-            onNavigate={handleNavigate}
-          />
-        );
-      case 'Instructor':
-        return <InstructorDashboard />;
-      case 'Admin':
-        return <AdminDashboard />;
+        if (currentUser.role === 'Admin') return <AdminDashboard />;
+        if (currentUser.role === 'Instructor') return <InstructorDashboard />;
+        if (currentUser.role === 'Accessibility Trainer') return <AccessibilityTrainerDashboard />;
+        return <DashboardView user={currentUser} lessons={lessons} onNavigate={handleNavigate} />;
+        
+      case 'Users':
+        if (currentUser.role === 'Admin') return <AdminUsersView />;
+        return <DashboardView user={currentUser} lessons={lessons} onNavigate={handleNavigate} />;
+        
       case 'Lessons':
-        return (
-          <LessonsView
-            lessons={lessons}
-            onNavigate={handleNavigate}
-            selectedLessonFromNav={selectedLessonFromNav}
-          />
-        );
+        if (currentUser.role === 'Admin') return <AdminLessonsView lessons={lessons} onLessonCreated={() => {}} />;
+        if (currentUser.role === 'Instructor') return <InstructorLessonsView lessons={lessons} />;
+        return <LessonsView lessons={lessons} onNavigate={handleNavigate} selectedLessonFromNav={selectedLessonFromNav} />;
+        
       case 'Practice':
-        return (
-          <PracticeView
-            initialTargetStep={selectedPracticeStep}
-            onNavigate={handleNavigate}
-          />
-        );
+        if (currentUser.role === 'Admin') return <AdminDashboard />;
+        if (currentUser.role === 'Accessibility Trainer') return <AccessibilityTrainerPracticeView />;
+        return <PracticeView initialTargetStep={selectedPracticeStep} onNavigate={handleNavigate} />;
+        
       case 'Reports':
+        if (currentUser.role === 'Admin') return <AdminReportsView />;
+        if (currentUser.role === 'Accessibility Trainer') return <AccessibilityTrainerReportsView />;
         return <ReportsView />;
       case 'Certification':
+        if (currentUser.role === 'Admin') return <AdminDashboard />;
         return <CertificationView />;
+        
+      case 'Reports':
+        if (currentUser.role === 'Admin' || currentUser.role === 'Accessibility Trainer') return <AdminDashboard />;
+        if (currentUser.role === 'Instructor') return <InstructorReportsView />;
+        return <ReportsView />;
+        
       case 'Leaderboard':
+        if (currentUser.role === 'Admin' || currentUser.role === 'Accessibility Trainer') return <AdminDashboard />;
+        if (currentUser.role === 'Instructor') return <InstructorLeaderboardView />;
         return <LeaderboardView />;
+        
       case 'Profile':
-        return (
-          <ProfileView
-            user={currentUser}
-            onUpdateProfile={handleUpdateProfile}
-          />
-        );
+        if (currentUser.role === 'Admin') return <AdminProfileView user={currentUser} onLogout={handleLogout} />;
+        if (currentUser.role === 'Accessibility Trainer') return <AccessibilityTrainerProfileView user={currentUser} onUpdateProfile={handleUpdateProfile} />;
+        if (currentUser.role === 'Instructor') return <InstructorProfileView user={currentUser} onUpdateProfile={handleUpdateProfile} />;
+        return <ProfileView user={currentUser} onUpdateProfile={handleUpdateProfile} />;
       default:
         return (
           <DashboardView
