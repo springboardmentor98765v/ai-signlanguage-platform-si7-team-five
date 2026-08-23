@@ -31,9 +31,9 @@ export default function App() {
   const [selectedLessonFromNav, setSelectedLessonFromNav] = useState<Lesson | null>(null);
   const [selectedPracticeStep, setSelectedPracticeStep] = useState<{ step: LessonStep; lessonName: string } | null>(null);
 
-  // Read session from localStorage if available (simulates persistent login)
+  // Read session from sessionStorage to require login on new tabs while keeping f5 reloads safe
   useEffect(() => {
-    const cachedUser = localStorage.getItem('asl_user_session');
+    const cachedUser = sessionStorage.getItem('asl_user_session');
     if (cachedUser) {
       try {
         setCurrentUser(JSON.parse(cachedUser));
@@ -93,7 +93,7 @@ export default function App() {
       avgAccuracy: 0,
     };
     setCurrentUser(loggedInUser);
-    localStorage.setItem('asl_user_session', JSON.stringify(loggedInUser));
+    sessionStorage.setItem('asl_user_session', JSON.stringify(loggedInUser));
     setActiveTab('Dashboard');
   };
 
@@ -126,13 +126,13 @@ export default function App() {
       avgAccuracy: 0,
     };
     setCurrentUser(newUser);
-    localStorage.setItem('asl_user_session', JSON.stringify(newUser));
+    sessionStorage.setItem('asl_user_session', JSON.stringify(newUser));
     setActiveTab('Dashboard');
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
-    localStorage.removeItem('asl_user_session');
+    sessionStorage.removeItem('asl_user_session');
     setSelectedLessonFromNav(null);
     setSelectedPracticeStep(null);
     setAuthScreen('login');
@@ -142,7 +142,7 @@ export default function App() {
     if (currentUser) {
       const updated = { ...currentUser, ...updates };
       setCurrentUser(updated);
-      localStorage.setItem('asl_user_session', JSON.stringify(updated));
+      sessionStorage.setItem('asl_user_session', JSON.stringify(updated));
     }
   };
 
