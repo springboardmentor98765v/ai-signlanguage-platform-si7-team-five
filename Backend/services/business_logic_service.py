@@ -186,6 +186,33 @@ def my_streak(db: Session = Depends(get_db), token: dict = Depends(get_current_u
     return {"current_streak": streak.current_streak if streak else 0, "longest_streak": streak.longest_streak if streak else 0}
 
 
+@r.get("/leaderboard", response_model=list[LeaderboardEntry])
+def global_leaderboard(metric: Metric = Query("accuracy"), db: Session = Depends(get_db)):
+    """All-time leaderboard across every practice attempt, regardless of lesson.
+
+    Most practice happens outside a specific lesson (course_id is null), so the
+    per-lesson /leaderboard/{lesson_id} endpoint below rarely has any matching
+    rows. This endpoint aggregates every learner's attempts platform-wide.
+    """
+    attempts = db.query(PracticeAttempt).all()
+    by_user: dict[int, list[PracticeAttempt]] = defaultdict(list)
+    for attempt in attempts:
+        by_user[attempt.user_id].append(attempt)
+    rows: list[LeaderboardEntry] = []
+    for user_id, user_attempts in by_user.items():
+        user = db.get(User, user_id)
+        streak = db.get(UserStreak, user_id)
+        accuracy = round(100 * sum(item.is_correct for item in user_attempts) / len(user_attempts), 2)
+        rows.append(LeaderboardEntry(rank=0, user_id=user_id, username=user.username if user else f"Learner {user_id}", accuracy=accuracy, current_streak=streak.current_streak if streak else 0, attempts=len(user_attempts)))
+    if metric == "streak":
+        rows.sort(key=lambda item: (-item.current_streak, -item.accuracy, item.username.lower()))
+    else:
+        rows.sort(key=lambda item: (-item.accuracy, -item.current_streak, item.username.lower()))
+    for rank, item in enumerate(rows, start=1):
+        item.rank = rank
+    return rows
+
+
 @r.get("/leaderboard/{lesson_id}", response_model=list[LeaderboardEntry])
 def leaderboard(lesson_id: int, metric: Metric = Query("accuracy"), db: Session = Depends(get_db)):
     """DAY 3: Intern 1 uses this to show class ranking by accuracy or streak."""

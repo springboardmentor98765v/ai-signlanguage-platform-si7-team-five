@@ -223,6 +223,7 @@ export default function App() {
         if (currentUser.role === 'Admin') return <AdminReportsView />;
         if (currentUser.role === 'Accessibility Trainer') return <AccessibilityTrainerReportsView />;
         return <ReportsView />;
+      
       case 'Certification':
         if (currentUser.role === 'Admin') return <AdminDashboard />;
         return <CertificationView />;

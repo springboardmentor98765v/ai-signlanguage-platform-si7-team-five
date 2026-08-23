@@ -94,6 +94,13 @@ export async function getLeaderboard(lessonId: number, metric: LeaderboardMetric
   );
 }
 
+export async function getGlobalLeaderboard(metric: LeaderboardMetric): Promise<LeaderboardEntry[]> {
+  return readJson<LeaderboardEntry[]>(
+    await fetch(`${apiBaseUrl}/business/leaderboard?metric=${metric}`),
+    'Could not load leaderboard',
+  );
+}
+
 export async function getRecommendations(token: string): Promise<Recommendation[]> {
   return readJson<Recommendation[]>(
     await fetch(`${apiBaseUrl}/business/recommendations/me`, { headers: headers(token) }),

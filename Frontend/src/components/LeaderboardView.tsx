@@ -18,11 +18,8 @@ import {
   Medal,
 } from 'lucide-react';
 import { LeaderboardUser } from '../types';
-import {
-  leaderboardService,
-  TimeRangeFilter,
-  SortOption,
-} from '../services/leaderboardService';
+import { getGlobalLeaderboard } from '../utils/businessLogicApi';
+import { TimeRangeFilter, SortOption } from '../services/leaderboardService';
 import { CinematicSection } from './CinematicMotion';
 
 /* ═══════════════════════════════════════════════════════════════
@@ -686,21 +683,66 @@ export default function LeaderboardView() {
 
   const fetchData = async () => {
     setLoading(true);
-    const result = await leaderboardService.getLeaderboard({
-      timeRange,
-      sortBy,
-      searchQuery,
-      page,
-      pageSize,
-    });
+    try {
+      // The backend only ranks by accuracy or streak; 'points' and 'lessons'
+      // sort options are applied client-side below on top of that base list.
+      const backendMetric = sortBy === 'streak' ? 'streak' : 'accuracy';
+      const entries = await getGlobalLeaderboard(backendMetric);
 
-    setUsers(result.users);
-    setTotalCount(result.totalCount);
-    setTotalPages(result.totalPages);
-    if (result.currentUserRank) {
-      setCurrentUserRank(result.currentUserRank);
+      let currentUsername: string | null = null;
+      const token = localStorage.getItem('asl_access_token');
+      if (token) {
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          currentUsername = payload.sub ?? null;
+        } catch {
+          currentUsername = null;
+        }
+      }
+
+      let mapped: LeaderboardUser[] = entries.map((entry) => ({
+        id: String(entry.user_id),
+        rank: entry.rank,
+        name: entry.username,
+        role: 'Learner',
+        accuracy: entry.accuracy,
+        streak: entry.current_streak,
+        // The backend doesn't track lessons/badges separately yet; attempts
+        // is the closest real signal of engagement we currently have.
+        lessonsCompleted: entry.attempts,
+        badgesCount: 0,
+        points: Math.round(entry.accuracy * 10 + entry.current_streak * 5),
+        isCurrentUser: currentUsername !== null && entry.username === currentUsername,
+      }));
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        mapped = mapped.filter((u) => u.name.toLowerCase().includes(q));
+      }
+      if (sortBy === 'points' || sortBy === 'lessons') {
+        mapped = [...mapped].sort((a, b) =>
+          sortBy === 'points' ? b.points - a.points : b.lessonsCompleted - a.lessonsCompleted
+        );
+        mapped = mapped.map((u, idx) => ({ ...u, rank: idx + 1 }));
+      }
+
+      const totalCount = mapped.length;
+      const totalPages = Math.ceil(totalCount / pageSize) || 1;
+      const startIndex = (page - 1) * pageSize;
+      const paginatedUsers = mapped.slice(startIndex, startIndex + pageSize);
+
+      setUsers(paginatedUsers);
+      setTotalCount(totalCount);
+      setTotalPages(totalPages);
+      setCurrentUserRank(mapped.find((u) => u.isCurrentUser) ?? null);
+    } catch (e) {
+      setUsers([]);
+      setTotalCount(0);
+      setTotalPages(1);
+      setCurrentUserRank(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // Top 3 Podium Users (derived from overall top ranked)
